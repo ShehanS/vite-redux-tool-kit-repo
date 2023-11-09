@@ -13,6 +13,9 @@ const initialState: LoginState = {
     payload: null
 }
 
+export const LOGIN = 'login';
+
+
 export const loginSlice = createSlice({
     name: 'login',
     initialState,

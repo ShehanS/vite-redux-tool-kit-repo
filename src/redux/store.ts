@@ -1,4 +1,4 @@
-import {configureStore} from '@reduxjs/toolkit';
+import {configureStore, getDefaultMiddleware} from '@reduxjs/toolkit';
 import {createLogger} from 'redux-logger';
 import rootReducer from "./root/root-reducer";
 import sagaMiddleware, {runRootSagaMiddleware} from "./root/root-saga-middleware";
@@ -7,7 +7,7 @@ const loggerMiddleware = createLogger();
 
 export const store = configureStore({
     reducer: rootReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware, loggerMiddleware),
+    middleware: [...getDefaultMiddleware(), sagaMiddleware, loggerMiddleware]
 });
 
 runRootSagaMiddleware();

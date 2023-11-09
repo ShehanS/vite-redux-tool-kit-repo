@@ -1,12 +1,12 @@
-import {call, put, takeLatest} from 'redux-saga/effects';
+import { all, call, put, takeLatest, take } from "redux-saga/effects";
 import {login, loginError, loginSuccess} from "./login-slice";
-import {all} from "axios";
 import {USER_LOGIN_API} from "./login-api";
+import {ServerResponse} from "http";
+
 
 function* handleUserLogin(action: { payload: {} }) {
-
     try {
-        const response: any = yield call(
+        const response: ServerResponse = yield call(
             USER_LOGIN_API.login,
             action.payload
         );
@@ -17,7 +17,7 @@ function* handleUserLogin(action: { payload: {} }) {
 }
 
 function* watchUserLogin() {
-    yield takeLatest<any>(login, handleUserLogin);
+    yield takeLatest<any>(login.type, handleUserLogin);
 }
 
 export default function* LoginSaga() {
