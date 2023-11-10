@@ -1,37 +1,32 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import ReduxTest from "./ReduxTest";
+import React from "react";
+import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import {ROUTES} from "./constants/routes";
+import LoginPage from "./pages/LoginPage"
+import LandingPage from "./pages/LandingPage";
+import {AppDataContextProvider, useAppDataContext} from "./context/AppDataContext";
+import Authenticate from "./pages/Authenticate";
+import Layout from "./components/Layout";
+import axios from "axios";
 
 function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-          <ReduxTest/>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+        <>
+            <AppDataContextProvider>
+                <GoogleOAuthProvider
+                    clientId="186010490777-6jfkm42ni28k4u29e1qbmq5mvhgcmlip.apps.googleusercontent.com">
+                    <Router>
+                        <Routes>
+                            <Route path={ROUTES.login} element={<LoginPage/>}/>
+                            <Route path={ROUTES.root} element={<LoginPage/>}/>
+                            <Route path={ROUTES.ladingPage} element={<Authenticate><Layout><LandingPage/></Layout></Authenticate>}/>
+                        </Routes>
+                    </Router>
+                </GoogleOAuthProvider>
+            </AppDataContextProvider>
+        </>
+    )
 }
 
 export default App
