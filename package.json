@@ -18,9 +18,12 @@
     "@mui/icons-material": "^5.14.16",
     "@mui/joy": "^5.0.0-beta.14",
     "@mui/material": "^5.14.17",
+    "@mui/styled-engine-sc": "^6.0.0-alpha.5",
+    "@mui/x-date-pickers": "^6.18.1",
     "@react-oauth/google": "^0.11.1",
     "@reduxjs/toolkit": "^1.9.7",
     "axios": "^1.6.1",
+    "date-fns": "^2.30.0",
     "http": "^0.0.1-security",
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
@@ -28,7 +31,8 @@
     "react-redux": "^8.1.3",
     "react-router-dom": "^6.18.0",
     "redux-logger": "^3.0.6",
-    "redux-saga": "^1.2.3"
+    "redux-saga": "^1.2.3",
+    "styled-components": "^6.1.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

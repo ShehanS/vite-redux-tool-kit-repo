@@ -10,7 +10,6 @@ import Layout from "./components/Layout";
 import axios from "axios";
 
 function App() {
-
     return (
         <>
             <AppDataContextProvider>

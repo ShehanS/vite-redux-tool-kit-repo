@@ -7,6 +7,7 @@ type AppDataContextType = {
         refreshToken: string;
         isOpenDialog: boolean;
         dialogContent: any;
+        dialogTitle: any;
     };
     setAppDataContext: (props: any) => void;
 };
@@ -23,7 +24,8 @@ const AppDataContextProvider = ({children}: AppDataContextProviderProps) => {
         user: null,
         refreshToken: "",
         isOpenDialog: false,
-        dialogContent: null
+        dialogContent: null,
+        dialogTitle: null
     });
 
     return (

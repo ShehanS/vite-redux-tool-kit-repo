@@ -31,10 +31,12 @@ const Authenticate: FC<Props> = (props) => {
     });
     const navigate = useNavigate();
     const {appDataContext, setAppDataContext} = useAppDataContext();
+
+
     axios.interceptors.request.use(
         (config) => {
             if (appDataContext.refreshToken !== "") {
-                config.headers['Authorization'] = `Bearer ${stateObj.refreshTokenPayload?.access_token}`;
+                config.headers['Authorization'] = `Zoho-oauthtoken ${stateObj.refreshTokenPayload?.access_token}`;
             }
             return config;
         },

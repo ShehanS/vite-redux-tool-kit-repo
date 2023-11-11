@@ -2,12 +2,13 @@ import React, {FC, useState} from "react"
 import Modal from '@mui/joy/Modal';
 import ModalClose from '@mui/joy/ModalClose';
 import {useAppDataContext} from "../context/AppDataContext";
-import {ModalDialog} from "@mui/joy";
+import {DialogTitle, Divider, ModalDialog} from "@mui/joy";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 type StateObj = {
     isOpen: boolean;
 }
+
 
 const Dialog: FC = (props: any) => {
     const matches = useMediaQuery('(min-width:600px)');
@@ -24,15 +25,19 @@ const Dialog: FC = (props: any) => {
     }
 
     return (<React.Fragment>
-        <Modal di
+        <Modal
             open={stateObj.isOpen}
             onClose={() => {
                 setAppDataContext({...appDataContext, isOpenDialog: false});
             }}
         >
-            <ModalDialog sx={{width:matches ? 600:'100%'}}
+            <ModalDialog role="alertdialog" sx={{width:matches ? 600:'100%'}}
                          layout={matches ? "center": "fullscreen"}
             ><ModalClose variant="outlined"/>
+                <DialogTitle>
+                    {appDataContext.dialogTitle ?? ""}
+                </DialogTitle>
+                <Divider />
                 {appDataContext.dialogContent}
             </ModalDialog>
         </Modal>
