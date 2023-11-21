@@ -1,5 +1,6 @@
 import type {PayloadAction} from '@reduxjs/toolkit'
 import {createSlice} from '@reduxjs/toolkit'
+import {ISnackBar} from "../../interfaces/ISnackBar";
 
 
 export interface TaskState {
@@ -12,8 +13,14 @@ export interface TaskState {
     statusResponse: any;
     priorityResponse: any;
     addTaskResponse: any;
+    updateTaskResponse: any;
+    getTaskResponse: any;
     projectId: string;
-    body: any;
+    taskId: string,
+    newTask: any;
+    isLoading: boolean;
+    showSnackBar: ISnackBar,
+    deleteTaskResponse: any;
 }
 
 const initialState: TaskState = {
@@ -26,8 +33,20 @@ const initialState: TaskState = {
     statusResponse: null,
     priorityResponse: null,
     addTaskResponse: null,
-    projectId:"",
-    body: null
+    getTaskResponse: null,
+    projectId: "",
+    taskId: "",
+    updateTaskResponse: null,
+    newTask: null,
+    isLoading: false,
+    deleteTaskResponse: null,
+    showSnackBar: {
+        message: "",
+        title: "",
+        isOpen: false,
+        variant: "solid",
+        color: "primary"
+    }
 
 }
 
@@ -37,35 +56,42 @@ export const taskSlice = createSlice({
     reducers: {
         getTask: (state, action: PayloadAction<any>) => ({
             ...state,
-            payload: action.payload
+            payload: action.payload,
+            error: null
         }),
         getTaskSuccess: (state, action: PayloadAction<any>) => ({
             ...state,
-            taskListResponse: action.payload
+            taskListResponse: action.payload,
+            error: null
         }),
         getTaskError: (state, action: PayloadAction<any>) => ({
             ...state,
-            error: action.payload
+            error: action.payload,
         }),
         getProject: (state, action: PayloadAction<any>) => ({
             ...state,
-            payload: action.payload
+            payload: action.payload,
+            error: null
         }),
         getProjectSuccess: (state, action: PayloadAction<any>) => ({
             ...state,
-            projectListResponse: action.payload
+            projectListResponse: action.payload,
+            error: null
         }),
         getProjectError: (state, action: PayloadAction<any>) => ({
             ...state,
-            error: action.payload
+            error: action.payload,
+
         }),
         getProjectById: (state, action: PayloadAction<any>) => ({
             ...state,
-            payload: action.payload
+            payload: action.payload,
+            error: null
         }),
         getProjectByIdSuccess: (state, action: PayloadAction<any>) => ({
             ...state,
-            projectResponse: action.payload
+            projectResponse: action.payload,
+            error: null
         }),
         getProjectByIdError: (state, action: PayloadAction<any>) => ({
             ...state,
@@ -73,11 +99,13 @@ export const taskSlice = createSlice({
         }),
         getOwnersByProjectById: (state, action: PayloadAction<any>) => ({
             ...state,
-            payload: action.payload
+            payload: action.payload,
+            error: null
         }),
         getOwnersByProjectByIdSuccess: (state, action: PayloadAction<any>) => ({
             ...state,
-            ownerResponse: action.payload
+            ownerResponse: action.payload,
+            error: null
         }),
         getOwnersByProjectByIdError: (state, action: PayloadAction<any>) => ({
             ...state,
@@ -85,11 +113,13 @@ export const taskSlice = createSlice({
         }),
         getPriorityByProjectById: (state, action: PayloadAction<any>) => ({
             ...state,
-            payload: action.payload
+            payload: action.payload,
+            error: null
         }),
         getPriorityByProjectByIdSuccess: (state, action: PayloadAction<any>) => ({
             ...state,
-            priorityResponse: action.payload
+            priorityResponse: action.payload,
+            error: null
         }),
         getPriorityByProjectByIdByIdError: (state, action: PayloadAction<any>) => ({
             ...state,
@@ -97,31 +127,105 @@ export const taskSlice = createSlice({
         }),
         getStatusByProjectById: (state, action: PayloadAction<any>) => ({
             ...state,
-            payload: action.payload
+            payload: action.payload,
+            error: null
         }),
         getStatusByProjectByIdSuccess: (state, action: PayloadAction<any>) => ({
             ...state,
-            statusResponse: action.payload
+            statusResponse: action.payload,
+            error: null
         }),
         getStatusByProjectByIdByIdError: (state, action: PayloadAction<any>) => ({
             ...state,
             error: action.payload
         }),
-        addTask: (state, action: PayloadAction<any>) => ({
+        addTask: (state, action: PayloadAction<{ payload: any, projectId: string }>) => ({
             ...state,
             projectId: action.projectId,
-            body: action.payload
+            newTask: action.payload,
+            error: null
         }),
         addTaskSuccess: (state, action: PayloadAction<any>) => ({
             ...state,
-            statusResponse: action.payload
+            addTaskResponse: action.payload ?? null,
+            error: null
         }),
         addTaskError: (state, action: PayloadAction<any>) => ({
             ...state,
             error: action.payload
         }),
 
+        updateTask: (state, action: PayloadAction<{ payload: any, projectId: string, taskId: string }>) => ({
+            ...state,
+            projectId: action.projectId,
+            taskId: action.taskId,
+            updateTask: action.payload,
+            error: null
+        }),
+        updateTaskSuccess: (state, action: PayloadAction<any>) => ({
+            ...state,
+            updateTaskResponse: action.payload ?? null,
+            error: null
+        }),
+        updateTaskTaskError: (state, action: PayloadAction<any>) => ({
+            ...state,
+            error: action.payload
+        }),
+        updateTaskSuccessClear: (state) => ({
+            ...state,
+            error: null,
+            updateTaskResponse: null
+        }),
 
+        setLoader: (state, action: PayloadAction<boolean>) => ({
+            ...state,
+            isLoading: action.payload,
+            error: null
+        }),
+        setSnackBar: (state, action: PayloadAction<ISnackBar>) => ({
+            ...state,
+            showSnackBar: action.payload,
+            error: null
+        }),
+        setResetState: (state) => ({
+            ...state,
+            addTaskResponse: null
+        }),
+        getTaskById: (state, action: PayloadAction<{ projectId: string, taskId: string }>) => ({
+            ...state,
+            projectId: action.projectId,
+            taskId: action.taskId,
+            error: null
+        }),
+        getTaskByIdSuccess: (state, action: PayloadAction<any>) => ({
+            ...state,
+            getTaskResponse: action.payload ?? null,
+            error: null
+        }),
+        getTaskByIdError: (state, action: PayloadAction<any>) => ({
+            ...state,
+            error: null
+        }),
+        deleteTaskById: (state, action: PayloadAction<{ projectId: string, taskId: string }>) => ({
+            ...state,
+            projectId: action.projectId,
+            taskId: action.taskId,
+            error: null
+        }),
+        deleteTaskByIdSuccess: (state, action: PayloadAction<any>) => ({
+            ...state,
+            deleteTaskResponse: action.payload ?? null,
+            error: null
+        }),
+        deleteTaskByIdError: (state, action: PayloadAction<any>) => ({
+            ...state,
+            error: null
+        }),
+        deleteTaskByIdResponseClear: (state) => ({
+            ...state,
+            deleteTaskResponse: null,
+            error: null
+        }),
     },
 })
 
@@ -146,7 +250,21 @@ export const {
     getStatusByProjectByIdByIdError,
     addTask,
     addTaskSuccess,
-    addTaskError
+    addTaskError,
+    setLoader,
+    setSnackBar,
+    setResetState,
+    updateTask,
+    updateTaskSuccess,
+    updateTaskTaskError,
+    updateTaskSuccessClear,
+    getTaskById,
+    getTaskByIdSuccess,
+    getTaskByIdError,
+    deleteTaskById,
+    deleteTaskByIdSuccess,
+    deleteTaskByIdError,
+    deleteTaskByIdResponseClear
 
 
 } = taskSlice.actions

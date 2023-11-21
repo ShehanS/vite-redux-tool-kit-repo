@@ -21,7 +21,7 @@ type StateObj = {
     user: any;
 
 };
-const AppDrawer: FC = (props: any) => {
+const CustomAppBar: FC = (props: any) => {
     const {appDataContext, setAppDataContext} = useAppDataContext();
     const [stateObj, setStateObj] = useState<StateObj>({
         user: null
@@ -181,4 +181,4 @@ const AppDrawer: FC = (props: any) => {
     </>)
 }
 
-export default AppDrawer;
+export default CustomAppBar;

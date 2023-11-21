@@ -44,6 +44,23 @@ const Authenticate: FC<Props> = (props) => {
             return Promise.reject(error);
         }
     );
+    axios.interceptors.response.use(
+        (response) => {
+            return response;
+        },
+        (error) => {
+            if (error.response.status === 401) {
+                setAppDataContext({
+                    ...appDataContext,
+                    isOpenDialog: true,
+                    dialogContent: <TokenDialog type={DialogType.success}/>
+                });
+                props.onGetToken();
+            }
+            return Promise.reject(error);
+        }
+    );
+
 
     useEffect(() => {
 

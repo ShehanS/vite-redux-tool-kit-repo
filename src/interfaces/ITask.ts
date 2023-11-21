@@ -3,6 +3,7 @@ export interface ITask {
 }
 
 export interface ITaskAttribute {
+    id?: string | undefined;
     percentage_completion?: string;
     estimated_effort_hours?: string | undefined;
     email_before?: string | undefined;
@@ -41,7 +42,8 @@ export interface IActualEndTime {
 
 export interface IOwner {
     name?: string | undefined;
-    id?: string | undefined
+    id?: string | undefined;
+    email_id?: string | undefined;
 }
 
 export interface IPriority {
@@ -50,6 +52,6 @@ export interface IPriority {
 }
 
 export interface IStatus {
-    name: string | undefined;
+    name?: string | undefined;
     id: string | undefined
 }
