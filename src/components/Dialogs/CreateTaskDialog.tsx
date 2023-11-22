@@ -258,7 +258,7 @@ const CreateTaskDialog: FC<Props> = (props) => {
                 },
             },
         }
-        props.onAddTask(props.project?.id, props.selectedTask?.id)
+        props.onAddTask(taskObject,props.project?.id, props.selectedTask?.id)
     }
 
         const handlingEditTask = () => {
