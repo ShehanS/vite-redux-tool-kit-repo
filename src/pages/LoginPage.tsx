@@ -1,6 +1,6 @@
 import React, {FC} from "react";
 import {GoogleLogin} from '@react-oauth/google';
-import {Box} from "@mui/joy";
+import {Box, Typography} from "@mui/joy";
 import {useNavigate} from "react-router-dom";
 import {useAppDataContext} from "../context/AppDataContext";
 import {jwtDecode} from "jwt-decode";
@@ -17,14 +17,16 @@ const LoginPage: FC = (props: any) => {
 
 
     return (<>
-        <Box>
-            <GoogleLogin
-                onSuccess={credentialResponse => {
-                    handleLogin(credentialResponse)
-                }}
-                onError={() => {
-                    console.log('Login Failed');
-                }}/>
+        <Box sx={{display:'flex', marginTop:'20%', justifyContent:'center', justifyItems : 'center', alignItems:'center'}}>
+           <Box sx={{background:'white', borderRadius:10, padding:5}}>
+               <GoogleLogin
+                   onSuccess={credentialResponse => {
+                       handleLogin(credentialResponse)
+                   }}
+                   onError={() => {
+                       console.log('Login Failed');
+                   }}/>
+           </Box>
         </Box>
     </>);
 }

@@ -9,6 +9,8 @@ type AppDataContextType = {
         dialogContent: any;
         dialogTitle: any;
         isEdit: boolean;
+        project:any;
+        task: any;
     };
     setAppDataContext: (props: any) => void;
 };
@@ -27,7 +29,9 @@ const AppDataContextProvider = ({children}: AppDataContextProviderProps) => {
         isOpenDialog: false,
         dialogContent: null,
         dialogTitle: null,
-        isEdit: false
+        isEdit: false,
+        project: null,
+        task: null
     });
 
     return (

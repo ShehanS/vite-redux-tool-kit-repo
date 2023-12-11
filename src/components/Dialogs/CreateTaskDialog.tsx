@@ -55,7 +55,6 @@ type InputObjectState = {
 
 
 const CreateTaskDialog: FC<Props> = (props) => {
-    console.log(props)
     const {appDataContext, setAppDataContext} = useAppDataContext();
     const [taskActualStartTime, setTaskActualStartTime] = useState<Date | undefined>(new Date());
     const [taskActualEndTime, setTaskActualEndTime] = useState<Date | undefined>(undefined);
@@ -216,6 +215,9 @@ const CreateTaskDialog: FC<Props> = (props) => {
             setSelectedStatus(value);
         }
 
+    }
+    const handlingClose = ()=>{
+        setAppDataContext({...appDataContext, isOpenDialog: false});
     }
 
     const handlingCreateTask = () => {
@@ -393,14 +395,14 @@ const CreateTaskDialog: FC<Props> = (props) => {
 
 
             <CardActions buttonFlex="0 1 120px">
-                <Button variant="outlined" color="neutral">
+                <Button variant="outlined" color="neutral" onClick={handlingClose}>
                     Close
                 </Button>
                 {props.isEdit === false && <Button onClick={handlingCreateTask} variant="solid" color="primary">
                     Create
                 </Button>}
                 {props.isEdit === true && <Button onClick={handlingEditTask} variant="solid" color="primary">
-                    Edit
+                    Update
                 </Button>}
             </CardActions>
         </Box>

@@ -1,7 +1,7 @@
 import {FC, useEffect, useState} from "react";
 import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
-import {Box, Button, CircularProgress, Grid, Option, Select, Stack, Typography} from "@mui/joy";
+import {Box, Button, CircularProgress, IconButton, Option, Select, Stack, Typography} from "@mui/joy";
 import {RootState} from "../redux/store";
 import {
     getProject,
@@ -16,13 +16,17 @@ import {
 import {connect, ConnectedProps} from "react-redux";
 import {useAppDataContext} from "../context/AppDataContext";
 import CreateTaskDialog from "./Dialogs/CreateTaskDialog";
-import {LocalizationProvider, TimePicker} from "@mui/x-date-pickers";
-import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {IGeneralRequest} from "../interfaces/IGeneralRequest";
 import {ITask, ITaskAttribute} from "../interfaces/ITask";
 import {ISnackBar} from "../interfaces/ISnackBar";
 import DeleteDialog from "./Dialogs/DeleteDialog";
-
+import CreateWorkLogDialog from "./Dialogs/CreateWorklog";
+import createWorklog from "./Dialogs/CreateWorklog";
+import {getWorklogs} from "../redux/worklog/worklog-slice";
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
+import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+import PatternRoundedIcon from '@mui/icons-material/PatternRounded';
 type ReduxProps = ConnectedProps<typeof connector>;
 
 
@@ -38,7 +42,7 @@ type StateObj = {
 };
 
 
-const TaskCreateBar: FC<ReduxProps> = (props) => {
+const MainBar: FC<ReduxProps> = (props) => {
     const {appDataContext, setAppDataContext} = useAppDataContext();
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [currentSelectedTask, setCurrentSelectedTask] = useState<ITaskAttribute>(null);
@@ -47,9 +51,11 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
     const [isTaskLoading, setTaskIsLoading] = useState<boolean>(false);
     const [projects, setProjects] = useState<any[]>([]);
     const [tasks, setTasks] = useState<any[]>([]);
-    const [actualStartTime, setActualStartTime] = useState<number>(new Date().getTime());
-    const [actualEndTime, setActuaEndTime] = useState<number>(new Date().getTime());
+    const [taskActualStartTime, setTaskActualStartTime] = useState<Date | undefined>(new Date());
+    const [taskActualEndTime, setTaskActualEndTime] = useState<Date | undefined>(new Date());
+
     const [currentDate, setCurrentDate] = useState<any>(new Date());
+
     const [stateObj, setStateObj] = useState<StateObj>({
         projectListResponse: null,
         user: null,
@@ -59,7 +65,6 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
         updateTaskResponse: null,
         addTaskResponse: null
     });
-
 
     useEffect(() => {
         setInterval(() => {
@@ -81,6 +86,7 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
             (stateObj.taskListResponse === null && props.taskListResponse !== null) ||
             stateObj.taskListResponse !== props.taskListResponse
         ) {
+            setTaskIsLoading(false);
             setStateObj({...stateObj, taskListResponse: props.taskListResponse});
             if (props.taskListResponse?.responseCode === "GET_TASK_LIST_SUCCESS") {
                 setTasks(props.taskListResponse?.data)
@@ -166,8 +172,8 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
     useEffect(() => {
         const startEpoch = Number.parseInt(stateObj.getTaskResponse?.data?.task?.actual_start_time?.value);
         const endEpoch = Number.parseInt(stateObj.getTaskResponse?.data?.task?.actual_end_time?.value);
-        setActualStartTime(startEpoch);
-        setActuaEndTime(endEpoch);
+        setTaskActualStartTime(new Date(startEpoch));
+        setTaskActualEndTime(new Date(endEpoch));
         setCurrentDate(endEpoch);
     }, [stateObj.getTaskResponse]);
 
@@ -192,6 +198,7 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
     const selectProjectDropdown = () => {
         if (appDataContext.user.email !== null) {
             setIsLoading(true);
+            setTaskIsLoading(false);
             const request = {
                 email: appDataContext.user.email
             }
@@ -202,9 +209,12 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
         if (value !== null) {
             props.onSetLoader(true);
             setSelectedProject(value);
+            setTasks(null);
+            setCurrentSelectedTask(null);
             const request = {
                 projectId: value?.id
             }
+            setAppDataContext({...appDataContext, project: value});
             props.onGetTasks(request);
             props.onGetProjectById(request);
         }
@@ -213,7 +223,9 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
     const selectTask = (event: any, value: any) => {
         if (value !== null) {
             setCurrentSelectedTask(value);
-            props.onGetTask(selectedProject.id, value.id)
+            props.onGetTask(selectedProject.id, value.id);
+            props.onGetWorklogs(selectedProject.id, value.id);
+            setAppDataContext({...appDataContext, task: value});
         }
     }
 
@@ -223,10 +235,22 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
             ...appDataContext,
             isOpenDialog: true,
             dialogTitle: "Add Task",
-            dialogContent: <CreateTaskDialog isEdit={false} user={appDataContext.user} project={selectedProject}
+            dialogContent: <CreateTaskDialog o isEdit={false} user={appDataContext.user} project={selectedProject}
                                              selectedTask={null}/>
         });
     }
+
+    const openWorklogCreateDialog = () => {
+        props.onReset();
+        setAppDataContext({
+            ...appDataContext,
+            isOpenDialog: true,
+            dialogTitle: "Add Worklog",
+            dialogContent: <CreateWorkLogDialog isEdit={false} user={appDataContext.user} project={selectedProject}
+                                                task={selectedTask}/>
+        });
+    }
+
 
     const editTaskCreateDialog = () => {
         props.onReset();
@@ -244,27 +268,29 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
             task: selectedTask.task
         }
         const updatedTaskObject = {
+
             ...taskObject,
             task: {
                 ...taskObject.task,
                 actual_end_time: {
                     ...taskObject.task.actual_end_time,
-                    value: actualEndTime.toString(),
+                    value: taskActualEndTime?.getTime().toString() ?? "",
                 },
                 actual_start_time: {
                     ...taskObject.task.actual_start_time,
-                    value: actualStartTime.toString()
+                    value: taskActualEndTime?.getTime().toString() ?? ""
                 },
                 scheduled_start_time: {
                     ...taskObject.task.scheduled_start_time,
-                    value: actualStartTime.toString()
+                    value: taskActualEndTime?.getTime().toString() ?? ""
                 },
                 scheduled_end_time: {
                     ...taskObject.task.scheduled_end_time,
-                    value: actualEndTime.toString()
+                    value: taskActualEndTime?.getTime().toString() ?? ""
                 }
             },
         };
+
         props.onUpdateTask(updatedTaskObject, selectedProject.id, currentSelectedTask.id);
     }
 
@@ -272,6 +298,7 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
         setAppDataContext({
             ...appDataContext,
             isOpenDialog: true,
+            dialogTitle: "Confirmation",
             dialogContent: <DeleteDialog projectId={selectedProject.id} taskId={currentSelectedTask.id}
                                          taskTitle={selectedTask.task.title}/>
         })
@@ -289,103 +316,80 @@ const TaskCreateBar: FC<ReduxProps> = (props) => {
     return (
         <>
             <Box sx={{
+                top: 100,
                 width: '98%',
                 position: 'fixed',
                 display: 'flex',
                 zIndex: 50,
+                alignItems: 'center',
+                justifyItems: 'center',
                 justifyContent: 'center'
             }}>
                 <Card
                     variant="outlined"
                     orientation="horizontal"
                     sx={{
-                        width: '95%',
-                        '&:hover': {boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder'},
+                        width: '100%'
                     }}
                 >
 
 
                     <CardContent>
-                        <Grid container spacing={2} sx={{flexGrow: 1}}>
-                            <Grid lg={6} md={12} sm={12}>
-                                <Stack direction={"row"}
-                                       sx={{justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
-                                    <Typography level="body-sm" fontSize={"md"}>
-                                        Select Project
-                                    </Typography>
-                                    <Select value={selectedProject}
-                                            onChange={selectProject}
-                                            onClick={selectProjectDropdown}
-                                            placeholder="Project..."
-                                            startDecorator={isLoading && <CircularProgress size="sm"/>}
-                                            sx={{width: 270}}
-                                    >
-                                        {projects?.map((project: any, index: number) => (
-                                            <Option key={index} value={project}>{project?.title}</Option>
-                                        ))}
-                                    </Select>
-
-                                    <Typography level="body-sm" fontSize={"md"}>
-                                        Ongoing Task
-                                    </Typography>
-                                    <Select onClick={getTasks} defaultValue={currentSelectedTask}
-                                            value={currentSelectedTask}
-                                            onChange={selectTask}
-                                            placeholder="Task..."
-                                            sx={{width: 270}}
-                                            startDecorator={isTaskLoading && <CircularProgress size="sm"/>}
-                                    >
-                                        {tasks?.map((task: any, index: number) => (
-                                            <Option key={index} value={task}>{task?.title}</Option>
-                                        ))}
-                                    </Select>
-
-                                    <Button
-                                        color="success"
-                                        onClick={openTaskCreateDialog}
-                                        variant="soft"
-                                    >Create</Button> <Button
+                        <Stack direction={"row"}
+                               sx={{justifyContent: 'space-between', alignItems: 'center', width: '60%'}}
+                               spacing={1}>
+                            <Stack spacing={1} direction={"row"}
+                                   sx={{display: 'flex', justifyItems: 'center', alignItems: 'center'}}>
+                                <Typography level="body-sm" fontSize={"md"}>
+                                    Project
+                                </Typography>
+                                <Select value={selectedProject}
+                                        onChange={selectProject}
+                                        onClick={selectProjectDropdown}
+                                        placeholder="Project..."
+                                        startDecorator={isLoading && <CircularProgress size="sm"/>}
+                                        sx={{width: 270}}
+                                >
+                                    {projects?.map((project: any, index: number) => (
+                                        <Option key={index} value={project}>{project?.title}</Option>
+                                    ))}
+                                </Select>
+                            </Stack>
+                            <Stack spacing={1} direction={"row"}
+                                   sx={{display: 'flex', justifyItems: 'center', alignItems: 'center'}}>
+                                <Typography level="body-sm" fontSize={"md"}>
+                                    Task
+                                </Typography>
+                                <Select onClick={getTasks} defaultValue={currentSelectedTask}
+                                        value={currentSelectedTask}
+                                        onChange={selectTask}
+                                        placeholder="Task..."
+                                        sx={{width: 270}}
+                                        startDecorator={isTaskLoading && <CircularProgress size="sm"/>}
+                                >
+                                    {tasks?.map((task: any, index: number) => (
+                                        <Option key={index} value={task}>{task?.title}</Option>
+                                    ))}
+                                </Select>
+                                <IconButton
+                                    color="success"
+                                    onClick={openTaskCreateDialog}
+                                    variant="soft"
+                                ><AddCircleRoundedIcon/></IconButton>
+                                <IconButton
                                     color="primary"
                                     onClick={editTaskCreateDialog}
                                     variant="soft"
-                                >Edit</Button></Stack>
-                            </Grid>
-                            <Grid lg={6} md={12} sm={12}>
-                                <Stack direction={"row"}
-                                       sx={{justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
-
-                                    <Stack direction={"row"} spacing={1}>
-                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                            <TimePicker value={actualStartTime}
-                                                        onChange={(event: Date) => setActualStartTime(event.getTime())}
-                                                        sx={{width: 120}} slotProps={{textField: {size: 'small'}}}
-                                                        ampm={false}/>
-                                        </LocalizationProvider>
-                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                            <TimePicker value={actualEndTime}
-                                                        onChange={(event: Date) => setActuaEndTime(event.getTime())}
-                                                        sx={{width: 120}} slotProps={{textField: {size: 'small'}}}
-                                                        ampm={false}/>
-                                        </LocalizationProvider>
-                                        {/*<LocalizationProvider dateAdapter={AdapterDateFns}>*/}
-                                        {/*    <DatePicker value={currentDate} onChange={(event) => setCurrentDate(event)}*/}
-                                        {/*                sx={{width: 250}} slotProps={{textField: {size: 'small'}}}/>*/}
-                                        {/*</LocalizationProvider>*/}
-                                        <Button
-                                            color="primary"
-                                            onClick={updateTask}
-                                            variant="soft"
-                                        >Update</Button>
-                                        <Button
-                                            color="danger"
-                                            onClick={deleteTask}
-                                            variant="soft"
-                                        >Delete</Button>
-
-                                    </Stack>
+                                ><BorderColorRoundedIcon/></IconButton>
+                                <IconButton
+                                    color="danger"
+                                    onClick={deleteTask}
+                                    variant="soft"
+                                ><DeleteForeverRoundedIcon/></IconButton>
+                            </Stack>
+                            <Button disabled={currentSelectedTask === null ? true : false} onClick={openWorklogCreateDialog}><PatternRoundedIcon/> Create Worklog</Button>
                                 </Stack>
-                            </Grid>
-                        </Grid>
+
                     </CardContent>
                 </Card>
             </Box>
@@ -410,6 +414,10 @@ const mapDispatchToProps = (dispatch: any) => {
         onGetProjectById: (payload: IGeneralRequest) => dispatch(getProjectById(payload)),
         onSetLoader: (payload: boolean) => dispatch(setLoader(payload)),
         onReset: () => dispatch(setResetState()),
+        onGetWorklogs: (projectId: string, taskId: string) => dispatch(getWorklogs({
+            projectId: projectId,
+            taskId: taskId
+        })),
         onUpdateTask: (payload: any, projectId: string, taskId: string) => dispatch(updateTask({
             payload: payload,
             projectId: projectId,
@@ -424,4 +432,4 @@ const mapDispatchToProps = (dispatch: any) => {
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
-export default connector(TaskCreateBar);
+export default connector(MainBar);

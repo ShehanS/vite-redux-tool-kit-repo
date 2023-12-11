@@ -1,5 +1,5 @@
 import React from "react";
-import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
+import {GoogleOAuthProvider} from "@react-oauth/google";
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import {ROUTES} from "./constants/routes";
 import LoginPage from "./pages/LoginPage"

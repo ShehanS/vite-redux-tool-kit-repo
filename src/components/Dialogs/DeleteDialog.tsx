@@ -56,12 +56,6 @@ const DeleteDialog: FC<Props> = (props) => {
     }, [props.deleteTaskResponse]);
 
     return (<>
-        <DialogTitle>
-            <WarningRoundedIcon/>
-            Confirmation
-        </DialogTitle>
-
-        <Divider/>
         <DialogContent>
             Are you sure you want to delete {props.taskTitle}?
         </DialogContent>
