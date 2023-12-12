@@ -1,4 +1,4 @@
-import {FC, useEffect, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -22,9 +22,9 @@ import {IGeneralRequest} from "../../interfaces/IGeneralRequest";
 import {ISnackBar} from "../../interfaces/ISnackBar";
 import {useAppDataContext} from "../../context/AppDataContext";
 import {addWorklog, editWorklog, getTypes} from "../../redux/worklog/worklog-slice";
-import {getOwnersByProjectById, setSnackBar, updateTask} from "../../redux/task/task-slice";
+import {getOwnersByProjectById, setSnackBar} from "../../redux/task/task-slice";
 import {IWorklogRoot} from "../../interfaces/IWorklog";
-import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
+
 type OwnProps = {
     isEdit: boolean;
     project?: any;
@@ -37,7 +37,7 @@ type ReduxProps = ConnectedProps<typeof connector>;
 type Props = ReduxProps & OwnProps;
 
 type StateObj = {
-    getWorklogResponse: any;
+    getWorklogsResponse: any;
     addWorklogResponse: any;
     editWorklogResponse: any;
     deleteWorklogResponse: any;
@@ -69,7 +69,7 @@ const CreateWorkLogDialog: FC<Props> = (props) => {
             addWorklogResponse: null,
             editWorklogResponse: null,
             deleteWorklogResponse: null,
-            getWorklogResponse: null,
+            getWorklogsResponse: null,
             ownerResponse: null,
             typesResponse: null,
             project: null,
@@ -77,19 +77,7 @@ const CreateWorkLogDialog: FC<Props> = (props) => {
         }
     );
 
-    useEffect(() => {
-        if (
-            (stateObj.getWorklogResponse === null && props.getWorklogResponse !== null) ||
-            stateObj.getWorklogResponse !== props.getWorklogResponse
-        ) {
-            setStateObj({...stateObj, getWorklogResponse: props.getWorklogResponse});
-            if (props.getWorklogResponse?.responseCode === "GET_ALL_WORKLOG_SUCCESS") {
-                setWorklogs(props.getWorklogResponse?.data)
-            }
 
-        }
-
-    }, [props.getWorklogResponse]);
 
     useEffect(() => {
         if (
@@ -136,7 +124,6 @@ const CreateWorkLogDialog: FC<Props> = (props) => {
             }
             props.onGetOwners(request);
         } else {
-            console.log(props.worklog.owner.email_id)
             const {input} = inputObject;
             setWorkLogActualEndTime(new Date(Number.parseInt(props?.worklog?.end_time?.value)));
             setWorkLogActualStartTime(new Date(Number.parseInt(props?.worklog?.start_time?.value)));
@@ -225,17 +212,18 @@ const CreateWorkLogDialog: FC<Props> = (props) => {
 
 
     return (
-        <>   <Box variant="outlined">
-            <Typography level="title-sm" sx={{fontWeight: "bold"}}>Project
-                : {appDataContext?.project?.title ?? ""}</Typography>
-            <Typography level="body-sm" sx={{fontWeight: "bold"}}>Task ID:
-                : {appDataContext?.task?.id ?? ""}</Typography>
+        <React.Fragment>
+            <Box>
+                <Typography level="title-sm" sx={{fontWeight: "bold"}}>Project
+                    : {appDataContext?.project?.title ?? ""}</Typography>
+                <Typography level="body-sm" sx={{fontWeight: "bold"}}>Task ID:
+                    : {appDataContext?.task?.id ?? ""}</Typography>
 
-            <Box sx={{padding: 1}}>
-                <FormControl>
-                    <FormLabel>
-                        Description
-                    </FormLabel>
+                <Box sx={{padding: 1}}>
+                    <FormControl>
+                        <FormLabel>
+                            Description
+                        </FormLabel>
                     <Textarea onChange={handlingInput} name={"description"}
                               value={inputObject.input?.description ?? ""} minRows={3}/>
                 </FormControl>
@@ -298,15 +286,16 @@ const CreateWorkLogDialog: FC<Props> = (props) => {
                     Update
                 </Button>}
             </CardActions>
-        </Box>
-        </>
+            </Box>
+        </React.Fragment>
     )
 }
 
 const mapStateToProps = (state: RootState) => {
     return {
         ownerResponse: state.task.ownerResponse,
-        typesResponse: state.worklog.typesResponse
+        typesResponse: state.worklog.typesResponse,
+        getWorklogsResponse: state.worklog.getWorklogsResponse
     };
 };
 

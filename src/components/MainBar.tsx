@@ -18,7 +18,7 @@ import {connect, ConnectedProps} from "react-redux";
 import {useAppDataContext} from "../context/AppDataContext";
 import CreateTaskDialog from "./Dialogs/CreateTaskDialog";
 import {IGeneralRequest} from "../interfaces/IGeneralRequest";
-import {ITask, ITaskAttribute} from "../interfaces/ITask";
+import {ITaskAttribute} from "../interfaces/ITask";
 import {ISnackBar} from "../interfaces/ISnackBar";
 import DeleteDialog from "./Dialogs/DeleteDialog";
 import CreateWorkLogDialog from "./Dialogs/CreateWorklog";
@@ -39,6 +39,7 @@ type StateObj = {
     getTaskResponse: any;
     updateTaskResponse: any;
     addTaskResponse: any;
+    deleteTaskResponse: any;
 
 };
 
@@ -64,7 +65,8 @@ const MainBar: FC<ReduxProps> = (props) => {
         selectedProjectResponse: null,
         getTaskResponse: null,
         updateTaskResponse: null,
-        addTaskResponse: null
+        addTaskResponse: null,
+        deleteTaskResponse: null
     });
 
     useEffect(() => {
@@ -236,7 +238,7 @@ const MainBar: FC<ReduxProps> = (props) => {
             ...appDataContext,
             isOpenDialog: true,
             dialogTitle: "Add Task",
-            dialogContent: <CreateTaskDialog o isEdit={false} user={appDataContext.user} project={selectedProject}
+            dialogContent: <CreateTaskDialog isEdit={false} user={appDataContext.user} project={selectedProject}
                                              selectedTask={null}/>
         });
     }
@@ -264,36 +266,36 @@ const MainBar: FC<ReduxProps> = (props) => {
         });
     }
 
-    const updateTask = () => {
-        let taskObject: ITask = {
-            task: selectedTask.task
-        }
-        const updatedTaskObject = {
-
-            ...taskObject,
-            task: {
-                ...taskObject.task,
-                actual_end_time: {
-                    ...taskObject.task.actual_end_time,
-                    value: taskActualEndTime?.getTime().toString() ?? "",
-                },
-                actual_start_time: {
-                    ...taskObject.task.actual_start_time,
-                    value: taskActualEndTime?.getTime().toString() ?? ""
-                },
-                scheduled_start_time: {
-                    ...taskObject.task.scheduled_start_time,
-                    value: taskActualEndTime?.getTime().toString() ?? ""
-                },
-                scheduled_end_time: {
-                    ...taskObject.task.scheduled_end_time,
-                    value: taskActualEndTime?.getTime().toString() ?? ""
-                }
-            },
-        };
-
-        props.onUpdateTask(updatedTaskObject, selectedProject.id, currentSelectedTask.id);
-    }
+    // const updateTask = () => {
+    //     let taskObject: ITask = {
+    //         task: selectedTask.task
+    //     }
+    //     const updatedTaskObject = {
+    //
+    //         ...taskObject,
+    //         task: {
+    //             ...taskObject.task,
+    //             actual_end_time: {
+    //                 ...taskObject.task.actual_end_time,
+    //                 value: taskActualEndTime?.getTime().toString() ?? "",
+    //             },
+    //             actual_start_time: {
+    //                 ...taskObject.task.actual_start_time,
+    //                 value: taskActualEndTime?.getTime().toString() ?? ""
+    //             },
+    //             scheduled_start_time: {
+    //                 ...taskObject.task.scheduled_start_time,
+    //                 value: taskActualEndTime?.getTime().toString() ?? ""
+    //             },
+    //             scheduled_end_time: {
+    //                 ...taskObject.task.scheduled_end_time,
+    //                 value: taskActualEndTime?.getTime().toString() ?? ""
+    //             }
+    //         },
+    //     };
+    //
+    //     props.onUpdateTask(updatedTaskObject, selectedProject.id, currentSelectedTask.id);
+    // }
 
     const openDeleteTaskConfirm = () => {
         setAppDataContext({
@@ -308,7 +310,7 @@ const MainBar: FC<ReduxProps> = (props) => {
     const handleDeleteTask = (taskid: string) => {
         props.onDelete(selectedProject.id, taskid);
         const request = {
-            projectId: props.projectId
+            projectId: appDataContext.project.id
         }
         props.onGetTasks(request);
     }

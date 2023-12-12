@@ -1,4 +1,4 @@
-import {FC, useEffect, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -33,8 +33,8 @@ import {useAppDataContext} from "../../context/AppDataContext";
 type OwnProps = {
     isEdit?: boolean;
     project?: any;
-    onCreate: (task: any) => void
-    user: any;
+    onCreate?: (task: any) => void
+    user?: any;
     selectedTask?: any
 }
 type ReduxProps = ConnectedProps<typeof connector>;
@@ -260,7 +260,7 @@ const CreateTaskDialog: FC<Props> = (props) => {
                 },
             },
         }
-        props.onAddTask(taskObject,props.project?.id, props.selectedTask?.id)
+        props.onAddTask(taskObject, appDataContext.project?.id)
     }
 
         const handlingEditTask = () => {
@@ -309,7 +309,8 @@ const CreateTaskDialog: FC<Props> = (props) => {
 
 
     return (
-        <>   <Box variant="outlined">
+        <React.Fragment>
+            <Box>
             <Typography level="title-sm" sx={{fontWeight: "bold"}}>Project : {props.project?.title}</Typography>
             <Typography level="title-sm">Project ID: {props.project?.id}</Typography>
 
@@ -406,7 +407,7 @@ const CreateTaskDialog: FC<Props> = (props) => {
                 </Button>}
             </CardActions>
         </Box>
-        </>
+        </React.Fragment>
     )
 }
 

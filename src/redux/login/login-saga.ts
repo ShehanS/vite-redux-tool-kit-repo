@@ -1,8 +1,7 @@
 import {all, call, put, takeLatest} from "redux-saga/effects";
 import {USER_LOGIN_API} from "./login-api";
-import {ServerResponse} from "http";
 import {login, loginError, loginSuccess} from "./login-slice";
-
+import {ServerResponse} from "http";
 
 
 function* handleLogin(action: { payload: {} }) {

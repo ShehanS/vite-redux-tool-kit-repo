@@ -139,9 +139,9 @@ export const taskSlice = createSlice({
             ...state,
             error: action.payload
         }),
-        addTask: (state, action: PayloadAction<{ payload: any, projectId: string }>) => ({
+        addTask: (state, action: PayloadAction<any>) => ({
             ...state,
-            projectId: action.projectId,
+            projectId: action.payload.projectId,
             newTask: action.payload,
             error: null
         }),
@@ -155,10 +155,10 @@ export const taskSlice = createSlice({
             error: action.payload
         }),
 
-        updateTask: (state, action: PayloadAction<{ payload: any, projectId: string, taskId: string }>) => ({
+        updateTask: (state, action: PayloadAction<any>) => ({
             ...state,
-            projectId: action.projectId,
-            taskId: action.taskId,
+            projectId: action.payload.projectId,
+            taskId: action.payload.taskId,
             updateTask: action.payload,
             error: null
         }),
@@ -193,8 +193,8 @@ export const taskSlice = createSlice({
         }),
         getTaskById: (state, action: PayloadAction<{ projectId: string, taskId: string }>) => ({
             ...state,
-            projectId: action.projectId,
-            taskId: action.taskId,
+            projectId: action.payload.projectId,
+            taskId: action.payload.taskId,
             error: null
         }),
         getTaskByIdSuccess: (state, action: PayloadAction<any>) => ({
@@ -206,10 +206,10 @@ export const taskSlice = createSlice({
             ...state,
             error: null
         }),
-        deleteTaskById: (state, action: PayloadAction<{ projectId: string, taskId: string }>) => ({
+        deleteTaskById: (state, action: PayloadAction<any>) => ({
             ...state,
-            projectId: action.projectId,
-            taskId: action.taskId,
+            projectId: action.payload.projectId,
+            taskId: action.payload.taskId,
             error: null
         }),
         deleteTaskByIdSuccess: (state, action: PayloadAction<any>) => ({

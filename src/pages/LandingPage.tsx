@@ -25,13 +25,14 @@ type StateObj = {
     getTaskResponse: any;
     deleteTaskResponse: any;
     deleteWorklogResponse: any;
+    projectListResponse: any;
 
 };
 type ReduxProps = ConnectedProps<typeof connector>;
 
 const LandingPage: FC<ReduxProps> = (props) => {
     const [page, setPage] = useState(2);
-    const [predictTime, setPredictTime] = useState<Date | undefined>(undefined);
+    const [predictTime, setPredictTime] = useState<number>(0);
     const [actualTime, setActualTime] = useState<number>(0)
     const {appDataContext, setAppDataContext} = useAppDataContext();
     const [worklogs, setWorklogs] = useState<any[]>([]);
@@ -72,12 +73,10 @@ const LandingPage: FC<ReduxProps> = (props) => {
         ) {
             setStateObj({...stateObj, getTaskResponse: props.getTaskResponse});
             if (props.getTaskResponse?.responseCode === "GET_TASK_SUCCESS") {
-
                 const startTime = Number.parseInt(props.getTaskResponse?.data?.task?.actual_start_time?.value);
                 const endTime = Number.parseInt(props.getTaskResponse?.data?.task?.actual_end_time?.value);
-                const diff = new Date(endTime) - new Date(startTime);
-                const diffDate = new Date(diff);
-                setPredictTime(diffDate);
+                const diff: number = endTime - startTime;
+                setPredictTime(diff);
 
             } else if (props.getTaskResponse?.responseCode === "GET_TASK_FAILED") {
                 const snackProps: ISnackBar = {
@@ -215,7 +214,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
             if (props.addWorklogResponse?.responseCode === "WORKLOG_ADD_FAILED") {
                 const snackProps: ISnackBar = {
                     title: "workLog Adding Failed",
-                    message: props.addWorkLogResponse.error,
+                    message: props.addWorklogResponse.error,
                     isOpen: true,
                     color: "danger",
                     variant: "outlined"
@@ -290,7 +289,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
             if (props.addWorklogResponse?.responseCode === "WORKLOG_ADD_FAILED") {
                 const snackProps: ISnackBar = {
                     title: "workLog Adding Failed",
-                    message: props.addWorkLogResponse.error,
+                    message: props.addWorklogResponse.error,
                     isOpen: true,
                     color: "danger",
                     variant: "outlined"
@@ -390,23 +389,25 @@ const LandingPage: FC<ReduxProps> = (props) => {
                     alignItems: 'center',
                     justifyContent: 'space-between'
                 }}>
-                    <Stack direction={"row"} spacing={1} sx={{paddingLeft: 1}}>
-                        <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Task Predict Time
-                            : </Typography>
-                        {predictTime !== undefined && <Typography
-                            level={"body-md"}> Month(s) {predictTime?.getUTCMonth()} Day(s) {predictTime?.getUTCDate() - 1} Hour(s) {predictTime?.getUTCHours()}</Typography>}
-                    </Stack>
-                    <Stack direction={"row"} spacing={1}>
-                        <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Actual Task Time
-                            : </Typography>
-                        {actualTime !== 0 && <Typography
-                            level={"body-md"}> Month(s) {new Date(actualTime).getUTCMonth()} Day(s) {new Date(actualTime).getUTCDate() - 1} Hour(s) {new Date(actualTime).getUTCHours()}</Typography>}
-                    </Stack>
-                    <Stack direction={"row"} spacing={1} sx={{paddingRight: 1}}>
-                        {predictTime <= actualTime &&
-                            <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>You behind with
-                                predicted time</Typography>}
-                    </Stack>
+                    {appDataContext.task !== null && <Stack direction={"row"} spacing={2}>
+                        <Stack direction={"row"} spacing={1} sx={{paddingLeft: 1}}>
+                            <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Task Predict Time
+                                : </Typography>
+                            {predictTime !== undefined && <Typography
+                                level={"body-md"}> Month(s) {new Date(predictTime).getUTCMonth()} Day(s) {new Date(predictTime).getUTCDate() - 1} Hour(s) {new Date(predictTime).getUTCHours()}</Typography>}
+                        </Stack>
+                        <Stack direction={"row"} spacing={1}>
+                            <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Actual Task Time
+                                : </Typography>
+                            {actualTime !== 0 && <Typography
+                                level={"body-md"}> Month(s) {new Date(actualTime).getUTCMonth()} Day(s) {new Date(actualTime).getUTCDate() - 1} Hour(s) {new Date(actualTime).getUTCHours()}</Typography>}
+                        </Stack>
+                        <Stack direction={"row"} spacing={1} sx={{paddingRight: 1}}>
+                            {predictTime <= actualTime &&
+                                <Chip color={"danger"}>You behind with
+                                    predicted time</Chip>}
+                        </Stack>
+                    </Stack>}
                 </Box>
                 <Box sx={{
                     width: "100%",
@@ -481,11 +482,11 @@ const LandingPage: FC<ReduxProps> = (props) => {
                                 <thead>
                                 <tr>
                                     <th style={{width: 150}}>Description</th>
-                                    <th tyle={{width: 100}}>Start Time</th>
-                                    <th tyle={{width: 100}}>End Time</th>
-                                    <th tyle={{width: 100}}>Worklog Type</th>
-                                    <th tyle={{width: 100}}>Owner</th>
-                                    <th tyle={{width: 100}}>Created By</th>
+                                    <th style={{width: 100}}>Start Time</th>
+                                    <th style={{width: 100}}>End Time</th>
+                                    <th style={{width: 100}}>Worklog Type</th>
+                                    <th style={{width: 100}}>Owner</th>
+                                    <th style={{width: 100}}>Created By</th>
                                     <th style={{width: 100}}/>
                                 </tr>
                                 </thead>
@@ -494,14 +495,14 @@ const LandingPage: FC<ReduxProps> = (props) => {
                                     <tr key={index}>
                                         <td>{row?.description ?? ""}</td>
                                         <td><Stack direction={"row"} spacing={1}>
-                                            <Typography>{new Date(Number.parseInt(row?.start_time?.value)).toLocaleDateString()}</Typography><Chip
-                                            label="primary" color="primary" variant="outlined"><Typography
-                                            level={"body-sm"}>{new Date(Number.parseInt(row?.start_time?.value)).toLocaleTimeString()}</Typography></Chip>
+                                            <Typography
+                                                level={"body-sm"}>{new Date(Number.parseInt(row?.start_time?.value)).toLocaleDateString() ?? ""}</Typography><Chip
+                                            color="primary">{new Date(Number.parseInt(row?.start_time?.value)).toLocaleTimeString()}</Chip>
                                         </Stack></td>
                                         <td><Stack direction={"row"} spacing={1}>
-                                            <Typography>{new Date(Number.parseInt(row?.end_time?.value)).toLocaleDateString()}</Typography><Chip
-                                            label="primary" color="primary" variant="outlined"><Typography
-                                            level={"body-sm"}>{new Date(Number.parseInt(row?.start_time?.value)).toLocaleTimeString()}</Typography></Chip>
+                                            <Typography
+                                                level={"body-sm"}>{new Date(Number.parseInt(row?.end_time?.value)).toLocaleDateString()}</Typography><Chip
+                                            color="primary">{new Date(Number.parseInt(row?.start_time?.value)).toLocaleTimeString()}</Chip>
                                         </Stack></td>
                                         <td>{row?.worklog_type?.name ?? ""}</td>
                                         <td>{row?.owner?.email_id ?? ""}</td>
@@ -550,7 +551,8 @@ const mapStateToProps = (state: RootState) => {
         updateTaskResponse: state.task.updateTaskResponse,
         getTaskResponse: state.task.getTaskResponse,
         deleteTaskResponse: state.task.deleteTaskResponse,
-        deleteWorklogResponse: state.worklog.deleteWorklogResponse
+        deleteWorklogResponse: state.worklog.deleteWorklogResponse,
+        projectListResponse: state.task.projectListResponse,
     };
 };
 

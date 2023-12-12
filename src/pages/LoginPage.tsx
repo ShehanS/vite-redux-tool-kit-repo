@@ -22,7 +22,7 @@ const LoginPage: FC = (props: any) => {
                 justifyContent: 'center', justifyItems: 'center', alignItems: 'center', left: 0,
                 right: 0
             }}>
-            <Stack spaacing={1} sx={{
+            <Stack spacing={1} sx={{
                 justifyItems: 'center',
                 alignItems: 'center'
             }}>

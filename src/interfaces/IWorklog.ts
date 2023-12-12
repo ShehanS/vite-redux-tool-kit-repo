@@ -1,4 +1,3 @@
-import {IOwner} from "./ITask";
 
 export interface IWorklogRoot {
     worklog: IWorklog;
