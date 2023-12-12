@@ -1,15 +1,17 @@
 import React, {FC, useEffect, useState} from "react";
 import {useAppDataContext} from "../context/AppDataContext";
-import {useNavigate} from "react-router-dom"
 import {RootState} from "../redux/store";
 import {connect, ConnectedProps} from "react-redux";
 import {Box, Chip, IconButton, Sheet, Stack, Table, Typography} from "@mui/joy";
 import TaskCreateBar from "../components/MainBar";
-import {getTask, setLoader, setSnackBar} from "../redux/task/task-slice";
+import {setLoader, setSnackBar} from "../redux/task/task-slice";
 import {ISnackBar} from "../interfaces/ISnackBar";
 import CreateWorkLogDialog from "../components/Dialogs/CreateWorklog";
-import {getWorklogs} from "../redux/worklog/worklog-slice";
+import {deleteWorklog, getWorklogs} from "../redux/worklog/worklog-slice";
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
+import {IWorklog} from "../interfaces/IWorklog";
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+import DeleteDialog from "../components/Dialogs/DeleteDialog";
 
 type StateObj = {
     user: any;
@@ -20,14 +22,17 @@ type StateObj = {
     getWorklogsResponse: any;
     editWorklogResponse: any;
     updateTaskResponse: any;
+    getTaskResponse: any;
+    deleteTaskResponse: any;
+    deleteWorklogResponse: any;
 
 };
 type ReduxProps = ConnectedProps<typeof connector>;
 
 const LandingPage: FC<ReduxProps> = (props) => {
     const [page, setPage] = useState(2);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const navigate = useNavigate();
+    const [predictTime, setPredictTime] = useState<Date | undefined>(undefined);
+    const [actualTime, setActualTime] = useState<number>(0)
     const {appDataContext, setAppDataContext} = useAppDataContext();
     const [worklogs, setWorklogs] = useState<any[]>([]);
     const [taskList, setTaskList] = useState<any[]>([]);
@@ -40,7 +45,10 @@ const LandingPage: FC<ReduxProps> = (props) => {
         addWorklogResponse: null,
         getWorklogsResponse: null,
         editWorklogResponse: null,
-        updateTaskResponse: null
+        updateTaskResponse: null,
+        getTaskResponse: null,
+        deleteTaskResponse: null,
+        deleteWorklogResponse: null
     });
     const handleChangePage = (
         event: React.MouseEvent<HTMLButtonElement> | null,
@@ -56,6 +64,32 @@ const LandingPage: FC<ReduxProps> = (props) => {
     const initials = () => {
 
     }
+
+    useEffect(() => {
+        if (
+            (stateObj.getTaskResponse === null && props.getTaskResponse !== null) ||
+            stateObj.getTaskResponse !== props.getTaskResponse
+        ) {
+            setStateObj({...stateObj, getTaskResponse: props.getTaskResponse});
+            if (props.getTaskResponse?.responseCode === "GET_TASK_SUCCESS") {
+
+                const startTime = Number.parseInt(props.getTaskResponse?.data?.task?.actual_start_time?.value);
+                const endTime = Number.parseInt(props.getTaskResponse?.data?.task?.actual_end_time?.value);
+                const diff = new Date(endTime) - new Date(startTime);
+                const diffDate = new Date(diff);
+                setPredictTime(diffDate);
+
+            } else if (props.getTaskResponse?.responseCode === "GET_TASK_FAILED") {
+                const snackProps: ISnackBar = {
+                    title: "Switching task failed",
+                    isOpen: true,
+                    color: "success",
+                    variant: "solid"
+                }
+                props.onShowSnackBar(snackProps);
+            }
+        }
+    }, [props.getTaskResponse])
 
     //user
     useEffect(() => {
@@ -77,6 +111,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
             setStateObj({...stateObj, projectResponse: props.projectResponse});
             if (props?.projectResponse?.responseCode === "GET_PROJECT_SUCCESS") {
                 setWorklogs([]);
+                setPredictTime(undefined)
             }
 
         }
@@ -275,7 +310,18 @@ const LandingPage: FC<ReduxProps> = (props) => {
         ) {
             setStateObj({...stateObj, getWorklogsResponse: props.getWorklogsResponse});
             if (props.getWorklogsResponse?.responseCode === "GET_ALL_WORKLOG_SUCCESS") {
-                setWorklogs(props.getWorklogsResponse?.data?.worklogs)
+                const workLogs = props.getWorklogsResponse?.data?.worklogs;
+                setWorklogs(workLogs);
+                setActualTime(0);
+                workLogs?.map((workLog: IWorklog) => {
+                    const startTime = Number.parseInt(workLog.start_time.value);
+                    const endTime = Number.parseInt(workLog.end_time.value);
+                    const diff: number = (endTime) - (startTime);
+                    setActualTime((prevActualTime) => prevActualTime + diff);
+
+                });
+
+
             } else if (props.getWorklogsResponse?.responseCode === "GET_ALL_WORKLOG_FAILED") {
                 const snackProps: ISnackBar = {
                     title: "Worklog loding failed!!!",
@@ -291,22 +337,86 @@ const LandingPage: FC<ReduxProps> = (props) => {
 
     }, [props.getWorklogsResponse]);
 
+    useEffect(() => {
+        if ((stateObj.deleteTaskResponse === null && props.deleteTaskResponse !== null) || (stateObj.deleteTaskResponse !== props.deleteTaskResponse)) {
+            setStateObj({...stateObj, deleteTaskResponse: props.deleteTaskResponse});
+            if (props.deleteTaskResponse?.responseCode === "DELETE_TASK_SUCCESS") {
+                setAppDataContext({...appDataContext, isOpenDialog: false, dialogContent: null});
+                setWorklogs([]);
+            }
+        }
+
+    }, [props.deleteTaskResponse]);
+
+    useEffect(() => {
+        if ((stateObj.deleteWorklogResponse === null && props.deleteWorklogResponse !== null) || (stateObj.deleteWorklogResponse !== props.deleteWorklogResponse)) {
+            setStateObj({...stateObj, deleteWorklogResponse: props.deleteWorklogResponse});
+            if (props.deleteWorklogResponse?.responseCode === "WORKLOG_DELETE_SUCCESS") {
+                setAppDataContext({...appDataContext, isOpenDialog: false, dialogContent: null});
+                props.onGetWorklogs(appDataContext?.project?.id, appDataContext?.task?.id)
+            }
+        }
+
+    }, [props.deleteWorklogResponse]);
+
+
+    const openDeleteWorklogConfirm = (data: any) => {
+        setAppDataContext({
+            ...appDataContext,
+            isOpenDialog: true,
+            dialogTitle: "Confirmation",
+            dialogContent: <DeleteDialog onDelete={handleDeleteWorklog} id={data.id}
+                                         title={data?.description ?? ""}/>
+        })
+    }
+
+    const handleDeleteWorklog = (worklogId: string) => {
+        props.onDeleteWorklog(appDataContext.project.id, appDataContext.task.id, worklogId);
+    }
 
     return (
         <>
             <Box>
                 <TaskCreateBar/>
             </Box>
-            <Box sx={{marginTop: 30}}>
+            <Box sx={{marginTop: 25}}>
+                <Box sx={{
+                    height: 60,
+                    width: '100%',
+                    background: predictTime <= actualTime ? '#be2565' : '#2596be',
+                    borderRadius: '10px 10px 0px 0px',
+                    display: 'flex',
+                    justifyItems: 'center',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}>
+                    <Stack direction={"row"} spacing={1} sx={{paddingLeft: 1}}>
+                        <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Task Predict Time
+                            : </Typography>
+                        {predictTime !== undefined && <Typography
+                            level={"body-md"}> Month(s) {predictTime?.getUTCMonth()} Day(s) {predictTime?.getUTCDate() - 1} Hour(s) {predictTime?.getUTCHours()}</Typography>}
+                    </Stack>
+                    <Stack direction={"row"} spacing={1}>
+                        <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Actual Task Time
+                            : </Typography>
+                        {actualTime !== 0 && <Typography
+                            level={"body-md"}> Month(s) {new Date(actualTime).getUTCMonth()} Day(s) {new Date(actualTime).getUTCDate() - 1} Hour(s) {new Date(actualTime).getUTCHours()}</Typography>}
+                    </Stack>
+                    <Stack direction={"row"} spacing={1} sx={{paddingRight: 1}}>
+                        {predictTime <= actualTime &&
+                            <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>You behind with
+                                predicted time</Typography>}
+                    </Stack>
+                </Box>
                 <Box sx={{
                     width: "100%",
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    paddingTop: 3
 
                 }}>
+
                     <Sheet
                         variant="outlined"
                         sx={{
@@ -348,6 +458,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                     >
                         <Box sx={{width: "100%"}}>
                             <Table
+                                noWrap
                                 borderAxis="bothBetween"
                                 stripe="odd"
                                 hoverRow
@@ -375,7 +486,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                                     <th tyle={{width: 100}}>Worklog Type</th>
                                     <th tyle={{width: 100}}>Owner</th>
                                     <th tyle={{width: 100}}>Created By</th>
-                                    <th style={{width: 50}}/>
+                                    <th style={{width: 100}}/>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -396,13 +507,21 @@ const LandingPage: FC<ReduxProps> = (props) => {
                                         <td>{row?.owner?.email_id ?? ""}</td>
                                         <td>{row?.created_by?.email_id ?? ""}</td>
                                         <td>
-                                            <Box sx={{display: 'flex', gap: 1}}>
+                                            <Stack direction={"row"} sx={{display: 'flex', gap: 1}}>
                                                 <IconButton
                                                     color="primary"
                                                     onClick={() => editWorklog(row)}
                                                     variant="soft"
-                                                ><BorderColorRoundedIcon/></IconButton>
-                                            </Box>
+                                                ><BorderColorRoundedIcon/>
+                                                </IconButton>
+
+                                                <IconButton
+                                                    color="danger"
+                                                    onClick={() => openDeleteWorklogConfirm(row)}
+                                                    variant="soft"
+                                                ><DeleteForeverRoundedIcon/></IconButton>
+
+                                            </Stack>
                                         </td>
                                     </tr>
                                 ))}
@@ -428,7 +547,10 @@ const mapStateToProps = (state: RootState) => {
         getWorklogsResponse: state.worklog.getWorklogsResponse,
         editWorklogResponse: state.worklog.editWorklogResponse,
         projectResponse: state.task.projectResponse,
-        updateTaskResponse: state.task.updateTaskResponse
+        updateTaskResponse: state.task.updateTaskResponse,
+        getTaskResponse: state.task.getTaskResponse,
+        deleteTaskResponse: state.task.deleteTaskResponse,
+        deleteWorklogResponse: state.worklog.deleteWorklogResponse
     };
 };
 
@@ -436,6 +558,11 @@ const mapDispatchToProps = (dispatch: any) => {
     return {
         onShowSnackBar: (props: ISnackBar) => dispatch(setSnackBar(props)),
         onSetLoader: (payload: boolean) => dispatch(setLoader(payload)),
+        onDeleteWorklog: (projectId: string, taskId: string, worklogId: string) => dispatch(deleteWorklog({
+            projectId: projectId,
+            taskId: taskId,
+            worklogId: worklogId
+        })),
         onGetWorklogs: (projectId: string, taskId: string) => dispatch(getWorklogs({
             projectId: projectId,
             taskId: taskId

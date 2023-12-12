@@ -1,16 +1,10 @@
 import React, {FC, useEffect, useState} from "react";
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import {useAppDataContext} from "../context/AppDataContext";
-import {Stack} from "@mui/joy";
+import {Avatar, Badge, badgeClasses, Box, Stack} from "@mui/joy";
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -51,127 +45,53 @@ const CustomAppBar: FC = (props: any) => {
         setAnchorElUser(null);
     };
     return (<>
-        <AppBar position="fixed">
+        <AppBar position="fixed" sx={{background: '#00b0a9', boxSizing: 'none', right: 0,}}>
             <Container maxWidth="100%">
-                <Toolbar disableGutters>
-                    <Stack direction={"row"} sx={{display: 'flex', justifyContent: 'space-between', width:"100%"}}>
-                        <p>NCINGA Time Tracker</p>
-                        {/*<Typography*/}
-                        {/*    variant="h6"*/}
-                        {/*    noWrap*/}
-                        {/*    component="a"*/}
-                        {/*    href="#app-bar-with-responsive-menu"*/}
-                        {/*    sx={{*/}
-                        {/*        mr: 2,*/}
-                        {/*        display: {xs: 'none', md: 'flex'},*/}
-                        {/*        fontFamily: 'monospace',*/}
-                        {/*        fontWeight: 700,*/}
-                        {/*        letterSpacing: '.3rem',*/}
-                        {/*        color: 'inherit',*/}
-                        {/*        textDecoration: 'none',*/}
-                        {/*    }}*/}
-                        {/*>*/}
-                        {/*    LOGO*/}
-                        {/*</Typography>*/}
+                <Toolbar disableGutters sx={{height: 80, boxSizing: 'none'}}>
 
-                        {/*<Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>*/}
-                        {/*    <IconButton*/}
-                        {/*        size="large"*/}
-                        {/*        aria-label="account of current user"*/}
-                        {/*        aria-controls="menu-appbar"*/}
-                        {/*        aria-haspopup="true"*/}
-                        {/*        onClick={handleOpenNavMenu}*/}
-                        {/*        color="inherit"*/}
-                        {/*    >*/}
-                        {/*        <MenuIcon/>*/}
-                        {/*    </IconButton>*/}
-                        {/*    <Menu*/}
-                        {/*        id="menu-appbar"*/}
-                        {/*        anchorEl={anchorElNav}*/}
-                        {/*        anchorOrigin={{*/}
-                        {/*            vertical: 'bottom',*/}
-                        {/*            horizontal: 'left',*/}
-                        {/*        }}*/}
-                        {/*        keepMounted*/}
-                        {/*        transformOrigin={{*/}
-                        {/*            vertical: 'top',*/}
-                        {/*            horizontal: 'left',*/}
-                        {/*        }}*/}
-                        {/*        open={Boolean(anchorElNav)}*/}
-                        {/*        onClose={handleCloseNavMenu}*/}
-                        {/*        sx={{*/}
-                        {/*            display: {xs: 'block', md: 'none'},*/}
-                        {/*        }}*/}
-                        {/*    >*/}
-                        {/*        {pages.map((page) => (*/}
-                        {/*            <MenuItem key={page} onClick={handleCloseNavMenu}>*/}
-                        {/*                <Typography textAlign="center">{page}</Typography>*/}
-                        {/*            </MenuItem>*/}
-                        {/*        ))}*/}
-                        {/*    </Menu>*/}
-                        {/*</Box>*/}
-                        {/*<AdbIcon sx={{display: {xs: 'flex', md: 'none'}, mr: 1}}/>*/}
-                        {/*<Typography*/}
-                        {/*    variant="h5"*/}
-                        {/*    noWrap*/}
-                        {/*    component="a"*/}
-                        {/*    href="#app-bar-with-responsive-menu"*/}
-                        {/*    sx={{*/}
-                        {/*        mr: 2,*/}
-                        {/*        display: {xs: 'flex', md: 'none'},*/}
-                        {/*        flexGrow: 1,*/}
-                        {/*        fontFamily: 'monospace',*/}
-                        {/*        fontWeight: 700,*/}
-                        {/*        letterSpacing: '.3rem',*/}
-                        {/*        color: 'inherit',*/}
-                        {/*        textDecoration: 'none',*/}
-                        {/*    }}*/}
-                        {/*>*/}
-                        {/*    LOGO*/}
-                        {/*</Typography>*/}
-                        {/*<Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>*/}
-                        {/*    {pages.map((page) => (*/}
-                        {/*        <Button*/}
-                        {/*            key={page}*/}
-                        {/*            onClick={handleCloseNavMenu}*/}
-                        {/*            sx={{my: 2, color: 'white', display: 'block'}}*/}
-                        {/*        >*/}
-                        {/*            {page}*/}
-                        {/*        </Button>*/}
-                        {/*    ))}*/}
-                        {/*</Box>*/}
-
-
-                        {/*<Box sx={{flexGrow: 1, justifyContent: 'end'}}>*/}
-                        {/*    <Tooltip title="Open settings">*/}
-                        {/*        <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>*/}
-                        {/*            <Avatar alt="Remy Sharp" src={stateObj.user?.picture}/>*/}
-                        {/*        </IconButton>*/}
-                        {/*    </Tooltip>*/}
-                        {/*    <Menu*/}
-                        {/*        sx={{mt: '45px'}}*/}
-                        {/*        id="menu-appbar"*/}
-                        {/*        anchorEl={anchorElUser}*/}
-                        {/*        anchorOrigin={{*/}
-                        {/*            vertical: 'top',*/}
-                        {/*            horizontal: 'right',*/}
-                        {/*        }}*/}
-                        {/*        keepMounted*/}
-                        {/*        transformOrigin={{*/}
-                        {/*            vertical: 'top',*/}
-                        {/*            horizontal: 'right',*/}
-                        {/*        }}*/}
-                        {/*        open={Boolean(anchorElUser)}*/}
-                        {/*        onClose={handleCloseUserMenu}*/}
-                        {/*    >*/}
-                        {/*        {settings.map((setting) => (*/}
-                        {/*            <MenuItem key={setting} onClick={handleCloseUserMenu}>*/}
-                        {/*                <Typography textAlign="center">{setting}</Typography>*/}
-                        {/*            </MenuItem>*/}
-                        {/*        ))}*/}
-                        {/*    </Menu>*/}
-                        {/*</Box>*/}
+                    <Stack direction={"row"} sx={{justifyContent: 'space-between', width: '100%'}}>
+                        <Typography level={"body-sm"}>NCINGA Time Tracker</Typography>
+                        <Stack spacing={1} direction={"row"} sx={{alignItems: 'center', justifyItems: 'center'}}>
+                            <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
+                                <Badge
+                                    anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                                    badgeInset="14%"
+                                    color="success"
+                                    sx={{
+                                        [`& .${badgeClasses.badge}`]: {
+                                            '&::after': {
+                                                position: 'absolute',
+                                                top: -2,
+                                                left: -2,
+                                                width: '100%',
+                                                height: '100%',
+                                                borderRadius: '50%',
+                                                animation: 'ripple 1.2s infinite ease-in-out',
+                                                border: '2px solid',
+                                                borderColor: 'success.500',
+                                                content: '""',
+                                            },
+                                        },
+                                        '@keyframes ripple': {
+                                            '0%': {
+                                                transform: 'scale(1)',
+                                                opacity: 1,
+                                            },
+                                            '100%': {
+                                                transform: 'scale(2)',
+                                                opacity: 0,
+                                            },
+                                        },
+                                    }}
+                                >
+                                    <Avatar alt={stateObj.user?.email} src={stateObj.user?.picture}/>
+                                </Badge>
+                            </Box>
+                            <Typography level={"body-sm"}>{stateObj.user?.email}</Typography>
+                        </Stack>
                     </Stack>
+
+
                 </Toolbar>
             </Container>
         </AppBar>

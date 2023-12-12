@@ -57,7 +57,7 @@ type InputObjectState = {
 const CreateTaskDialog: FC<Props> = (props) => {
     const {appDataContext, setAppDataContext} = useAppDataContext();
     const [taskActualStartTime, setTaskActualStartTime] = useState<Date | undefined>(new Date());
-    const [taskActualEndTime, setTaskActualEndTime] = useState<Date | undefined>(undefined);
+    const [taskActualEndTime, setTaskActualEndTime] = useState<Date | undefined>(new Date());
     const [inputObject, setInputObject] = useState<InputObjectState>({
             input: {}
         }

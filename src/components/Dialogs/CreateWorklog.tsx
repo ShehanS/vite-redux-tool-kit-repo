@@ -191,7 +191,7 @@ const CreateWorkLogDialog: FC<Props> = (props) => {
             },
 
         }
-        props.onAddWOrkLog(props.project?.id, props.task?.task.id, worklog);
+        props.onAddWOrkLog(appDataContext.project.id, appDataContext.task.id, worklog);
     }
 
     const handlingEditWorkLog = () => {

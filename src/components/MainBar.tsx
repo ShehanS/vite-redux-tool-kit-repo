@@ -4,6 +4,7 @@ import CardContent from '@mui/joy/CardContent';
 import {Box, Button, CircularProgress, IconButton, Option, Select, Stack, Typography} from "@mui/joy";
 import {RootState} from "../redux/store";
 import {
+    deleteTaskById,
     getProject,
     getProjectById,
     getTask,
@@ -21,12 +22,12 @@ import {ITask, ITaskAttribute} from "../interfaces/ITask";
 import {ISnackBar} from "../interfaces/ISnackBar";
 import DeleteDialog from "./Dialogs/DeleteDialog";
 import CreateWorkLogDialog from "./Dialogs/CreateWorklog";
-import createWorklog from "./Dialogs/CreateWorklog";
 import {getWorklogs} from "../redux/worklog/worklog-slice";
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import PatternRoundedIcon from '@mui/icons-material/PatternRounded';
+
 type ReduxProps = ConnectedProps<typeof connector>;
 
 
@@ -46,7 +47,7 @@ const MainBar: FC<ReduxProps> = (props) => {
     const {appDataContext, setAppDataContext} = useAppDataContext();
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [currentSelectedTask, setCurrentSelectedTask] = useState<ITaskAttribute>(null);
-    const [selectedTask, setSelectedTask] = useState<ITask>(null);
+   // const [selectedTask, setSelectedTask] = useState<ITask>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isTaskLoading, setTaskIsLoading] = useState<boolean>(false);
     const [projects, setProjects] = useState<any[]>([]);
@@ -102,7 +103,7 @@ const MainBar: FC<ReduxProps> = (props) => {
             setTaskIsLoading(false);
             setStateObj({...stateObj, getTaskResponse: props.getTaskResponse});
             if (props.getTaskResponse?.responseCode === "GET_TASK_SUCCESS") {
-                setSelectedTask(props.getTaskResponse?.data);
+               // setSelectedTask(props.getTaskResponse?.data);
                 const snackProps: ISnackBar = {
                     title: "Switching task success",
                     isOpen: true,
@@ -247,7 +248,7 @@ const MainBar: FC<ReduxProps> = (props) => {
             isOpenDialog: true,
             dialogTitle: "Add Worklog",
             dialogContent: <CreateWorkLogDialog isEdit={false} user={appDataContext.user} project={selectedProject}
-                                                task={selectedTask}/>
+                                                task={currentSelectedTask}/>
         });
     }
 
@@ -294,15 +295,33 @@ const MainBar: FC<ReduxProps> = (props) => {
         props.onUpdateTask(updatedTaskObject, selectedProject.id, currentSelectedTask.id);
     }
 
-    const deleteTask = () => {
+    const openDeleteTaskConfirm = () => {
         setAppDataContext({
             ...appDataContext,
             isOpenDialog: true,
             dialogTitle: "Confirmation",
-            dialogContent: <DeleteDialog projectId={selectedProject.id} taskId={currentSelectedTask.id}
-                                         taskTitle={selectedTask.task.title}/>
+            dialogContent: <DeleteDialog onDelete={handleDeleteTask} id={currentSelectedTask.id}
+                                         title={currentSelectedTask.title}/>
         })
     }
+
+    const handleDeleteTask = (taskid: string) => {
+        props.onDelete(selectedProject.id, taskid);
+        const request = {
+            projectId: props.projectId
+        }
+        props.onGetTasks(request);
+    }
+
+    useEffect(() => {
+        if ((stateObj.deleteTaskResponse === null && props.deleteTaskResponse !== null) || (stateObj.deleteTaskResponse !== props.deleteTaskResponse)) {
+            setStateObj({...stateObj, deleteTaskResponse: props.deleteTaskResponse});
+            if (props.deleteTaskResponse?.responseCode === "DELETE_TASK_SUCCESS") {
+                setCurrentSelectedTask(null);
+            }
+        }
+
+    }, [props.deleteTaskResponse]);
 
     const getTasks = () => {
         setTaskIsLoading(true);
@@ -343,7 +362,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                                 <Typography level="body-sm" fontSize={"md"}>
                                     Project
                                 </Typography>
-                                <Select value={selectedProject}
+                                <Select value={selectedProject ?? ""}
                                         onChange={selectProject}
                                         onClick={selectProjectDropdown}
                                         placeholder="Project..."
@@ -360,9 +379,9 @@ const MainBar: FC<ReduxProps> = (props) => {
                                 <Typography level="body-sm" fontSize={"md"}>
                                     Task
                                 </Typography>
-                                <Select onClick={getTasks} defaultValue={currentSelectedTask}
-                                        value={currentSelectedTask}
-                                        onChange={selectTask}
+                                <Select value={currentSelectedTask ?? ""}
+                                        onChange={(event, value) => selectTask(event, value)}
+                                        onClick={() => getTasks()}
                                         placeholder="Task..."
                                         sx={{width: 270}}
                                         startDecorator={isTaskLoading && <CircularProgress size="sm"/>}
@@ -372,19 +391,22 @@ const MainBar: FC<ReduxProps> = (props) => {
                                     ))}
                                 </Select>
                                 <IconButton
-                                    color="success"
+                                    color="primary"
+                                    sx={{background:'#0ca59d'}}
                                     onClick={openTaskCreateDialog}
-                                    variant="soft"
+                                    variant="solid"
                                 ><AddCircleRoundedIcon/></IconButton>
                                 <IconButton
                                     color="primary"
+                                    sx={{background:'#fc8441'}}
                                     onClick={editTaskCreateDialog}
-                                    variant="soft"
+                                    variant="solid"
                                 ><BorderColorRoundedIcon/></IconButton>
                                 <IconButton
-                                    color="danger"
-                                    onClick={deleteTask}
-                                    variant="soft"
+                                    color="primary"
+                                    sx={{background:'#e85153'}}
+                                    onClick={openDeleteTaskConfirm}
+                                    variant="solid"
                                 ><DeleteForeverRoundedIcon/></IconButton>
                             </Stack>
                             <Button disabled={currentSelectedTask === null ? true : false} onClick={openWorklogCreateDialog}><PatternRoundedIcon/> Create Worklog</Button>
@@ -403,12 +425,17 @@ const mapStateToProps = (state: RootState) => {
         projectResponse: state.task.projectResponse,
         getTaskResponse: state.task.getTaskResponse,
         updateTaskResponse: state.task.updateTaskResponse,
-        addTaskResponse: state.task.addTaskResponse
+        addTaskResponse: state.task.addTaskResponse,
+        deleteTaskResponse: state.task.deleteTaskResponse
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
+        onDelete: (projectId: string, taskId: string) => dispatch(deleteTaskById({
+            projectId: projectId,
+            taskId: taskId
+        })),
         onGetProjects: (payload: IGeneralRequest) => dispatch(getProject(payload)),
         onGetTasks: (payload: IGeneralRequest) => dispatch(getTask(payload)),
         onGetProjectById: (payload: IGeneralRequest) => dispatch(getProjectById(payload)),

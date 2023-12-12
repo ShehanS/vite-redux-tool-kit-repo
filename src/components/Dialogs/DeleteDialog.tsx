@@ -13,54 +13,30 @@ import {IGeneralRequest} from "../../interfaces/IGeneralRequest";
 
 
 type OwnProps = {
-    projectId: string;
-    taskId: string | undefined;
-    taskTitle: string | undefined;
+    id: string;
+    title?: string | undefined;
+    onDelete?:(id: string) => void;
 }
 
 type ReduxProps = ConnectedProps<typeof connector>;
 
 type Props = ReduxProps & OwnProps;
 
-type StateObj = {
-    deleteTaskResponse: any;
-}
 
 const DeleteDialog: FC<Props> = (props) => {
     const {appDataContext, setAppDataContext} = useAppDataContext();
-    const [stateObj, setStateObj] = useState<StateObj>({
-        deleteTaskResponse: null
-    });
-
-    const onDelete = () => {
-        props.onDelete(props.projectId, props.taskId);
-        const request = {
-            projectId: props.projectId
-        }
-        props.onGetTasks(request);
-    }
-
     useEffect(()=>{
         props.onDeleteHistory()
     }, []);
 
 
-    useEffect(() => {
-        if ((stateObj.deleteTaskResponse === null && props.deleteTaskResponse !== null) || (stateObj.deleteTaskResponse !== props.deleteTaskResponse)) {
-            setStateObj({...stateObj, deleteTaskResponse: props.deleteTaskResponse});
-            if (props.deleteTaskResponse?.responseCode === "DELETE_TASK_SUCCESS") {
-                setAppDataContext({...appDataContext, isOpenDialog: false, dialogContent: null})
-            }
-        }
-
-    }, [props.deleteTaskResponse]);
 
     return (<>
         <DialogContent>
-            Are you sure you want to delete {props.taskTitle}?
+            Are you sure you want to delete {props.title}?
         </DialogContent>
         <DialogActions>
-            <Button variant="solid" color="danger" onClick={onDelete}>
+            <Button variant="solid" color="danger" onClick={()=> props.onDelete?.(props.id as string)}>
                 YES
             </Button>
             <Button variant="plain" color="neutral"
@@ -79,10 +55,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return {
         onGetTasks: (payload: IGeneralRequest) => dispatch(getTask(payload)),
         onDeleteHistory: () => dispatch(deleteTaskByIdResponseClear()),
-        onDelete: (projectId: string, taskId: string) => dispatch(deleteTaskById({
-            projectId: projectId,
-            taskId: taskId
-        }))
+
     };
 };
 

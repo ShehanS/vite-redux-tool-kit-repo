@@ -22,7 +22,7 @@ const EDIT_WORKLOG_API = {
 
 const DELETE_WORKLOG_API = {
     delete: (payload: any) =>
-        axios.delete(`/api/engine/projects/${payload.projectId}/tasks/${payload.taskId}/delete`, payload.payload).then((response: { data: any }) => {
+        axios.delete(`/api/engine/projects/${payload.projectId}/tasks/${payload.taskId}/worklogs/${payload.worklogId}/delete`, payload.payload).then((response: { data: any }) => {
             return response.data;
         }),
 };

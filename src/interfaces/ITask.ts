@@ -3,7 +3,7 @@ export interface ITask {
 }
 
 export interface ITaskAttribute {
-    id?: string | undefined;
+    id: string;
     percentage_completion?: string;
     estimated_effort_hours?: string | undefined;
     email_before?: string | undefined;
