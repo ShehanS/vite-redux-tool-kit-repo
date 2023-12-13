@@ -226,10 +226,16 @@ export const taskSlice = createSlice({
             deleteTaskResponse: null,
             error: null
         }),
+        clearTaskResponseHistory: (state) => ({
+            ...state,
+            getTaskResponse: null
+
+        })
     },
 })
 
 export const {
+    clearTaskResponseHistory,
     getTask,
     getTaskSuccess,
     getTaskError,

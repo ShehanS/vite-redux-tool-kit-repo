@@ -18,10 +18,11 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {RootState} from "../../redux/store";
 import {connect, ConnectedProps} from "react-redux";
 import {
-    addTask,
+    addTask, clearTaskResponseHistory,
     getOwnersByProjectById,
     getPriorityByProjectById,
     getStatusByProjectById,
+    getTaskById,
     setSnackBar,
     updateTask
 } from "../../redux/task/task-slice";
@@ -47,6 +48,7 @@ type StateObj = {
     statusResponse: any;
     addTaskResponse: any;
     selectedTask: any;
+    getTaskResponse: any;
 
 };
 type InputObjectState = {
@@ -73,9 +75,21 @@ const CreateTaskDialog: FC<Props> = (props) => {
             priorityResponse: null,
             statusResponse: null,
             addTaskResponse: null,
-            selectedTask: null
+            selectedTask: null,
+            getTaskResponse: null
         }
     );
+
+    const loadTask = ()=>{
+
+        if (props.isEdit) {
+            props.onGetTask(props.project.id, props.selectedTask.id)
+        }
+    }
+
+    useEffect(()=>{
+        loadTask();
+    }, []);
 
     useEffect(() => {
         if (
@@ -92,16 +106,30 @@ const CreateTaskDialog: FC<Props> = (props) => {
 
     }, [props.ownerResponse]);
 
+    // useEffect(() => {
+    //     if (
+    //         (stateObj.selectedTask === null && props.selectedTask !== undefined || null) ||
+    //         stateObj.selectedTask !== props.selectedTask
+    //     ) {
+    //         setStateObj({...stateObj, selectedTask: props.selectedTask});
+    //         initData();
+    //     }
+    //
+    // }, [props.selectedTask]);
+
+////task
     useEffect(() => {
         if (
-            (stateObj.selectedTask === null && props.selectedTask !== undefined || null) ||
-            stateObj.selectedTask !== props.selectedTask
+            (stateObj.getTaskResponse === null && props.getTaskResponse !==  null) ||
+            stateObj.getTaskResponse !== props.getTaskResponse
         ) {
-            setStateObj({...stateObj, selectedTask: props.selectedTask});
-            initData();
+            setStateObj({...stateObj, getTaskResponse: props.getTaskResponse});
+            if (props.getTaskResponse?.responseCode === "GET_TASK_SUCCESS") {
+                initData(props.getTaskResponse?.data?.task);
+            }
         }
 
-    }, [props.selectedTask]);
+    }, [props.getTaskResponse]);
 
     useEffect(() => {
         if (
@@ -179,15 +207,15 @@ const CreateTaskDialog: FC<Props> = (props) => {
     }, []);
 
 
-    const initData = () => {
+    const initData = (data: any) => {
         const {input} = inputObject;
-        input['title'] = props.selectedTask?.title;
-        input['description'] = props.selectedTask?.description;
-        setOwner(props.selectedTask?.owner);
-        setSelectedPriority(props.selectedTask?.priority?.name);
-        setSelectedStatus(props.selectedTask?.status?.name);
-        const actualStartTime = Number.parseInt(props.selectedTask?.actual_start_time?.value as string);
-        const actualEndTime = Number.parseInt(props.selectedTask?.actual_end_time?.value as string);
+        input['title'] = data?.title;
+        input['description'] =data?.description;
+        setOwner(data?.owner);
+        setSelectedPriority(data?.priority?.name);
+        setSelectedStatus(data?.status?.name);
+        const actualStartTime = Number.parseInt(data?.actual_start_time?.value as string);
+        const actualEndTime = Number.parseInt(data?.actual_end_time?.value as string);
         if (!isNaN(actualStartTime)) {
             setTaskActualStartTime(new Date(actualStartTime));
         }
@@ -333,7 +361,7 @@ const CreateTaskDialog: FC<Props> = (props) => {
                     <Stack direction={"row"} spacing={1}>
                         <FormControl>
                             <FormLabel>
-                                Start Time
+                                Start Time *
                             </FormLabel>
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <DateTimePicker onChange={(value) => setTaskActualStartTime(value)}
@@ -343,7 +371,7 @@ const CreateTaskDialog: FC<Props> = (props) => {
                             </FormControl>
                             <FormControl>
                                 <FormLabel>
-                                    End Time
+                                    End Time *
                                 </FormLabel>
                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                                     <DateTimePicker onChange={(value) => setTaskActualEndTime(value)}
@@ -357,9 +385,9 @@ const CreateTaskDialog: FC<Props> = (props) => {
                     <Stack direction={"row"} spacing={1}>
                         <FormControl sx={{width: 200}}>
                             <FormLabel>
-                                Assigner
+                                Assign
                             </FormLabel>
-                            <Input value={owner?.email_id} name={"owner"}/>
+                            <Input disabled value={owner?.email_id} name={"owner"}/>
                         </FormControl>
                         <FormControl sx={{width: 200}}>
                             <FormLabel>
@@ -416,7 +444,8 @@ const mapStateToProps = (state: RootState) => {
         ownerResponse: state.task.ownerResponse,
         priorityResponse: state.task.priorityResponse,
         statusResponse: state.task.statusResponse,
-        addTaskResponse: state.task.addTaskResponse
+        addTaskResponse: state.task.addTaskResponse,
+        getTaskResponse: state.task.getTaskResponse
     };
 };
 
@@ -432,6 +461,10 @@ const mapDispatchToProps = (dispatch: any) => {
             projectId: projectId,
             taskId: taskId
         })),
+        onGetTask: (projectId: string, taskId: string) => dispatch(getTaskById({
+            projectId: projectId,
+            taskId: taskId
+        }))
     };
 };
 

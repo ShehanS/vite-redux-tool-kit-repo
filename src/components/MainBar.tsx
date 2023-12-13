@@ -4,6 +4,7 @@ import CardContent from '@mui/joy/CardContent';
 import {Box, Button, CircularProgress, IconButton, Option, Select, Stack, Typography} from "@mui/joy";
 import {RootState} from "../redux/store";
 import {
+    clearTaskResponseHistory,
     deleteTaskById,
     getProject,
     getProjectById,
@@ -142,6 +143,7 @@ const MainBar: FC<ReduxProps> = (props) => {
             } else if (props.updateTaskResponse?.responseCode === "TASK_UPDATE_FAILED") {
                 const snackProps: ISnackBar = {
                     title: "Task update failed",
+                    message: props.updateTaskResponse.error,
                     isOpen: true,
                     color: "success",
                     variant: "solid"
@@ -234,6 +236,7 @@ const MainBar: FC<ReduxProps> = (props) => {
 
     const openTaskCreateDialog = () => {
         props.onReset();
+        props.onClearTaskResponse();
         setAppDataContext({
             ...appDataContext,
             isOpenDialog: true,
@@ -381,7 +384,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                                 <Typography level="body-sm" fontSize={"md"}>
                                     Task
                                 </Typography>
-                                <Select value={currentSelectedTask ?? ""}
+                                <Select disabled={selectedProject !== null ? false : true} value={currentSelectedTask ?? ""}
                                         onChange={(event, value) => selectTask(event, value)}
                                         onClick={() => getTasks()}
                                         placeholder="Task..."
@@ -393,18 +396,21 @@ const MainBar: FC<ReduxProps> = (props) => {
                                     ))}
                                 </Select>
                                 <IconButton
+                                    disabled={selectedProject !== null ? false : true}
                                     color="primary"
                                     sx={{background:'#0ca59d'}}
                                     onClick={openTaskCreateDialog}
                                     variant="solid"
                                 ><AddCircleRoundedIcon/></IconButton>
                                 <IconButton
+                                    disabled={currentSelectedTask !== null ? false : true}
                                     color="primary"
                                     sx={{background:'#fc8441'}}
                                     onClick={editTaskCreateDialog}
                                     variant="solid"
                                 ><BorderColorRoundedIcon/></IconButton>
                                 <IconButton
+                                    disabled={currentSelectedTask !== null ? false : true}
                                     color="primary"
                                     sx={{background:'#e85153'}}
                                     onClick={openDeleteTaskConfirm}
@@ -438,6 +444,7 @@ const mapDispatchToProps = (dispatch: any) => {
             projectId: projectId,
             taskId: taskId
         })),
+        onClearTaskResponse:() => dispatch(clearTaskResponseHistory()),
         onGetProjects: (payload: IGeneralRequest) => dispatch(getProject(payload)),
         onGetTasks: (payload: IGeneralRequest) => dispatch(getTask(payload)),
         onGetProjectById: (payload: IGeneralRequest) => dispatch(getProjectById(payload)),

@@ -256,9 +256,9 @@ const CreateWorkLogDialog: FC<Props> = (props) => {
                 <Stack direction={"row"} spacing={1}>
                     <FormControl sx={{width: 200}}>
                         <FormLabel>
-                            Assigner
+                            Assign
                         </FormLabel>
-                        <Input value={owner?.email_id ?? ""} name={"owner"}/>
+                        <Input disabled value={owner?.email_id ?? ""} name={"owner"}/>
                     </FormControl>
                     <FormControl sx={{width: 200}}>
                         <FormLabel>

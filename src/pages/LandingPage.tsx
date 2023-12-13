@@ -251,7 +251,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
             }
             if (props.editWorklogResponse?.responseCode === "WORKLOG_EDIT_FAILED") {
                 const snackProps: ISnackBar = {
-                    title: "workLog Adding Failed",
+                    title: "Worklog Editing Failed",
                     message: props.editWorklogResponse.error,
                     isOpen: true,
                     color: "danger",
