@@ -50,7 +50,7 @@ const LoginPage: FC = (props: any) => {
                             NCINGA Time tracker beta
                         </Typography>
                     </Stack>
-                    <img src={"http://localhost/bar.png"} style={{position: 'absolute', right:0, height:80}}/>
+                    <img src={"bar.png"} style={{position: 'absolute', right:0, height:80}}/>
                 </Box>
             </Stack>
         </Box>
