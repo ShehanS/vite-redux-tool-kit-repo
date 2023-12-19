@@ -70,11 +70,11 @@ const MainBar: FC<ReduxProps> = (props) => {
         deleteTaskResponse: null
     });
 
-    useEffect(() => {
-        setInterval(() => {
-            setIsLoading(false);
-        }, 3000)
-    }, [isTaskLoading]);
+    // useEffect(() => {
+    //     setInterval(() => {
+    //         setIsLoading(false);
+    //     }, 3000)
+    // }, [isTaskLoading]);
 
     useEffect(() => {
         if (
@@ -360,7 +360,7 @@ const MainBar: FC<ReduxProps> = (props) => {
 
                     <CardContent>
                         <Stack direction={"row"}
-                               sx={{justifyContent: 'space-between', alignItems: 'center', width: '60%'}}
+                               sx={{justifyContent: 'space-between', alignItems: 'center', width: '40%'}}
                                spacing={1}>
                             <Stack spacing={1} direction={"row"}
                                    sx={{display: 'flex', justifyItems: 'center', alignItems: 'center'}}>
@@ -375,7 +375,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                                         sx={{width: 270}}
                                 >
                                     {projects?.map((project: any, index: number) => (
-                                        <Option key={index} value={project}>{project?.title}</Option>
+                                        <Option disabled={isLoading ? true : false} key={index} value={project}>{project?.title}</Option>
                                     ))}
                                 </Select>
                             </Stack>
@@ -392,7 +392,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                                         startDecorator={isTaskLoading && <CircularProgress size="sm"/>}
                                 >
                                     {tasks?.map((task: any, index: number) => (
-                                        <Option key={index} value={task}>{task?.title}</Option>
+                                        <Option disabled={isTaskLoading ? true : false} key={index} value={task}>{task?.title}</Option>
                                     ))}
                                 </Select>
                                 <IconButton
@@ -417,7 +417,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                                     variant="solid"
                                 ><DeleteForeverRoundedIcon/></IconButton>
                             </Stack>
-                            <Button disabled={currentSelectedTask === null ? true : false} onClick={openWorklogCreateDialog}><PatternRoundedIcon/> Create Worklog</Button>
+                            <Button variant={"outlined"} disabled={currentSelectedTask === null ? true : false} onClick={openWorklogCreateDialog}><PatternRoundedIcon/>Worklog</Button>
                                 </Stack>
 
                     </CardContent>

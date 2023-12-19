@@ -15,7 +15,7 @@ const TokenDialog: FC<Props> = (props: any) => {
     return (<>
         <Box>
             <Stack direction={"column"}>
-                <img src={"/images/img_1.png"} width={220} height={70}/>
+                <img src={"img_1.png"} width={220} height={70}/>
                 {props.type === DialogType.success && <Typography level="h2" fontSize="xl">
                     Waiting for getting new access token
                 </Typography>}

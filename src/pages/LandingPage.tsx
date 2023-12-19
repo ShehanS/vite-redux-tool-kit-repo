@@ -73,10 +73,12 @@ const LandingPage: FC<ReduxProps> = (props) => {
         ) {
             setStateObj({...stateObj, getTaskResponse: props.getTaskResponse});
             if (props.getTaskResponse?.responseCode === "GET_TASK_SUCCESS") {
-                const startTime = Number.parseInt(props.getTaskResponse?.data?.task?.actual_start_time?.value);
-                const endTime = Number.parseInt(props.getTaskResponse?.data?.task?.actual_end_time?.value);
-                const diff: number = endTime - startTime;
-                setPredictTime(diff);
+                if (props.getTaskResponse?.data?.task?.actual_start_time?.value && props.getTaskResponse?.data?.task?.actual_end_time?.value) {
+                    const startTime = Number.parseInt(props.getTaskResponse?.data?.task?.actual_start_time?.value);
+                    const endTime = Number.parseInt(props.getTaskResponse?.data?.task?.actual_end_time?.value);
+                    const diff: number = endTime - startTime;
+                    setPredictTime(diff);
+                }
 
             } else if (props.getTaskResponse?.responseCode === "GET_TASK_FAILED") {
                 const snackProps: ISnackBar = {
@@ -393,8 +395,10 @@ const LandingPage: FC<ReduxProps> = (props) => {
                         <Stack direction={"row"} spacing={1} sx={{paddingLeft: 1}}>
                             <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Task Predict Time
                                 : </Typography>
-                            {predictTime !== undefined && <Typography
-                                level={"body-md"}> Month(s) {new Date(predictTime).getUTCMonth()} Day(s) {new Date(predictTime).getUTCDate() - 1} Hour(s) {new Date(predictTime).getUTCHours()}</Typography>}
+                            {predictTime !== undefined ? <Typography
+                                    level={"body-md"}> Month(s) {new Date(predictTime).getUTCMonth()} Day(s) {new Date(predictTime).getUTCDate() - 1} Hour(s) {new Date(predictTime).getUTCHours()}</Typography> :
+                                <Typography
+                                    level={"body-md"}>Time not define</Typography>}
                         </Stack>
                         <Stack direction={"row"} spacing={1}>
                             <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Actual Task Time
@@ -485,15 +489,17 @@ const LandingPage: FC<ReduxProps> = (props) => {
                                     <th style={{width: 100}}>Start Time</th>
                                     <th style={{width: 100}}>End Time</th>
                                     <th style={{width: 100}}>Worklog Type</th>
-                                    <th style={{width: 100}}>Owner</th>
+                                    {/*<th style={{width: 100}}>Owner</th>*/}
                                     <th style={{width: 100}}>Created By</th>
-                                    <th style={{width: 100}}/>
+                                    <th style={{width: 50}}/>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {worklogs?.map((row: any, index: number) => (
                                     <tr key={index}>
-                                        <td>{row?.description ?? ""}</td>
+                                        <td>
+                                            <div dangerouslySetInnerHTML={{__html: row?.description}}/>
+                                        </td>
                                         <td><Stack direction={"row"} spacing={1}>
                                             <Typography
                                                 level={"body-sm"}>{new Date(Number.parseInt(row?.start_time?.value)).toLocaleDateString() ?? ""}</Typography><Chip
@@ -502,10 +508,10 @@ const LandingPage: FC<ReduxProps> = (props) => {
                                         <td><Stack direction={"row"} spacing={1}>
                                             <Typography
                                                 level={"body-sm"}>{new Date(Number.parseInt(row?.end_time?.value)).toLocaleDateString()}</Typography><Chip
-                                            color="primary">{new Date(Number.parseInt(row?.start_time?.value)).toLocaleTimeString()}</Chip>
+                                            color="primary">{new Date(Number.parseInt(row?.end_time?.value)).toLocaleTimeString()}</Chip>
                                         </Stack></td>
                                         <td>{row?.worklog_type?.name ?? ""}</td>
-                                        <td>{row?.owner?.email_id ?? ""}</td>
+                                        {/*<td>{row?.owner?.email_id ?? ""}</td>*/}
                                         <td>{row?.created_by?.email_id ?? ""}</td>
                                         <td>
                                             <Stack direction={"row"} sx={{display: 'flex', gap: 1}}>

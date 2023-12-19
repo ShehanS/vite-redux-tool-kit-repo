@@ -4,10 +4,10 @@ import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import {ROUTES} from "./constants/routes";
 import LoginPage from "./pages/LoginPage"
 import LandingPage from "./pages/LandingPage";
-import {AppDataContextProvider, useAppDataContext} from "./context/AppDataContext";
+import {AppDataContextProvider} from "./context/AppDataContext";
 import Authenticate from "./pages/Authenticate";
 import Layout from "./components/Layout";
-import axios from "axios";
+
 
 function App() {
     return (
