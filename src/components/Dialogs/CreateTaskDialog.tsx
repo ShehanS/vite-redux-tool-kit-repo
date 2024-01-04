@@ -18,7 +18,7 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {RootState} from "../../redux/store";
 import {connect, ConnectedProps} from "react-redux";
 import {
-    addTask, clearTaskResponseHistory,
+    addTask,
     getOwnersByProjectById,
     getPriorityByProjectById,
     getStatusByProjectById,
@@ -43,6 +43,7 @@ type ReduxProps = ConnectedProps<typeof connector>;
 type Props = ReduxProps & OwnProps;
 
 type StateObj = {
+    getWorklogsResponse: any,
     ownerResponse: any;
     priorityResponse: any;
     statusResponse: any;
@@ -60,6 +61,8 @@ const CreateTaskDialog: FC<Props> = (props) => {
     const {appDataContext, setAppDataContext} = useAppDataContext();
     const [taskActualStartTime, setTaskActualStartTime] = useState<Date | undefined>(new Date());
     const [taskActualEndTime, setTaskActualEndTime] = useState<Date | undefined>(new Date());
+    const [error, setError] = useState({message: "", isEnable: false})
+    const [worklogs, setWorklogs] = useState<any[]>([]);
     const [inputObject, setInputObject] = useState<InputObjectState>({
             input: {}
         }
@@ -71,6 +74,7 @@ const CreateTaskDialog: FC<Props> = (props) => {
     const [selectedStatus, setSelectedStatus] = useState<any>(null);
     const [stateObj, setStateObj] = useState<StateObj>(
         {
+            getWorklogsResponse: null,
             ownerResponse: null,
             priorityResponse: null,
             statusResponse: null,
@@ -105,6 +109,32 @@ const CreateTaskDialog: FC<Props> = (props) => {
         }
 
     }, [props.ownerResponse]);
+
+    useEffect(() => {
+        if (
+            (stateObj.getWorklogsResponse === null && props.getWorklogsResponse !== null) ||
+            stateObj.getWorklogsResponse !== props.getWorklogsResponse
+        ) {
+            setStateObj({...stateObj, getWorklogsResponse: props.getWorklogsResponse});
+            if (props.getWorklogsResponse?.responseCode === "GET_ALL_WORKLOG_SUCCESS") {
+                const workLogs = props.getWorklogsResponse?.data?.worklogs;
+                setWorklogs(workLogs);
+
+
+            } else if (props.getWorklogsResponse?.responseCode === "GET_ALL_WORKLOG_FAILED") {
+                const snackProps: ISnackBar = {
+                    title: "Worklog loding failed!!!",
+                    message: props.getWorklogsResponse.error,
+                    isOpen: true,
+                    color: "danger",
+                    variant: "outlined"
+                }
+                props.onShowSnackBar(snackProps);
+            }
+
+        }
+
+    }, [props.getWorklogsResponse]);
 
     // useEffect(() => {
     //     if (
@@ -210,12 +240,12 @@ const CreateTaskDialog: FC<Props> = (props) => {
     const initData = (data: any) => {
         const {input} = inputObject;
         input['title'] = data?.title;
-        input['description'] =data?.description;
+        input['description'] = data?.description;
         setOwner(data?.owner);
         setSelectedPriority(data?.priority?.name);
         setSelectedStatus(data?.status?.name);
-        const actualStartTime = Number.parseInt(data?.actual_start_time?.value as string);
-        const actualEndTime = Number.parseInt(data?.actual_end_time?.value as string);
+        const actualStartTime = Number.parseInt(data?.scheduled_start_time?.value as string);
+        const actualEndTime = Number.parseInt(data?.scheduled_end_time?.value as string);
         if (!isNaN(actualStartTime)) {
             setTaskActualStartTime(new Date(actualStartTime));
         }
@@ -280,7 +310,7 @@ const CreateTaskDialog: FC<Props> = (props) => {
                 estimated_effort_days: undefined,
                 task_type: null,
                 scheduled_start_time: {
-                    value: taskActualEndTime?.getTime().toString() ?? "",
+                    value: taskActualStartTime?.getTime().toString() ?? "",
                 },
                 status: {
                     name: s?.name,
@@ -294,44 +324,49 @@ const CreateTaskDialog: FC<Props> = (props) => {
         const handlingEditTask = () => {
             const p: IPriority = priorities.filter((p: IPriority) => p.name === selectedPriority)?.[0];
             const s: IStatus = status.filter((s: IStatus) => s.name === selectedStatus)?.[0];
-            const taskObject: ITask = {
-                task: {
-                    percentage_completion: undefined,
-                    estimated_effort_hours: undefined,
-                    email_before: "3600000",
-                    description: inputObject?.input?.description,
-                    title: inputObject?.input?.title,
-                    additional_cost: undefined,
-                    actual_end_time: {
-                        value: taskActualEndTime?.getTime().toString() ?? "",
+            if (s.name === "Closed" && worklogs?.length === 0) {
+                setError({isEnable: true, message: "Cannot close this task without worklog"});
+            } else {
+                setError({isEnable: false, message: ""})
+                const taskObject: ITask = {
+                    task: {
+                        percentage_completion: undefined,
+                        estimated_effort_hours: undefined,
+                        email_before: "3600000",
+                        description: inputObject?.input?.description,
+                        title: inputObject?.input?.title,
+                        additional_cost: undefined,
+                        actual_end_time: {
+                            value: taskActualEndTime?.getTime().toString() ?? "",
+                        },
+                        actual_start_time: {
+                            value: taskActualStartTime?.getTime().toString() ?? "",
+                        },
+                        owner: {
+                            id: owner?.id,
+                            email_id: owner?.email_id
+                        },
+                        priority: {
+                            name: p?.name,
+                            id: p?.id,
+                        },
+                        scheduled_end_time: {
+                            value: taskActualEndTime?.getTime().toString() ?? "",
+                        },
+                        estimated_effort_minutes: undefined,
+                        estimated_effort_days: undefined,
+                        task_type: null,
+                        scheduled_start_time: {
+                            value: taskActualStartTime?.getTime().toString() ?? "",
+                        },
+                        status: {
+                            name: s?.name,
+                            id: s?.id
+                        },
                     },
-                    actual_start_time: {
-                        value: taskActualStartTime?.getTime().toString() ?? "",
-                    },
-                    owner: {
-                        id: owner?.id,
-                        email_id: owner?.email_id
-                    },
-                    priority: {
-                        name: p?.name,
-                        id: p?.id,
-                    },
-                    scheduled_end_time: {
-                        value: taskActualEndTime?.getTime().toString() ?? "",
-                    },
-                    estimated_effort_minutes: undefined,
-                    estimated_effort_days: undefined,
-                    task_type: null,
-                    scheduled_start_time: {
-                        value: taskActualEndTime?.getTime().toString() ?? "",
-                    },
-                    status: {
-                        name: s?.name,
-                        id: s?.id
-                    },
-                },
+                }
+                props.onUpdateTask(taskObject, props.project?.id, props.selectedTask?.id)
             }
-            props.onUpdateTask(taskObject, props.project?.id, props.selectedTask?.id)
         }
 
 
@@ -341,7 +376,7 @@ const CreateTaskDialog: FC<Props> = (props) => {
             <Box>
             <Typography level="title-sm" sx={{fontWeight: "bold"}}>Project : {props.project?.title}</Typography>
             <Typography level="title-sm">Project ID: {props.project?.id}</Typography>
-
+                {error.isEnable && <Typography level="body-sm" sx={{color:'red', pt:1}}>Error: {error.message ?? ""}</Typography>}
             <Box sx={{padding: 1}}>
                 <FormControl>
                     <FormLabel>
@@ -445,7 +480,8 @@ const mapStateToProps = (state: RootState) => {
         priorityResponse: state.task.priorityResponse,
         statusResponse: state.task.statusResponse,
         addTaskResponse: state.task.addTaskResponse,
-        getTaskResponse: state.task.getTaskResponse
+        getTaskResponse: state.task.getTaskResponse,
+        getWorklogsResponse: state.worklog.getWorklogsResponse,
     };
 };
 
