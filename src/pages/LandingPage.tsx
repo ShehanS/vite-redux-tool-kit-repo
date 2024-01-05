@@ -7,7 +7,7 @@ import TaskCreateBar from "../components/MainBar";
 import {setLoader, setSnackBar} from "../redux/task/task-slice";
 import {ISnackBar} from "../interfaces/ISnackBar";
 import CreateWorkLogDialog from "../components/Dialogs/CreateWorklog";
-import {deleteWorklog, getWorklogs} from "../redux/worklog/worklog-slice";
+import {deleteWorklog, getWorklogs, getWorklogsSuccess} from "../redux/worklog/worklog-slice";
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import {IWorklog} from "../interfaces/IWorklog";
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
@@ -125,14 +125,21 @@ const LandingPage: FC<ReduxProps> = (props) => {
             stateObj.updateTaskResponse !== props.updateTaskResponse
         ) {
             setStateObj({...stateObj, updateTaskResponse: props.updateTaskResponse});
-
             if (props?.updateTaskResponse?.responseCode === "TASK_UPDATED") {
+
                 setAppDataContext({
                     ...appDataContext,
                     isOpenDialog: false,
                     dialogTitle: "",
                     dialogContent: null
                 });
+                if (props?.updateTaskResponse?.data?.task?.status?.name === "Closed") {
+                    setActualTime(0);
+                    setPredictTime(0);
+                    props.clearWorklog();
+                    setWorklogs([]);
+
+                }
             }
 
         }
@@ -374,7 +381,8 @@ const LandingPage: FC<ReduxProps> = (props) => {
     const handleDeleteWorklog = (worklogId: string) => {
         props.onDeleteWorklog(appDataContext.project.id, appDataContext.task.id, worklogId);
     }
-
+// predictTime || actualTime === 0 ? '':''
+    //predictTime <= actualTime ? '#be2565' :
     return (
         <>
             <Box>
@@ -384,7 +392,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                 <Box sx={{
                     height: 60,
                     width: '100%',
-                    background: predictTime <= actualTime ? '#be2565' : '#2596be',
+                    background: '#2596be',
                     borderRadius: '10px 10px 0px 0px',
                     display: 'flex',
                     justifyItems: 'center',
@@ -564,6 +572,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
+        clearWorklog: () => dispatch(getWorklogsSuccess(null)),
         onShowSnackBar: (props: ISnackBar) => dispatch(setSnackBar(props)),
         onSetLoader: (payload: boolean) => dispatch(setLoader(payload)),
         onDeleteWorklog: (projectId: string, taskId: string, worklogId: string) => dispatch(deleteWorklog({

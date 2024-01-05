@@ -133,6 +133,16 @@ const MainBar: FC<ReduxProps> = (props) => {
         ) {
             setStateObj({...stateObj, updateTaskResponse: props.updateTaskResponse});
             if (props.updateTaskResponse?.responseCode === "TASK_UPDATED") {
+                if(props?.updateTaskResponse?.data?.task?.status?.name==="Closed"){
+                   setCurrentSelectedTask(null);
+                    // setAppDataContext({
+                    //     ...appDataContext,
+                    //     isOpenDialog: false,
+                    //     dialogTitle: "",
+                    //     dialogContent: null
+                    // });
+                   //setAppDataContext({...appDataContext, task: null});
+                }
                 const snackProps: ISnackBar = {
                     title: "Task update success",
                     isOpen: true,
@@ -299,6 +309,7 @@ const MainBar: FC<ReduxProps> = (props) => {
     //
     //     props.onUpdateTask(updatedTaskObject, selectedProject.id, currentSelectedTask.id);
     // }
+
 
     const openDeleteTaskConfirm = () => {
         setAppDataContext({
