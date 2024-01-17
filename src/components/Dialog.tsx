@@ -25,14 +25,9 @@ const Dialog: FC = (props: any) => {
 
     return (<React.Fragment>
         <Modal
-            disableEscapeKeyDown={true}
-            disableRestoreFocus={true}
             open={stateObj.isOpen}
-            onClose={(data) => {
+            onClose={() => {
                 setAppDataContext({...appDataContext, isOpenDialog: false});
-            }}
-            BackdropProps={{
-                disableBackdropClick: true,
             }}
         >
             <ModalDialog role="alertdialog" sx={{width:matches ? 600:'100%'}}

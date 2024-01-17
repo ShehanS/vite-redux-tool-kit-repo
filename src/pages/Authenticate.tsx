@@ -144,7 +144,7 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: any) => {
     return {
         onGetToken: () => dispatch(getToken()),
-        clearTokenError:() => dispatch(clearTokenError())
+        clearTokenError:() => dispatch(clearTokenError(null))
     };
 };
 
