@@ -11,7 +11,7 @@ const LoginPage: FC = (props: any) => {
 
     const handleLogin = (user: any) => {
         const profile = jwtDecode(user?.credential);
-        setAppDataContext({...appDataContext, user: profile});
+        setAppDataContext({...appDataContext, user: profile, project: null, task: null});
         navigate('/landing-page', {replace: true});
     }
 

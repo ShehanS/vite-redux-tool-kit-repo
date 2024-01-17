@@ -7,7 +7,7 @@ import TaskCreateBar from "../components/MainBar";
 import {setLoader, setSnackBar} from "../redux/task/task-slice";
 import {ISnackBar} from "../interfaces/ISnackBar";
 import CreateWorkLogDialog from "../components/Dialogs/CreateWorklog";
-import {clearHistory, deleteWorklog, getWorklogs, getWorklogsSuccess} from "../redux/worklog/worklog-slice";
+import {clearHistory, deleteWorklog, getWorklogs} from "../redux/worklog/worklog-slice";
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import {IWorklog} from "../interfaces/IWorklog";
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
@@ -243,14 +243,18 @@ const LandingPage: FC<ReduxProps> = (props) => {
         ) {
             setStateObj({...stateObj, addWorklogResponse: props.editWorklogResponse});
             if (props.editWorklogResponse?.responseCode === "WORKLOG_EDIT_SUCCESS") {
-                props.onGetWorklogs(appDataContext?.project?.id, appDataContext?.task?.id)
                 const snackProps: ISnackBar = {
                     title: "Worklog Adding Success",
                     isOpen: true,
                     color: "success",
                     variant: "solid"
                 }
-                props.onShowSnackBar(snackProps);
+                if (appDataContext?.project?.id && appDataContext?.task?.id !== null) {
+                    props.onGetWorklogs(appDataContext?.project?.id, appDataContext?.task?.id)
+                    props.onShowSnackBar(snackProps);
+                }
+
+
                 setAppDataContext({
                     ...appDataContext,
                     isOpenDialog: false,
@@ -286,8 +290,12 @@ const LandingPage: FC<ReduxProps> = (props) => {
                     color: "success",
                     variant: "solid"
                 }
-                props.onGetWorklogs(appDataContext?.project?.id, appDataContext?.task?.id)
-                props.onShowSnackBar(snackProps);
+
+                if (appDataContext?.project?.id && appDataContext?.task?.id !== null) {
+                    props.onGetWorklogs(appDataContext?.project?.id, appDataContext?.task?.id)
+                    props.onShowSnackBar(snackProps);
+                }
+
                 setAppDataContext({
                     ...appDataContext,
                     isOpenDialog: false,
@@ -361,7 +369,9 @@ const LandingPage: FC<ReduxProps> = (props) => {
             setStateObj({...stateObj, deleteWorklogResponse: props.deleteWorklogResponse});
             if (props.deleteWorklogResponse?.responseCode === "WORKLOG_DELETE_SUCCESS") {
                 setAppDataContext({...appDataContext, isOpenDialog: false, dialogContent: null});
-                props.onGetWorklogs(appDataContext?.project?.id, appDataContext?.task?.id)
+                if (appDataContext?.project?.id && appDataContext?.task?.id !== null) {
+                    props.onGetWorklogs(appDataContext?.project?.id, appDataContext?.task?.id)
+                }
             }
         }
 
