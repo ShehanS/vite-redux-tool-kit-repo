@@ -2,9 +2,8 @@ import React, {FC, useState} from "react"
 import Modal from '@mui/joy/Modal';
 import ModalClose from '@mui/joy/ModalClose';
 import {useAppDataContext} from "../context/AppDataContext";
-import {DialogTitle, Divider, ModalDialog} from "@mui/joy";
+import {Box, DialogTitle, Divider, ModalDialog} from "@mui/joy";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
 type StateObj = {
     isOpen: boolean;
 }
@@ -26,16 +25,23 @@ const Dialog: FC = (props: any) => {
 
     return (<React.Fragment>
         <Modal
+            disableEscapeKeyDown={true}
+            disableRestoreFocus={true}
             open={stateObj.isOpen}
-            onClose={() => {
+            onClose={(data) => {
                 setAppDataContext({...appDataContext, isOpenDialog: false});
+            }}
+            BackdropProps={{
+                disableBackdropClick: true,
             }}
         >
             <ModalDialog role="alertdialog" sx={{width:matches ? 600:'100%'}}
                          layout={matches ? "center": "fullscreen"}
             ><ModalClose variant="outlined"/>
                 <DialogTitle>
-                    {appDataContext.dialogTitle ?? ""}
+                   <Box sx={{height:20}}>
+                       {appDataContext.dialogTitle ?? ""}
+                   </Box>
                 </DialogTitle>
                 <Divider />
                 {appDataContext.dialogContent}

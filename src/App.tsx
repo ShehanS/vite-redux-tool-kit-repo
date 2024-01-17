@@ -7,6 +7,7 @@ import LandingPage from "./pages/LandingPage";
 import {AppDataContextProvider} from "./context/AppDataContext";
 import Authenticate from "./pages/Authenticate";
 import Layout from "./components/Layout";
+import IdealTimerContainer from "./components/IdelTimer";
 
 
 function App() {
@@ -19,7 +20,8 @@ function App() {
                         <Routes>
                             <Route path={ROUTES.login} element={<LoginPage/>}/>
                             <Route path={ROUTES.root} element={<LoginPage/>}/>
-                            <Route path={ROUTES.ladingPage} element={<Authenticate><Layout><LandingPage/></Layout></Authenticate>}/>
+                            <Route path={ROUTES.ladingPage} element={
+                                <IdealTimerContainer><Authenticate><Layout><LandingPage/></Layout></Authenticate></IdealTimerContainer>}/>
                         </Routes>
                     </Router>
                 </GoogleOAuthProvider>

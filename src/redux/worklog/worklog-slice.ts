@@ -99,9 +99,24 @@ export const worklogSlice = createSlice({
         }),
         clearHistory: (state)=>({
             ...state,
-            ddWorklogResponse: null,
+            typesResponse: null,
+            getWorklogsResponse: null,
+            addWorklogResponse: null,
             editWorklogResponse: null,
-            deleteWorklogResponse: null
+            deleteWorklogResponse: null,
+            error: null,
+            worklogId: "",
+            payload: "",
+            projectId: "",
+            taskId: "",
+            isLoading: false,
+            showSnackBar: {
+                message: "",
+                title: "",
+                isOpen: false,
+                variant: "solid",
+                color: "primary"
+            }
 
         })
 

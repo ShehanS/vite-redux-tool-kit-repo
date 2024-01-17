@@ -7,7 +7,7 @@ import TaskCreateBar from "../components/MainBar";
 import {setLoader, setSnackBar} from "../redux/task/task-slice";
 import {ISnackBar} from "../interfaces/ISnackBar";
 import CreateWorkLogDialog from "../components/Dialogs/CreateWorklog";
-import {deleteWorklog, getWorklogs, getWorklogsSuccess} from "../redux/worklog/worklog-slice";
+import {clearHistory, deleteWorklog, getWorklogs, getWorklogsSuccess} from "../redux/worklog/worklog-slice";
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import {IWorklog} from "../interfaces/IWorklog";
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
@@ -367,6 +367,11 @@ const LandingPage: FC<ReduxProps> = (props) => {
 
     }, [props.deleteWorklogResponse]);
 
+    useEffect(()=>{
+        props.clearWorklog();
+        setWorklogs([]);
+    }, [])
+
 
     const openDeleteWorklogConfirm = (data: any) => {
         setAppDataContext({
@@ -572,7 +577,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        clearWorklog: () => dispatch(getWorklogsSuccess(null)),
+        clearWorklog: () => dispatch(clearHistory()),
         onShowSnackBar: (props: ISnackBar) => dispatch(setSnackBar(props)),
         onSetLoader: (payload: boolean) => dispatch(setLoader(payload)),
         onDeleteWorklog: (projectId: string, taskId: string, worklogId: string) => dispatch(deleteWorklog({

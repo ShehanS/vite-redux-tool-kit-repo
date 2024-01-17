@@ -28,10 +28,10 @@ const CustomAppBar: FC = (props: any) => {
     }, [appDataContext.user]);
 
     return (<>
-        <AppBar position="fixed" sx={{background: 'linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);', boxSizing: 'none', right: 0}}>
+        <AppBar position="fixed" sx={{background: 'linear-gradient(22deg, rgba(0,52,98,1) 0%, rgba(0,177,179,1) 61%);', boxSizing: 'none', right: 0}}>
                 <Toolbar disableGutters sx={{height: 50, boxSizing: 'none'}}>
                     <Stack direction={"row"} sx={{paddingLeft:5, paddingRight:5, justifyContent: 'space-between', width: '100%', alignItems:'center'}}>
-                        <Typography sx={{fontSize: 20, fontWeight:'bold', color:'white'}} level={"body-sm"}>NCINGA Time Tracker</Typography>
+                        <img src={"NCINGALogoWhite.png"} width={170} height={40}/>
                         <Stack spacing={1} direction={"row"} sx={{alignItems: 'center', justifyItems: 'center'}}>
                             <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
                                 <Badge

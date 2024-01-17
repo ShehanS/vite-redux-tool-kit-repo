@@ -27,10 +27,14 @@ export const tokenSlice = createSlice({
         getTokenError: (state, action: PayloadAction<any>) => ({
             ...state,
             error: action.payload
+        }),
+      clearTokenError: (state, action: PayloadAction<any>) => ({
+            ...state,
+            error: null
         })
 
     },
 })
 
-export const {getToken, getTokenSuccess, getTokenError} = tokenSlice.actions
+export const {getToken, getTokenSuccess, getTokenError, clearTokenError} = tokenSlice.actions
 export default tokenSlice.reducer

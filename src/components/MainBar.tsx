@@ -342,7 +342,8 @@ const MainBar: FC<ReduxProps> = (props) => {
     const getTasks = () => {
         setTaskIsLoading(true);
         const request = {
-            projectId: selectedProject?.id
+            projectId: selectedProject?.id,
+            email: appDataContext.user.email
         }
         props.onGetTasks(request);
 
