@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; //useState
+import React, { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -10,7 +10,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { styled } from "@mui/system";
 
@@ -76,6 +76,15 @@ const ViewMyRecordsDialog: React.FC<ViewMyRecordsDialogProps> = ({
       startTime: "9:00 AM",
       endTime: "10:00 PM",
     },
+    {
+      date: "2024-01-26",
+      project: "Integration Project",
+      task: "Manage API service",
+      worklogTask: "Worklog Task 1",
+      worklogType: "Type D",
+      startTime: "4:00 AM",
+      endTime: "10:00 PM",
+    },
   ];
 
   useEffect(() => {
@@ -138,7 +147,13 @@ const ViewMyRecordsDialog: React.FC<ViewMyRecordsDialogProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth style={{ marginTop: "-15vh" }} >
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      style={{ marginTop: "-15vh" }}
+    >
       <DialogTitle style={{ textAlign: "center", fontSize: "30px" }}>
         My Records
       </DialogTitle>
@@ -151,7 +166,7 @@ const ViewMyRecordsDialog: React.FC<ViewMyRecordsDialogProps> = ({
         >
           <div>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DateTimePicker
+              <DatePicker
                 label="From Date"
                 value={selectedFromDate}
                 onChange={(newValue) => setSelectedFromDate(newValue)}
@@ -160,7 +175,7 @@ const ViewMyRecordsDialog: React.FC<ViewMyRecordsDialogProps> = ({
           </div>
           <div>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DateTimePicker
+              <DatePicker
                 label="To Date"
                 value={selectedToDate}
                 onChange={(newValue) => setSelectedToDate(newValue)}
