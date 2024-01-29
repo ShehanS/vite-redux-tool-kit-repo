@@ -37,6 +37,7 @@ import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import BorderColorRoundedIcon from "@mui/icons-material/BorderColorRounded";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import PatternRoundedIcon from "@mui/icons-material/PatternRounded";
+import TodayNDatePicker from "./TodayNDatePicker";
 
 type ReduxProps = ConnectedProps<typeof connector>;
 
@@ -232,7 +233,7 @@ const MainBar: FC<ReduxProps> = (props) => {
       setIsLoading(true);
       setTaskIsLoading(false);
       const request = {
-        email: appDataContext.user.email,
+        email: "shehan.salinda@ncinga.net",
       };
       props.onGetProjects(request);
     }
@@ -387,7 +388,7 @@ const MainBar: FC<ReduxProps> = (props) => {
     setTaskIsLoading(true);
     const request = {
       projectId: selectedProject?.id,
-      email: appDataContext.user.email,
+      email: "shehan.salinda@ncinga.net",
     };
     props.onGetTasks(request);
   };
@@ -524,6 +525,13 @@ const MainBar: FC<ReduxProps> = (props) => {
                 Worklog
               </Button>
             </Stack>
+            {/* <TodayNDatePicker
+              fromDate={stateObj.fromDate}
+              toDate={stateObj.toDate}
+              onFromDateChange={handleFromDateChange}
+              onToDateChange={handleToDateChange}
+              onTodayButtonClick={handleTodayButtonClick}
+            /> */}
           </CardContent>
         </Card>
       </Box>
