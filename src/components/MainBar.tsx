@@ -38,8 +38,6 @@ import BorderColorRoundedIcon from "@mui/icons-material/BorderColorRounded";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import PatternRoundedIcon from "@mui/icons-material/PatternRounded";
 
-import ViewMyRecordsDialog from "./Dialogs/ViewMyRecordsDialog";
-
 type ReduxProps = ConnectedProps<typeof connector>;
 
 type StateObj = {
@@ -234,7 +232,7 @@ const MainBar: FC<ReduxProps> = (props) => {
       setIsLoading(true);
       setTaskIsLoading(false);
       const request = {
-        email: "shehan.salinda@ncinga.net",
+        email: appDataContext.user.email,
       };
       props.onGetProjects(request);
     }
@@ -389,49 +387,17 @@ const MainBar: FC<ReduxProps> = (props) => {
     setTaskIsLoading(true);
     const request = {
       projectId: selectedProject?.id,
-      email: "shehan.salinda@ncinga.net",
+      email: appDataContext.user.email,
     };
     props.onGetTasks(request);
   };
 
-  const [isViewRecordsDialogOpen, setIsViewRecordsDialogOpen] =
-    useState<boolean>(false);
-
-  const handleOpenViewRecordsDialog = () => {
-    setIsViewRecordsDialogOpen(true);
-  };
-
-  const handleCloseViewRecordsDialog = () => {
-    setIsViewRecordsDialogOpen(false);
-  };
-
   return (
     <>
-      <Button
-        sx={{
-          bottom: "10",
-          marginLeft: "auto",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          backgroundColor: "#03adfc",
-          color: "#fff",
-        }}
-        onClick={handleOpenViewRecordsDialog}
-      >
-        View My Records
-      </Button>
-
-      <ViewMyRecordsDialog
-        isOpen={isViewRecordsDialogOpen}
-        onClose={handleCloseViewRecordsDialog}
-        project={selectedProject}
-        user={stateObj.user}
-      />
       <Box
         sx={{
-          top: 130,
-          width: "99%",
+          top: 100,
+          width: "98%",
           position: "fixed",
           display: "flex",
           zIndex: 50,

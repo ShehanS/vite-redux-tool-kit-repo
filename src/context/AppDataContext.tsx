@@ -1,54 +1,51 @@
-import React, {createContext, useContext, useState} from "react";
-
+import React, { createContext, useContext, useState } from "react";
 
 type AppDataContextType = {
-    appDataContext: {
-        user: any;
-        refreshToken: string;
-        isOpenDialog: boolean;
-        dialogContent: any;
-        dialogTitle: any;
-        isEdit: boolean;
-        project:any;
-        task: any;
-    };
-    setAppDataContext: (props: any) => void;
+  appDataContext: {
+    user: any;
+    refreshToken: string;
+    isOpenDialog: boolean;
+    dialogContent: any;
+    dialogTitle: any;
+    isEdit: boolean;
+    project: any;
+    task: any;
+  };
+  setAppDataContext: (props: any) => void;
 };
 type AppDataContextProviderProps = {
-    children: React.ReactNode;
+  children: React.ReactNode;
 };
 
-const AppDataContext = createContext<AppDataContextType | undefined>(
-    undefined
-);
+const AppDataContext = createContext<AppDataContextType | undefined>(undefined);
 
-const AppDataContextProvider = ({children}: AppDataContextProviderProps) => {
-    const [appDataContext, setAppDataContext] = useState({
-        user: null,
-        refreshToken: "",
-        isOpenDialog: false,
-        dialogContent: null,
-        dialogTitle: null,
-        isEdit: false,
-        project: null,
-        task: null
-    });
+const AppDataContextProvider = ({ children }: AppDataContextProviderProps) => {
+  const [appDataContext, setAppDataContext] = useState({
+    user: null,
+    refreshToken: "",
+    isOpenDialog: false,
+    dialogContent: null,
+    dialogTitle: null,
+    isEdit: false,
+    project: null,
+    task: null,
+  });
 
-    return (
-        <AppDataContext.Provider value={{appDataContext, setAppDataContext}}>
-            {children}
-        </AppDataContext.Provider>
-    );
+  return (
+    <AppDataContext.Provider value={{ appDataContext, setAppDataContext }}>
+      {children}
+    </AppDataContext.Provider>
+  );
 };
 
 const useAppDataContext = () => {
-    const context = useContext(AppDataContext);
-    if (context === undefined) {
-        throw new Error(
-            "useAppDataContext must be used within a AppDataContextProvider"
-        );
-    }
-    return context;
+  const context = useContext(AppDataContext);
+  if (context === undefined) {
+    throw new Error(
+      "useAppDataContext must be used within a AppDataContextProvider"
+    );
+  }
+  return context;
 };
 
-export {AppDataContextProvider, useAppDataContext};
+export { AppDataContextProvider, useAppDataContext };
