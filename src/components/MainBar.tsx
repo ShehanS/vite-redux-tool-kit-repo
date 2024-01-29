@@ -215,7 +215,7 @@ const MainBar: FC<ReduxProps> = (props) => {
             setIsLoading(true);
             setTaskIsLoading(false);
             const request = {
-                email: appDataContext.user.email
+                email: 'shehan.salinda@ncinga.net'
             }
             props.onGetProjects(request);
         }
@@ -343,7 +343,7 @@ const MainBar: FC<ReduxProps> = (props) => {
         setTaskIsLoading(true);
         const request = {
             projectId: selectedProject?.id,
-            email: appDataContext.user.email
+            email: 'shehan.salinda@ncinga.net'
         }
         props.onGetTasks(request);
 
@@ -352,7 +352,7 @@ const MainBar: FC<ReduxProps> = (props) => {
     return (
         <>
             <Box sx={{
-                top: 100,
+                top: 150,
                 width: '98%',
                 position: 'fixed',
                 display: 'flex',

@@ -2,7 +2,7 @@ import React, {FC, useEffect, useState} from "react";
 import {useAppDataContext} from "../context/AppDataContext";
 import {RootState} from "../redux/store";
 import {connect, ConnectedProps} from "react-redux";
-import {Box, Chip, IconButton, Sheet, Stack, Table, Typography} from "@mui/joy";
+import {Box, Chip, IconButton, Sheet, Stack, TabPanel, Table, Typography} from "@mui/joy";
 import TaskCreateBar from "../components/MainBar";
 import {setLoader, setSnackBar} from "../redux/task/task-slice";
 import {ISnackBar} from "../interfaces/ISnackBar";
@@ -12,6 +12,16 @@ import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import {IWorklog} from "../interfaces/IWorklog";
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import DeleteDialog from "../components/Dialogs/DeleteDialog";
+
+import Tabs from '@mui/joy/Tabs';
+import TabList from '@mui/joy/TabList';
+import Tab from '@mui/joy/Tab';
+
+import {useNavigate} from "react-router-dom";
+import { ROUTES } from "../constants/routes";
+import CommonPage from "../components/CommonPage";
+import { Console } from "console";
+
 
 type StateObj = {
     user: any;
@@ -57,6 +67,12 @@ const LandingPage: FC<ReduxProps> = (props) => {
     ) => {
         setPage(newPage);
     };
+    
+    const navigate = useNavigate();
+    
+    const [currentTab, setCurrentTab] = useState(0);
+
+    
 
     useEffect(() => {
         initials()
@@ -396,173 +412,189 @@ const LandingPage: FC<ReduxProps> = (props) => {
     const handleDeleteWorklog = (worklogId: string) => {
         props.onDeleteWorklog(appDataContext.project.id, appDataContext.task.id, worklogId);
     }
+
+
 // predictTime || actualTime === 0 ? '':''
     //predictTime <= actualTime ? '#be2565' :
     return (
         <>
-            <Box>
-                <TaskCreateBar/>
-            </Box>
-            <Box sx={{marginTop: 25}}>
-                <Box sx={{
-                    height: 60,
-                    width: '100%',
-                    background: '#2596be',
-                    borderRadius: '10px 10px 0px 0px',
-                    display: 'flex',
-                    justifyItems: 'center',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
-                }}>
-                    {appDataContext.task !== null && <Stack direction={"row"} spacing={2}>
-                        <Stack direction={"row"} spacing={1} sx={{paddingLeft: 1}}>
-                            <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Task Predict Time
-                                : </Typography>
-                            {predictTime !== undefined ? <Typography
-                                    level={"body-md"}> Month(s) {new Date(predictTime).getUTCMonth()} Day(s) {new Date(predictTime).getUTCDate() - 1} Hour(s) {new Date(predictTime).getUTCHours()}</Typography> :
-                                <Typography
-                                    level={"body-md"}>Time not define</Typography>}
-                        </Stack>
-                        <Stack direction={"row"} spacing={1}>
-                            <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Actual Task Time
-                                : </Typography>
-                            {actualTime !== 0 && <Typography
-                                level={"body-md"}> Month(s) {new Date(actualTime).getUTCMonth()} Day(s) {new Date(actualTime).getUTCDate() - 1} Hour(s) {new Date(actualTime).getUTCHours()}</Typography>}
-                        </Stack>
-                        <Stack direction={"row"} spacing={1} sx={{paddingRight: 1}}>
-                            {predictTime <= actualTime &&
-                                <Chip color={"danger"}>You behind with
-                                    predicted time</Chip>}
-                        </Stack>
-                    </Stack>}
-                </Box>
-                <Box sx={{
-                    width: "100%",
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+            <Tabs value={currentTab} onChange={(event, newValue) => setCurrentTab(Number(newValue))} aria-label="Basic tabs">
+            <TabList>
+            <Tab> Common</Tab>
+            <Tab> On Demand </Tab>
+            </TabList>
+            </Tabs>
 
-                }}>
+            <Tabs value={currentTab}>
+                <TabPanel value={0}>
+                    <Box>
+                        <TaskCreateBar/>
+                    </Box>
+                    <Box sx={{marginTop: 10}}>
+                    <Box sx={{
+                        height: 60,
+                        width: '100%',
+                        background: '#2596be',
+                        borderRadius: '10px 10px 0px 0px',
+                        display: 'flex',
+                        justifyItems: 'center',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}>
+                        {appDataContext.task !== null && <Stack direction={"row"} spacing={2}>
+                            <Stack direction={"row"} spacing={1} sx={{paddingLeft: 1}}>
+                                <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Task Predict Time
+                                    : </Typography>
+                                {predictTime !== undefined ? <Typography
+                                        level={"body-md"}> Month(s) {new Date(predictTime).getUTCMonth()} Day(s) {new Date(predictTime).getUTCDate() - 1} Hour(s) {new Date(predictTime).getUTCHours()}</Typography> :
+                                    <Typography
+                                        level={"body-md"}>Time not define</Typography>}
+                            </Stack>
+                            <Stack direction={"row"} spacing={1}>
+                                <Typography level={"body-md"} sx={{fontWeight: 'bold', color: 'white'}}>Actual Task Time
+                                    : </Typography>
+                                {actualTime !== 0 && <Typography
+                                    level={"body-md"}> Month(s) {new Date(actualTime).getUTCMonth()} Day(s) {new Date(actualTime).getUTCDate() - 1} Hour(s) {new Date(actualTime).getUTCHours()}</Typography>}
+                            </Stack>
+                            <Stack direction={"row"} spacing={1} sx={{paddingRight: 1}}>
+                                {predictTime <= actualTime &&
+                                    <Chip color={"danger"}>You behind with
+                                        predicted time</Chip>}
+                            </Stack>
+                        </Stack>}
+                    </Box>
+                    <Box sx={{
+                        width: "100%",
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
 
-                    <Sheet
-                        variant="outlined"
-                        sx={{
-                            '--TableCell-height': '10px',
-                            // the number is the amount of the header rows.
-                            '--TableHeader-height': 'calc(1 * var(--TableCell-height))',
-                            '--Table-firstColumnWidth': '80px',
-                            '--Table-lastColumnWidth': '144px',
-                            // background needs to have transparency to show the scrolling shadows
-                            '--TableRow-stripeBackground': 'rgba(0 0 0 / 0.04)',
-                            '--TableRow-hoverBackground': 'rgba(0 0 0 / 0.08)',
-                            overflow: 'auto',
-                            background: (
-                                theme,
-                            ) => `linear-gradient(to right, ${theme.vars.palette.background.surface} 30%, rgba(255, 255, 255, 0)),
-            linear-gradient(to right, rgba(255, 255, 255, 0), ${theme.vars.palette.background.surface} 70%) 0 100%,
-            radial-gradient(
-              farthest-side at 0 50%,
-              rgba(0, 0, 0, 0.12),
-              rgba(0, 0, 0, 0)
-            ),
-            radial-gradient(
-                farthest-side at 100% 50%,
-                rgba(0, 0, 0, 0.12),
-                rgba(0, 0, 0, 0)
-              )
-              0 100%`,
-                            backgroundSize:
-                                '40px calc(100% - var(--TableCell-height)), 40px calc(100% - var(--TableCell-height)), 14px calc(100% - var(--TableCell-height)), 14px calc(100% - var(--TableCell-height))',
-                            backgroundRepeat: 'no-repeat',
-                            backgroundAttachment: 'local, local, scroll, scroll',
-                            backgroundPosition:
-                                'var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height), var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height)',
-                            backgroundColor: 'background.surface',
-                            overflowX: 'auto',
-                            maxWidth: '100%',
-                            height: "550px"
-                        }}
-                    >
-                        <Box sx={{width: "100%"}}>
-                            <Table
-                                noWrap
-                                borderAxis="bothBetween"
-                                stripe="odd"
-                                hoverRow
-                                sx={{
-                                    width: "100%",
-                                    '& tr > *:first-child': {
-                                        position: 'sticky',
-                                        left: 0,
-                                        boxShadow: '1px 0 var(--TableCell-borderColor)',
-                                        bgcolor: 'background.surface',
-                                    },
-                                    '& tr > *:last-child': {
-                                        position: 'sticky',
-                                        right: 0,
-                                        bgcolor: 'var(--TableCell-headBackground)',
-                                        width: '120px',
-                                    },
-                                }}
-                            >
-                                <thead>
-                                <tr>
-                                    <th style={{width: 150}}>Description</th>
-                                    <th style={{width: 100}}>Start Time</th>
-                                    <th style={{width: 100}}>End Time</th>
-                                    <th style={{width: 100}}>Worklog Type</th>
-                                    {/*<th style={{width: 100}}>Owner</th>*/}
-                                    <th style={{width: 100}}>Created By</th>
-                                    <th style={{width: 50}}/>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {worklogs?.map((row: any, index: number) => (
-                                    <tr key={index}>
-                                        <td>
-                                            <div dangerouslySetInnerHTML={{__html: row?.description}}/>
-                                        </td>
-                                        <td><Stack direction={"row"} spacing={1}>
-                                            <Typography
-                                                level={"body-sm"}>{new Date(Number.parseInt(row?.start_time?.value)).toLocaleDateString() ?? ""}</Typography><Chip
-                                            color="primary">{new Date(Number.parseInt(row?.start_time?.value)).toLocaleTimeString()}</Chip>
-                                        </Stack></td>
-                                        <td><Stack direction={"row"} spacing={1}>
-                                            <Typography
-                                                level={"body-sm"}>{new Date(Number.parseInt(row?.end_time?.value)).toLocaleDateString()}</Typography><Chip
-                                            color="primary">{new Date(Number.parseInt(row?.end_time?.value)).toLocaleTimeString()}</Chip>
-                                        </Stack></td>
-                                        <td>{row?.worklog_type?.name ?? ""}</td>
-                                        {/*<td>{row?.owner?.email_id ?? ""}</td>*/}
-                                        <td>{row?.created_by?.email_id ?? ""}</td>
-                                        <td>
-                                            <Stack direction={"row"} sx={{display: 'flex', gap: 1}}>
-                                                <IconButton
-                                                    color="primary"
-                                                    onClick={() => editWorklog(row)}
-                                                    variant="soft"
-                                                ><BorderColorRoundedIcon/>
-                                                </IconButton>
+                    }}>
 
-                                                <IconButton
-                                                    color="danger"
-                                                    onClick={() => openDeleteWorklogConfirm(row)}
-                                                    variant="soft"
-                                                ><DeleteForeverRoundedIcon/></IconButton>
-
-                                            </Stack>
-                                        </td>
+                        <Sheet
+                            variant="outlined"
+                            sx={{
+                                '--TableCell-height': '10px',
+                                // the number is the amount of the header rows.
+                                '--TableHeader-height': 'calc(1 * var(--TableCell-height))',
+                                '--Table-firstColumnWidth': '80px',
+                                '--Table-lastColumnWidth': '144px',
+                                // background needs to have transparency to show the scrolling shadows
+                                '--TableRow-stripeBackground': 'rgba(0 0 0 / 0.04)',
+                                '--TableRow-hoverBackground': 'rgba(0 0 0 / 0.08)',
+                                overflow: 'auto',
+                                background: (
+                                    theme,
+                                ) => `linear-gradient(to right, ${theme.vars.palette.background.surface} 30%, rgba(255, 255, 255, 0)),
+                                linear-gradient(to right, rgba(255, 255, 255, 0), ${theme.vars.palette.background.surface} 70%) 0 100%,
+                                radial-gradient(
+                                farthest-side at 0 50%,
+                                rgba(0, 0, 0, 0.12),
+                                rgba(0, 0, 0, 0)
+                                ),
+                                radial-gradient(
+                                farthest-side at 100% 50%,
+                                rgba(0, 0, 0, 0.12),
+                                rgba(0, 0, 0, 0)
+                                )
+                                0 100%`,
+                                backgroundSize:
+                                    '40px calc(100% - var(--TableCell-height)), 40px calc(100% - var(--TableCell-height)), 14px calc(100% - var(--TableCell-height)), 14px calc(100% - var(--TableCell-height))',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundAttachment: 'local, local, scroll, scroll',
+                                backgroundPosition:
+                                    'var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height), var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height)',
+                                backgroundColor: 'background.surface',
+                                overflowX: 'auto',
+                                maxWidth: '100%',
+                                height: "550px"
+                            }}
+                        >
+                            <Box sx={{width: "100%"}}>
+                                <Table
+                                    noWrap
+                                    borderAxis="bothBetween"
+                                    stripe="odd"
+                                    hoverRow
+                                    sx={{
+                                        width: "100%",
+                                        '& tr > *:first-child': {
+                                            position: 'sticky',
+                                            left: 0,
+                                            boxShadow: '1px 0 var(--TableCell-borderColor)',
+                                            bgcolor: 'background.surface',
+                                        },
+                                        '& tr > *:last-child': {
+                                            position: 'sticky',
+                                            right: 0,
+                                            bgcolor: 'var(--TableCell-headBackground)',
+                                            width: '120px',
+                                        },
+                                    }}
+                                >
+                                    <thead>
+                                    <tr>
+                                        <th style={{width: 150}}>Description</th>
+                                        <th style={{width: 100}}>Start Time</th>
+                                        <th style={{width: 100}}>End Time</th>
+                                        <th style={{width: 100}}>Worklog Type</th>
+                                        {/*<th style={{width: 100}}>Owner</th>*/}
+                                        <th style={{width: 100}}>Created By</th>
+                                        <th style={{width: 50}}/>
                                     </tr>
-                                ))}
-                                </tbody>
-                            </Table>
-                        </Box>
-                    </Sheet>
+                                    </thead>
+                                    <tbody>
+                                    {worklogs?.map((row: any, index: number) => (
+                                        <tr key={index}>
+                                            <td>
+                                                <div dangerouslySetInnerHTML={{__html: row?.description}}/>
+                                            </td>
+                                            <td><Stack direction={"row"} spacing={1}>
+                                                <Typography
+                                                    level={"body-sm"}>{new Date(Number.parseInt(row?.start_time?.value)).toLocaleDateString() ?? ""}</Typography><Chip
+                                                color="primary">{new Date(Number.parseInt(row?.start_time?.value)).toLocaleTimeString()}</Chip>
+                                            </Stack></td>
+                                            <td><Stack direction={"row"} spacing={1}>
+                                                <Typography
+                                                    level={"body-sm"}>{new Date(Number.parseInt(row?.end_time?.value)).toLocaleDateString()}</Typography><Chip
+                                                color="primary">{new Date(Number.parseInt(row?.end_time?.value)).toLocaleTimeString()}</Chip>
+                                            </Stack></td>
+                                            <td>{row?.worklog_type?.name ?? ""}</td>
+                                            {/*<td>{row?.owner?.email_id ?? ""}</td>*/}
+                                            <td>{row?.created_by?.email_id ?? ""}</td>
+                                            <td>
+                                                <Stack direction={"row"} sx={{display: 'flex', gap: 1}}>
+                                                    <IconButton
+                                                        color="primary"
+                                                        onClick={() => editWorklog(row)}
+                                                        variant="soft"
+                                                        ><BorderColorRoundedIcon/>
+                                                    </IconButton>
+
+                                                    <IconButton
+                                                        color="danger"
+                                                        onClick={() => openDeleteWorklogConfirm(row)}
+                                                        variant="soft"
+                                                    ><DeleteForeverRoundedIcon/></IconButton>
+
+                                                </Stack>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </Table>
+                            </Box>
+                        </Sheet>
+                    </Box>
                 </Box>
-            </Box>
-
-
+                </TabPanel>
+                <TabPanel value={1}>
+                    <Box>
+                        <CommonPage/>
+                    </Box>
+                </TabPanel>
+            </Tabs>
         </>
     )
 }
