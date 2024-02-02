@@ -17,7 +17,7 @@ import {
 } from "../redux/task/task-slice";
 import {connect, ConnectedProps} from "react-redux";
 import {useAppDataContext} from "../context/AppDataContext";
-import CreateTaskDialog from "./Dialogs/CreateTaskDialog";
+import CreateOnDemandTaskDialog from "./Dialogs/CreateOnDemandTaskDialog";
 import {IGeneralRequest} from "../interfaces/IGeneralRequest";
 import {ITaskAttribute} from "../interfaces/ITask";
 import {ISnackBar} from "../interfaces/ISnackBar";
@@ -28,7 +28,6 @@ import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import PatternRoundedIcon from '@mui/icons-material/PatternRounded';
-import TodayNDatePicker from "./TodayNDatePicker";
 
 type ReduxProps = ConnectedProps<typeof connector>;
 
@@ -46,7 +45,7 @@ type StateObj = {
 };
 
 
-const MainBar: FC<ReduxProps> = (props) => {
+const CommonPage: FC<ReduxProps> = (props) => {
     const {appDataContext, setAppDataContext} = useAppDataContext();
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [currentSelectedTask, setCurrentSelectedTask] = useState<ITaskAttribute>(null);
@@ -211,31 +210,6 @@ const MainBar: FC<ReduxProps> = (props) => {
     }, [props.projectListResponse])
 
 
-    const selectProjectDropdown = () => {
-        if (appDataContext.user.email !== null) {
-            setIsLoading(true);
-            setTaskIsLoading(false);
-            const request = {
-                email: 'shehan.salinda@ncinga.net'
-            }
-            props.onGetProjects(request);
-        }
-    }
-    const selectProject = (event: any, value: any) => {
-        if (value !== null) {
-            props.onSetLoader(true);
-            setSelectedProject(value);
-            setTasks(null);
-            setCurrentSelectedTask(null);
-            const request = {
-                projectId: value?.id
-            }
-            setAppDataContext({...appDataContext, project: value});
-            props.onGetTasks(request);
-            props.onGetProjectById(request);
-        }
-    }
-
     const selectTask = (event: any, value: any) => {
         if (value !== null) {
             setCurrentSelectedTask(value);
@@ -252,7 +226,7 @@ const MainBar: FC<ReduxProps> = (props) => {
             ...appDataContext,
             isOpenDialog: true,
             dialogTitle: "Add Task",
-            dialogContent: <CreateTaskDialog isEdit={false} user={appDataContext.user} project={selectedProject}
+            dialogContent: <CreateOnDemandTaskDialog isEdit={false} user={appDataContext.user} project={selectedProject}
                                              selectedTask={null}/>
         });
     }
@@ -275,7 +249,7 @@ const MainBar: FC<ReduxProps> = (props) => {
             ...appDataContext,
             isOpenDialog: true,
             dialogTitle: "Edit Task",
-            dialogContent: <CreateTaskDialog isEdit={true} user={appDataContext.user} project={selectedProject}
+            dialogContent: <CreateOnDemandTaskDialog isEdit={true} user={appDataContext.user} project={selectedProject}
                                              selectedTask={currentSelectedTask}/>
         });
     }
@@ -378,43 +352,27 @@ const MainBar: FC<ReduxProps> = (props) => {
                             <Stack spacing={1} direction={"row"}
                                    sx={{display: 'flex', justifyItems: 'center', alignItems: 'center'}}>
                                 <Typography level="body-sm" fontSize={"md"}>
-                                    Project
-                                </Typography>
-                                <Select value={selectedProject ?? ""}
-                                        onChange={selectProject}
-                                        onClick={selectProjectDropdown}
-                                        placeholder="Project..."
-                                        startDecorator={isLoading && <CircularProgress size="sm"/>}
-                                        sx={{width: 270}}
-                                >
-                                    {projects?.map((project: any, index: number) => (
-                                        <Option disabled={isLoading ? true : false} key={index} value={project}>{project?.title}</Option>
-                                    ))}
-                                </Select>
-                            </Stack>
-                            <Stack spacing={1} direction={"row"}
-                                   sx={{display: 'flex', justifyItems: 'center', alignItems: 'center'}}>
-                                <Typography level="body-sm" fontSize={"md"}>
                                     Task
                                 </Typography>
-                                <Select disabled={selectedProject !== null ? false : true} value={currentSelectedTask ?? ""}
-                                        onChange={(event, value) => selectTask(event, value)}
-                                        onClick={() => getTasks()}
-                                        placeholder="Task..."
-                                        sx={{width: 270}}
-                                        startDecorator={isTaskLoading && <CircularProgress size="sm"/>}
+                                <Select disabled={false} value={currentSelectedTask ?? ""}
+                                  onChange={(event, value) => selectTask(event, value)}
+                                  onClick={() => getTasks()}
+                                  placeholder="Task..."
+                                  sx={{width: 270}}
+                                  startDecorator={isTaskLoading && <CircularProgress size="sm"/>}
                                 >
-                                    {tasks?.map((task: any, index: number) => (
-                                        <Option disabled={isTaskLoading ? true : false} key={index} value={task}>{task?.title}</Option>
-                                    ))}
+                                  {tasks?.map((task: any, index: number) => (
+                                  <Option disabled={isTaskLoading ? true : false} key={index} value={task}>{task?.title}</Option>
+                                  ))}
                                 </Select>
                                 <IconButton
-                                    disabled={selectedProject !== null ? false : true}
-                                    color="primary"
-                                    sx={{background:'#0ca59d'}}
-                                    onClick={openTaskCreateDialog}
-                                    variant="solid"
-                                ><AddCircleRoundedIcon/></IconButton>
+                                  disabled={false}
+                                  color="primary"
+                                  sx={{background:'#0ca59d'}}
+                                  onClick={openTaskCreateDialog}
+                                  variant="solid"
+                                >
+                                <AddCircleRoundedIcon/></IconButton>
                                 <IconButton
                                     disabled={currentSelectedTask !== null ? false : true}
                                     color="primary"
@@ -481,4 +439,4 @@ const mapDispatchToProps = (dispatch: any) => {
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
-export default connector(MainBar);
+export default connector(CommonPage);
