@@ -910,70 +910,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredWorklogs?.map((row: any, index: number) => (
-                          <tr key={index}>
-                            <td>
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: row?.description,
-                                }}
-                              />
-                            </td>
-                            <td>
-                              <Stack direction={"row"} spacing={1}>
-                                <Typography level={"body-sm"}>
-                                  {new Date(
-                                    Number.parseInt(row?.start_time?.value)
-                                  ).toLocaleDateString() ?? ""}
-                                </Typography>
-                                <Chip color="primary">
-                                  {new Date(
-                                    Number.parseInt(row?.start_time?.value)
-                                  ).toLocaleTimeString()}
-                                </Chip>
-                              </Stack>
-                            </td>
-                            <td>
-                              <Stack direction={"row"} spacing={1}>
-                                <Typography level={"body-sm"}>
-                                  {new Date(
-                                    Number.parseInt(row?.end_time?.value)
-                                  ).toLocaleDateString()}
-                                </Typography>
-                                <Chip color="primary">
-                                  {new Date(
-                                    Number.parseInt(row?.end_time?.value)
-                                  ).toLocaleTimeString()}
-                                </Chip>
-                              </Stack>
-                            </td>
-                            <td>{row?.worklog_type?.name ?? ""}</td>
-                            {/*<td>{row?.owner?.email_id ?? ""}</td>*/}
-                            <td>{row?.created_by?.email_id ?? ""}</td>
-                            <td>
-                              <Stack
-                                direction={"row"}
-                                sx={{ display: "flex", gap: 1 }}
-                              >
-                                <IconButton
-                                  color="primary"
-                                  onClick={() => editWorklog(row)}
-                                  variant="soft"
-                                >
-                                  <BorderColorRoundedIcon />
-                                </IconButton>
-
-                                <IconButton
-                                  color="danger"
-                                  onClick={() => openDeleteWorklogConfirm(row)}
-                                  variant="soft"
-                                >
-                                  <DeleteForeverRoundedIcon />
-                                </IconButton>
-                              </Stack>
-                            </td>
-                          </tr>
-                        ))}
+                  
                       </tbody>
                     </Table>
                   </Box>
