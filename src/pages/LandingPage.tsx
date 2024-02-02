@@ -12,6 +12,7 @@ import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import {IWorklog} from "../interfaces/IWorklog";
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import DeleteDialog from "../components/Dialogs/DeleteDialog";
+import TodayNDatePicker from "../components/TodayNDatePicker";
 
 import Tabs from '@mui/joy/Tabs';
 import TabList from '@mui/joy/TabList';
@@ -36,6 +37,8 @@ type StateObj = {
     deleteTaskResponse: any;
     deleteWorklogResponse: any;
     projectListResponse: any;
+   fromDate: Date | null;
+  toDate: Date | null;
 
 };
 type ReduxProps = ConnectedProps<typeof connector>;
@@ -47,6 +50,10 @@ const LandingPage: FC<ReduxProps> = (props) => {
     const {appDataContext, setAppDataContext} = useAppDataContext();
     const [worklogs, setWorklogs] = useState<any[]>([]);
     const [taskList, setTaskList] = useState<any[]>([]);
+   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [isTodayFilterActive, setIsTodayFilterActive] =
+    useState<boolean>(false);
+
     const [stateObj, setStateObj] = useState<StateObj>({
         user: null,
         projectResponse: null,
@@ -60,6 +67,8 @@ const LandingPage: FC<ReduxProps> = (props) => {
         getTaskResponse: null,
         deleteTaskResponse: null,
         deleteWorklogResponse: null
+      fromDate: null,
+    toDate: null,
     });
     const handleChangePage = (
         event: React.MouseEvent<HTMLButtonElement> | null,
@@ -416,6 +425,40 @@ const LandingPage: FC<ReduxProps> = (props) => {
 
 // predictTime || actualTime === 0 ? '':''
     //predictTime <= actualTime ? '#be2565' :
+    
+//////////////////////////////////// Filter Logic /////////////////////////////////////////////////////
+  const handleTodayButtonClick = () => {
+    setIsTodayFilterActive(!isTodayFilterActive);
+  };
+
+  const filteredWorklogs = worklogs.filter((log) => {
+    const startTime = new Date(Number.parseInt(log?.start_time?.value));
+    const endTime = new Date(Number.parseInt(log?.end_time?.value));
+    const today = new Date();
+
+    const isToday =
+      (startTime.getDate() === today.getDate() &&
+        startTime.getMonth() === today.getMonth() &&
+        startTime.getFullYear() === today.getFullYear()) ||
+      (endTime.getDate() === today.getDate() &&
+        endTime.getMonth() === today.getMonth() &&
+        endTime.getFullYear() === today.getFullYear());
+
+    const isInDateRange =
+      (!stateObj.fromDate || startTime >= stateObj.fromDate) &&
+      (!stateObj.toDate || endTime <= stateObj.toDate);
+
+    return isTodayFilterActive ? isToday && isInDateRange : isInDateRange;
+  });
+
+  const handleFromDateChange = (date: Date | null) => {
+    setStateObj({ ...stateObj, fromDate: date });
+  };
+
+  const handleToDateChange = (date: Date | null) => {
+    setStateObj({ ...stateObj, toDate: date });
+  };
+  
     return (
         <>
             <Tabs value={currentTab} onChange={(event, newValue) => setCurrentTab(Number(newValue))} aria-label="Basic tabs">
@@ -625,6 +668,13 @@ const LandingPage: FC<ReduxProps> = (props) => {
                                     <Chip color={"danger"}>You behind with
                                         predicted time</Chip>}
                             </Stack>
+                        <TodayNDatePicker
+                fromDate={stateObj.fromDate}
+                toDate={stateObj.toDate}
+                onFromDateChange={handleFromDateChange}
+                onToDateChange={handleToDateChange}
+                onTodayButtonClick={handleTodayButtonClick}
+              />
                         </Stack>}
                     </Box>
                     <Box sx={{
@@ -709,7 +759,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {worklogs?.map((row: any, index: number) => (
+                                    {filteredWorklogs?.map((row: any, index: number) => (
                                         <tr key={index}>
                                             <td>
                                                 <div dangerouslySetInnerHTML={{__html: row?.description}}/>
