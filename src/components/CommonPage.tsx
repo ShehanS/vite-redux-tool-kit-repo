@@ -469,7 +469,6 @@ const CommonPage: FC<ReduxProps> = (props) => {
               </Button>
               <Button>Today</Button>
             </Stack>
-            
           </CardContent>
         </Card>
       </Box>
