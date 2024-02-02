@@ -1,0 +1,32 @@
+version: '3'
+services:
+  backend:
+    container_name: ncinga-timmer-api-container
+    image: ncinga-timmer-api:v1
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+  frontend:
+    container_name: ncinga-timmer-web-container
+    image:
+      nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - app-network
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      - ./certbot/www/:/var/www/certbot/:ro
+    dns:
+      - 8.8.8.8
+    depends_on:
+      - backend
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./dist/:/var/www/certbot/:rw
+networks:
+  app-network:
+    driver: bridge

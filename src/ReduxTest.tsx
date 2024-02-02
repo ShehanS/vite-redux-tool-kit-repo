@@ -3,11 +3,18 @@ import {connect, ConnectedProps} from "react-redux";
 import {decrement, increment} from "./redux/login/counter-slice";
 import {RootState} from "./redux/store";
 import {login} from "./redux/login/login-slice";
-
+import {
+    Accordion,
+    AccordionHeader,
+    AccordionBody, Badge, Button,
+} from "@material-tailwind/react";
 
 type ReduxProps = ConnectedProps<typeof connector>;
 
 const ReduxTest: FC<ReduxProps> = ({onIncrement, onDecrement, onLogin}) => {
+    const [open, setOpen] = React.useState(1);
+
+    const handleOpen = (value) => setOpen(open === value ? 0 : value);
 
     const handleLogin = () => {
         const user = {
@@ -31,6 +38,9 @@ const ReduxTest: FC<ReduxProps> = ({onIncrement, onDecrement, onLogin}) => {
                     Login
                 </button>
             </div>
+            <Badge content="5">
+                <Button>Notifications</Button>
+            </Badge>
         </div>
     );
 };
