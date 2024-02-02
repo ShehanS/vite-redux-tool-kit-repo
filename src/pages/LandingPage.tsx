@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppDataContext } from "../context/AppDataContext";
 import { RootState } from "../redux/store";
-import { connect, ConnectedProps } from "react-redux";
+import { connect, ConnectedProps } from "react-redux"; //redux
 import {
   Box,
   Chip,
