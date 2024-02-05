@@ -51,7 +51,7 @@ type StateObj = {
   deleteTaskResponse: any;
 };
 
-const CommonPage: FC<ReduxProps> = (props) => {
+const OnDemandBar: FC<ReduxProps> = (props) => {
   const { appDataContext, setAppDataContext } = useAppDataContext();
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [currentSelectedTask, setCurrentSelectedTask] =
@@ -530,4 +530,4 @@ const mapDispatchToProps = (dispatch: any) => {
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
-export default connector(CommonPage);
+export default connector(OnDemandBar);
