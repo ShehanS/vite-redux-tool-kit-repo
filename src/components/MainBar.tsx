@@ -24,6 +24,8 @@ import {
   setSnackBar,
   updateTask,
   setTodayFilter,
+  setFromDate,
+  setToDate
 } from "../redux/task/task-slice";
 import { connect, ConnectedProps } from "react-redux";
 import { useAppDataContext } from "../context/AppDataContext";
@@ -404,6 +406,14 @@ const MainBar: FC<ReduxProps> = (props) => {
     props.setTodayFilter();
   };
 
+  const handleFromDateChange = (date: Date | null) => {
+    setFromDate(fromDate);
+  };
+
+  const handleToDateChange = (date: Date | null) => {
+    setToDate(toDate);
+  };
+
   useEffect(() => {}, [props.isTodayFilterActive]);
 
   return (
@@ -541,6 +551,8 @@ const MainBar: FC<ReduxProps> = (props) => {
             </Stack>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
+                value={fromDate}
+                onChange={handleFromDateChange}
                 sx={{ width: 170 }}
                 slotProps={{ textField: { size: "small" } }}
               />
@@ -548,6 +560,8 @@ const MainBar: FC<ReduxProps> = (props) => {
 
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
+                value={toDate}
+                onChange={handleToDateChange}
                 sx={{ width: 170 }}
                 slotProps={{ textField: { size: "small" } }}
               />
@@ -568,6 +582,8 @@ const mapStateToProps = (state: RootState) => {
     addTaskResponse: state.task.addTaskResponse,
     deleteTaskResponse: state.task.deleteTaskResponse,
     isTodayFilterActive: state.task.isTodayFilterActive,
+    fromDate: state.task.fromDate,
+    toDate: state.task.toDate,
   };
 };
 

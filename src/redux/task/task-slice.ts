@@ -21,6 +21,8 @@ export interface TaskState {
   showSnackBar: ISnackBar;
   deleteTaskResponse: any;
   isTodayFilterActive: boolean;
+  fromDate?: Date | null;
+  toDate?: Date | null;
 }
 
 const initialState: TaskState = {
@@ -235,6 +237,12 @@ export const taskSlice = createSlice({
     setTodayFilter: (state) => {
       state.isTodayFilterActive = !state.isTodayFilterActive; // Toggle the value
     },
+    setFromDate: (state, action) => {
+      state.fromDate = action.payload;
+    },
+    setToDate: (state, action) => {
+      state.toDate = action.payload;
+    },
   },
 });
 
@@ -276,6 +284,8 @@ export const {
   deleteTaskByIdError,
   deleteTaskByIdResponseClear,
   setTodayFilter,
+  setFromDate,
+  setToDate,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

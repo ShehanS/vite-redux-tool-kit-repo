@@ -37,6 +37,7 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
 import OnDemandBar from "../components/OnDemandbar";
 import { Console } from "console";
+import { Today } from "@mui/icons-material";
 
 type StateObj = {
   user: any;
@@ -481,16 +482,66 @@ const LandingPage: FC<ReduxProps> = (props) => {
   //predictTime <= actualTime ? '#be2565' :
 
   //////////////////////////////////// Filter Logic /////////////////////////////////////////////////////
-  useEffect(() => {}, [props.isTodayFilterActive]);
+  // useEffect(() => {}, [props.isTodayFilterActive, stateObj.fromDate, stateObj.toDate]);
 
+  // const filteredWorklogs = worklogs.filter((log) => {
+  //   const logDate = new Date(log.date).toDateString();
+
+  //   if (props.isTodayFilterActive) {
+  //     const today = new Date().toDateString();
+  //     console.log(today)
+
+  //     return logDate === today;
+  //   } else if (stateObj.fromDate && stateObj.toDate) {
+  //     return new Date(log.date) >= stateObj.fromDate && new Date(log.date) <= stateObj.toDate;
+  //   }
+
+  //   return true;
+  // });
+
+  useEffect(() => {}, [
+    props.isTodayFilterActive,
+    stateObj.fromDate,
+    stateObj.toDate,
+  ]);
+
+  useEffect(() => {}, [
+    props.isTodayFilterActive,
+    stateObj.fromDate,
+    stateObj.toDate,
+  ]);
+
+  ///////////////////////Logic ////////////////////
   const filteredWorklogs = worklogs.filter((log) => {
+    const logStartTime = new Date(Number.parseInt(log?.start_time?.value));
+
     if (props.isTodayFilterActive) {
-      const today = new Date().toDateString();
-      const logDate = new Date(log.date).toDateString();
-      return logDate === today;
-    } else {
-      return true;
+      const today = new Date(2023, 11, 18);
+      console.log("Today:", today);
+      console.log("Log Start Time:", logStartTime);
+
+      const isToday =
+        logStartTime.getDate() === today.getDate() &&
+        logStartTime.getMonth() === today.getMonth() &&
+        logStartTime.getFullYear() === today.getFullYear();
+
+      console.log("Is Today:", isToday);
+
+      return isToday;
+    } else if (stateObj.fromDate && stateObj.toDate) {
+      console.log("From Date:", stateObj.fromDate);
+      console.log("To Date:", stateObj.toDate);
+      console.log("Log Start Time:", logStartTime);
+
+      const isInDateRange =
+        logStartTime >= stateObj.fromDate && logStartTime <= stateObj.toDate;
+
+      console.log("Is In Date Range:", isInDateRange);
+
+      return isInDateRange;
     }
+
+    return true;
   });
 
   return (
