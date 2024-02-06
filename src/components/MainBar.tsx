@@ -23,6 +23,7 @@ import {
   setResetState,
   setSnackBar,
   updateTask,
+  setTodayFilter,
 } from "../redux/task/task-slice";
 import { connect, ConnectedProps } from "react-redux";
 import { useAppDataContext } from "../context/AppDataContext";
@@ -50,6 +51,7 @@ type StateObj = {
   updateTaskResponse: any;
   addTaskResponse: any;
   deleteTaskResponse: any;
+  isTodayFilterActive: boolean;
 };
 
 const MainBar: FC<ReduxProps> = (props) => {
@@ -70,7 +72,10 @@ const MainBar: FC<ReduxProps> = (props) => {
   );
 
   const [currentDate, setCurrentDate] = useState<any>(new Date());
-
+  const [isTodayFilterActive, setIsTodayFilterActive] =
+    useState<boolean>(false);
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
   const [stateObj, setStateObj] = useState<StateObj>({
     projectListResponse: null,
     user: null,
@@ -80,6 +85,7 @@ const MainBar: FC<ReduxProps> = (props) => {
     updateTaskResponse: null,
     addTaskResponse: null,
     deleteTaskResponse: null,
+    isTodayFilterActive: null,
   });
 
   // useEffect(() => {
@@ -393,6 +399,12 @@ const MainBar: FC<ReduxProps> = (props) => {
     props.onGetTasks(request);
   };
 
+  const handleTodayButtonClick = () => {
+    props.setTodayFilter();
+  };
+
+  useEffect(() => {}, [props.isTodayFilterActive]);
+
   return (
     <>
       <Box
@@ -524,7 +536,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                 <PatternRoundedIcon />
                 Worklog
               </Button>
-              <Button>Today</Button>
+              <Button onClick={handleTodayButtonClick}>Today</Button>
             </Stack>
           </CardContent>
         </Card>
@@ -541,6 +553,7 @@ const mapStateToProps = (state: RootState) => {
     updateTaskResponse: state.task.updateTaskResponse,
     addTaskResponse: state.task.addTaskResponse,
     deleteTaskResponse: state.task.deleteTaskResponse,
+    isTodayFilterActive: state.task.isTodayFilterActive,
   };
 };
 
@@ -582,7 +595,9 @@ const mapDispatchToProps = (dispatch: any) => {
           taskId: taskId,
         })
       ),
+
     onShowSnackBar: (props: ISnackBar) => dispatch(setSnackBar(props)),
+    setTodayFilter: () => dispatch(setTodayFilter()),
   };
 };
 

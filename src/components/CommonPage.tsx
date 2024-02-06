@@ -371,8 +371,8 @@ const CommonPage: FC<ReduxProps> = (props) => {
     <>
       <Box
         sx={{
-          top: 150,
-          width: "98%",
+          top: 130,
+          width: "97%",
           position: "fixed",
           display: "flex",
           zIndex: 50,

@@ -13,7 +13,11 @@ import {
   Typography,
 } from "@mui/joy";
 import TaskCreateBar from "../components/MainBar";
-import { setLoader, setSnackBar } from "../redux/task/task-slice";
+import {
+  setLoader,
+  setSnackBar,
+  setTodayFilter,
+} from "../redux/task/task-slice";
 import { ISnackBar } from "../interfaces/ISnackBar";
 import CreateWorkLogDialog from "../components/Dialogs/CreateWorklog";
 import {
@@ -25,8 +29,6 @@ import BorderColorRoundedIcon from "@mui/icons-material/BorderColorRounded";
 import { IWorklog } from "../interfaces/IWorklog";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import DeleteDialog from "../components/Dialogs/DeleteDialog";
-// import TodayNDatePicker from "../components/TodayNDatePicker";
-
 import Tabs from "@mui/joy/Tabs";
 import TabList from "@mui/joy/TabList";
 import Tab from "@mui/joy/Tab";
@@ -49,6 +51,7 @@ type StateObj = {
   deleteTaskResponse: any;
   deleteWorklogResponse: any;
   projectListResponse: any;
+  isTodayFilterActive: any;
   fromDate: Date | null;
   toDate: Date | null;
 };
@@ -78,6 +81,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
     getTaskResponse: null,
     deleteTaskResponse: null,
     deleteWorklogResponse: null,
+    isTodayFilterActive: null,
     fromDate: null,
     toDate: null,
   });
@@ -477,37 +481,17 @@ const LandingPage: FC<ReduxProps> = (props) => {
   //predictTime <= actualTime ? '#be2565' :
 
   //////////////////////////////////// Filter Logic /////////////////////////////////////////////////////
-  const handleTodayButtonClick = () => {
-    setIsTodayFilterActive(!isTodayFilterActive);
-  };
+  useEffect(() => {}, [props.isTodayFilterActive]);
 
   const filteredWorklogs = worklogs.filter((log) => {
-    const startTime = new Date(Number.parseInt(log?.start_time?.value));
-    const endTime = new Date(Number.parseInt(log?.end_time?.value));
-    const today = new Date();
-
-    const isToday =
-      (startTime.getDate() === today.getDate() &&
-        startTime.getMonth() === today.getMonth() &&
-        startTime.getFullYear() === today.getFullYear()) ||
-      (endTime.getDate() === today.getDate() &&
-        endTime.getMonth() === today.getMonth() &&
-        endTime.getFullYear() === today.getFullYear());
-
-    const isInDateRange =
-      (!stateObj.fromDate || startTime >= stateObj.fromDate) &&
-      (!stateObj.toDate || endTime <= stateObj.toDate);
-
-    return isTodayFilterActive ? isToday && isInDateRange : isInDateRange;
+    if (props.isTodayFilterActive) {
+      const today = new Date().toDateString();
+      const logDate = new Date(log.date).toDateString();
+      return logDate === today;
+    } else {
+      return true;
+    }
   });
-
-  const handleFromDateChange = (date: Date | null) => {
-    setStateObj({ ...stateObj, fromDate: date });
-  };
-
-  const handleToDateChange = (date: Date | null) => {
-    setStateObj({ ...stateObj, toDate: date });
-  };
 
   return (
     <>
@@ -586,7 +570,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                         You behind with predicted time
                       </Chip>
                     )}
-                  </Stack>
+                  </Stack>{" "}
                 </Stack>
               )}
             </Box>
@@ -672,7 +656,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {worklogs?.map((row: any, index: number) => (
+                      {filteredWorklogs?.map((row: any, index: number) => (
                         <tr key={index}>
                           <td>
                             <div
@@ -818,13 +802,6 @@ const LandingPage: FC<ReduxProps> = (props) => {
                         </Chip>
                       )}
                     </Stack>
-                    {/* <TodayNDatePicker
-                      fromDate={stateObj.fromDate}
-                      toDate={stateObj.toDate}
-                      onFromDateChange={handleFromDateChange}
-                      onToDateChange={handleToDateChange}
-                      onTodayButtonClick={handleTodayButtonClick}
-                    /> */}
                   </Stack>
                 )}
               </Box>
@@ -909,9 +886,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                           <th style={{ width: 50 }} />
                         </tr>
                       </thead>
-                      <tbody>
-                  
-                      </tbody>
+                      <tbody></tbody>
                     </Table>
                   </Box>
                 </Sheet>
@@ -939,11 +914,13 @@ const mapStateToProps = (state: RootState) => {
     deleteTaskResponse: state.task.deleteTaskResponse,
     deleteWorklogResponse: state.worklog.deleteWorklogResponse,
     projectListResponse: state.task.projectListResponse,
+    isTodayFilterActive: state.task.isTodayFilterActive,
   };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
+    setTodayFilter: () => dispatch(setTodayFilter()),
     clearWorklog: () => dispatch(clearHistory()),
     onShowSnackBar: (props: ISnackBar) => dispatch(setSnackBar(props)),
     onSetLoader: (payload: boolean) => dispatch(setLoader(payload)),
