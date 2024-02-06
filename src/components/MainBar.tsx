@@ -38,7 +38,8 @@ import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import BorderColorRoundedIcon from "@mui/icons-material/BorderColorRounded";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import PatternRoundedIcon from "@mui/icons-material/PatternRounded";
-// import TodayNDatePicker from "./TodayNDatePicker";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 type ReduxProps = ConnectedProps<typeof connector>;
 
@@ -538,6 +539,19 @@ const MainBar: FC<ReduxProps> = (props) => {
               </Button>
               <Button onClick={handleTodayButtonClick}>Today</Button>
             </Stack>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                sx={{ width: 170 }}
+                slotProps={{ textField: { size: "small" } }}
+              />
+            </LocalizationProvider>
+
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                sx={{ width: 170 }}
+                slotProps={{ textField: { size: "small" } }}
+              />
+            </LocalizationProvider>
           </CardContent>
         </Card>
       </Box>
