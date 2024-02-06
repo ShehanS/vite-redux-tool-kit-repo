@@ -35,7 +35,7 @@ import Tab from "@mui/joy/Tab";
 
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
-import CommonPage from "../components/CommonPage";
+import OnDemandBar from "../components/OnDemandbar";
 import { Console } from "console";
 
 type StateObj = {
@@ -730,7 +730,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
         <TabPanel value={1}>
           <Box>
             <Box>
-              <CommonPage />
+              <OnDemandBar />
             </Box>
             <Box sx={{ marginTop: 10 }}>
               <Box
