@@ -409,11 +409,10 @@ const MainBar: FC<ReduxProps> = (props) => {
   const handleFromDateChange = (date: Date | null) => {
     props.setFromDate(date);
   };
-  
+
   const handleToDateChange = (date: Date | null) => {
     props.setToDate(date);
   };
-  
 
   useEffect(() => {}, [props.isTodayFilterActive]);
 
@@ -421,8 +420,8 @@ const MainBar: FC<ReduxProps> = (props) => {
     <>
       <Box
         sx={{
-          top: 150,
-          width: "98%",
+          top: 128,
+          width: "97%",
           position: "fixed",
           display: "flex",
           zIndex: 50,
@@ -540,32 +539,73 @@ const MainBar: FC<ReduxProps> = (props) => {
                   <DeleteForeverRoundedIcon />
                 </IconButton>
               </Stack>
-              <Button
-                variant={"outlined"}
-                disabled={currentSelectedTask === null ? true : false}
-                onClick={openWorklogCreateDialog}
+
+              <Stack
+                spacing={1}
+                direction={"row"}
+                sx={{
+                  display: "flex",
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
               >
-                <PatternRoundedIcon />
-                Worklog
-              </Button>
-              <Button onClick={handleTodayButtonClick}>Today</Button>
+                <Button
+                  variant={"outlined"}
+                  disabled={currentSelectedTask === null ? true : false}
+                  onClick={openWorklogCreateDialog}
+                >
+                  <PatternRoundedIcon />
+                  Worklog
+                </Button>
+              </Stack>
+              <Stack
+                spacing={1}
+                direction={"row"}
+                sx={{
+                  display: "flex",
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Button onClick={handleTodayButtonClick}>Today</Button>
+              </Stack>
+              <Stack
+                spacing={1}
+                direction={"row"}
+                sx={{
+                  display: "flex",
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
+              >
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="From"
+                    value={props.fromDate}
+                    onChange={handleFromDateChange}
+                    slotProps={{ textField: { size: "small" } }}
+                  />
+                </LocalizationProvider>
+              </Stack>
+              <Stack
+                spacing={1}
+                direction={"row"}
+                sx={{
+                  display: "flex",
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
+              >
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="To"
+                    value={props.toDate}
+                    onChange={handleToDateChange}
+                    slotProps={{ textField: { size: "small" } }}
+                  />
+                </LocalizationProvider>
+              </Stack>
             </Stack>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                value={props.fromDate}
-                onChange={handleFromDateChange}
-                sx={{ width: 170 }}
-                slotProps={{ textField: { size: "small" } }}
-              />
-            </LocalizationProvider>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                value={props.toDate}
-                onChange={handleToDateChange}
-                sx={{ width: 170 }}
-                slotProps={{ textField: { size: "small" } }}
-              />
-            </LocalizationProvider>
           </CardContent>
         </Card>
       </Box>
