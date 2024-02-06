@@ -235,12 +235,12 @@ export const taskSlice = createSlice({
       getTaskResponse: null,
     }),
     setTodayFilter: (state) => {
-      state.isTodayFilterActive = !state.isTodayFilterActive; // Toggle the value
+      state.isTodayFilterActive = !state.isTodayFilterActive;
     },
-    setFromDate: (state, action) => {
+    setFromDate: (state, action: PayloadAction<Date | null>) => {
       state.fromDate = action.payload;
     },
-    setToDate: (state, action) => {
+    setToDate: (state, action: PayloadAction<Date | null>) => {
       state.toDate = action.payload;
     },
   },

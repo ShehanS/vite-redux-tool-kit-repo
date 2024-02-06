@@ -511,7 +511,16 @@ const LandingPage: FC<ReduxProps> = (props) => {
     stateObj.toDate,
   ]);
 
-  ///////////////////////Logic ////////////////////
+  ///////////////////////Logic (december 18 is hardcoded) ////////////////////
+  useEffect(() => {}, [
+    props.isTodayFilterActive,
+    stateObj.fromDate,
+    stateObj.toDate,
+  ]);
+
+  console.log("From Date:", stateObj.fromDate);
+  console.log("To Date:", stateObj.toDate);
+
   const filteredWorklogs = worklogs.filter((log) => {
     const logStartTime = new Date(Number.parseInt(log?.start_time?.value));
 
@@ -528,21 +537,15 @@ const LandingPage: FC<ReduxProps> = (props) => {
       console.log("Is Today:", isToday);
 
       return isToday;
-    } else if (stateObj.fromDate && stateObj.toDate) {
-      console.log("From Date:", stateObj.fromDate);
-      console.log("To Date:", stateObj.toDate);
-      console.log("Log Start Time:", logStartTime);
-
+    } else if (props.fromDate && props.toDate) {
       const isInDateRange =
-        logStartTime >= stateObj.fromDate && logStartTime <= stateObj.toDate;
-
-      console.log("Is In Date Range:", isInDateRange);
-
+        logStartTime >= props.fromDate && logStartTime <= props.toDate;
       return isInDateRange;
     }
 
     return true;
   });
+  //////////////////////////////////////////
 
   return (
     <>
@@ -966,6 +969,8 @@ const mapStateToProps = (state: RootState) => {
     deleteWorklogResponse: state.worklog.deleteWorklogResponse,
     projectListResponse: state.task.projectListResponse,
     isTodayFilterActive: state.task.isTodayFilterActive,
+    fromDate: state.task.fromDate,
+    toDate: state.task.toDate,
   };
 };
 
