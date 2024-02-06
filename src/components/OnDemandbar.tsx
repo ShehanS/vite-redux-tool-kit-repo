@@ -37,7 +37,8 @@ import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import BorderColorRoundedIcon from "@mui/icons-material/BorderColorRounded";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import PatternRoundedIcon from "@mui/icons-material/PatternRounded";
-
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 type ReduxProps = ConnectedProps<typeof connector>;
 
 type StateObj = {
@@ -459,15 +460,59 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                   <DeleteForeverRoundedIcon />
                 </IconButton>
               </Stack>
-              <Button
-                variant={"outlined"}
-                disabled={currentSelectedTask === null ? true : false}
-                onClick={openWorklogCreateDialog}
+              <Stack>
+                <Button
+                  variant={"outlined"}
+                  disabled={currentSelectedTask === null ? true : false}
+                  onClick={openWorklogCreateDialog}
+                >
+                  <PatternRoundedIcon />
+                  Worklog
+                </Button>
+              </Stack>
+              <Stack
+                spacing={1}
+                direction={"row"}
+                sx={{
+                  display: "flex",
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
               >
-                <PatternRoundedIcon />
-                Worklog
-              </Button>
-              <Button>Today</Button>
+                <Button>Today</Button>
+              </Stack>
+              <Stack
+                spacing={1}
+                direction={"row"}
+                sx={{
+                  display: "flex",
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
+              >
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="From"
+                    slotProps={{ textField: { size: "small" } }}
+                  />
+                </LocalizationProvider>
+              </Stack>
+              <Stack
+                spacing={1}
+                direction={"row"}
+                sx={{
+                  display: "flex",
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
+              >
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="To"
+                    slotProps={{ textField: { size: "small" } }}
+                  />
+                </LocalizationProvider>
+              </Stack>
             </Stack>
           </CardContent>
         </Card>
