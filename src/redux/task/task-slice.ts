@@ -23,6 +23,7 @@ export interface TaskState {
   isTodayFilterActive: boolean;
   fromDate?: Date | null;
   toDate?: Date | null;
+  tasksListsResponse: null;
 }
 
 const initialState: TaskState = {
@@ -50,12 +51,18 @@ const initialState: TaskState = {
     color: "primary",
   },
   isTodayFilterActive: false,
+  tasksListsResponse: null,
 };
 
 export const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
+    getTasksList: (state, action: PayloadAction<any>) => ({
+      ...state,
+      tasksListsResponse: action.payload,
+      error: null,
+    }),
     getTask: (state, action: PayloadAction<any>) => ({
       ...state,
       payload: action.payload,
@@ -247,6 +254,7 @@ export const taskSlice = createSlice({
 });
 
 export const {
+  getTasksList,
   clearTaskResponseHistory,
   getTask,
   getTaskSuccess,
