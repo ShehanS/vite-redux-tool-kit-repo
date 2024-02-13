@@ -48,17 +48,21 @@ import {
 } from "./task-api";
 
 //get taskslist here//
-function* handleGetTasksList(action: { payload: { email: string } }) {
+function* handleGetTasksList(action: { payload: {} }) {
   try {
     const response: ServerResponse = yield call(
       GET_TASKSLIST_API.get,
       action.payload
     );
-    yield put(getTaskSuccess(response));
+    console.log("Complete response from redux saga:", response);
+
+    yield put(getTasksList(response));
   } catch (e) {
+    console.error("Error fetching tasks:", e);
     yield put(getTaskError(e));
   }
 }
+
 
 function* handleGetTask(action: { payload: {} }) {
   try {

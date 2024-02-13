@@ -16,6 +16,7 @@ import {
   setLoader,
   setResetState,
   setSnackBar,
+  getTasksList,
 } from "../redux/task/task-slice";
 import { connect, ConnectedProps } from "react-redux";
 import { useAppDataContext } from "../context/AppDataContext";
@@ -26,7 +27,6 @@ import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import PatternRoundedIcon from "@mui/icons-material/PatternRounded";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { getTasksList } from "../redux/task/task-slice";
 
 type ReduxProps = ConnectedProps<typeof connector>;
 
@@ -36,14 +36,39 @@ type StateObj = {
 
 const OnDemandBar: FC<ReduxProps> = (props) => {
   const { appDataContext, setAppDataContext } = useAppDataContext();
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [isTaskLoading, setTaskIsLoading] = useState<boolean>(false);
+  const { tasksListsResponse, dispatch } = props;
+  const [selectedTask, setSelectedTask] = useState<any>(null);
 
   const [stateObj, setStateObj] = useState<StateObj>({
     user: null,
   });
 
   useEffect(() => {
+    dispatch(getTasksList({}));
+  }, [dispatch]);
+
+  
+  const selectTaskDropdown = () => {
+    if (appDataContext.user.email !== null) {
+      const request = {
+        email: "tango@ncinga.net",
+      };
+      // Assuming you have the onGetProjects action
+      dispatch(getTasksList(request));
+    }
+  };
+
+  const selectTask = (event: any, value: any) => {
+    if (value !== null) {
+      dispatch(setLoader(true));
+      setSelectedTask(value);
+      dispatch(getTasksList({ projectId: value?.id }));
+    }
+  };
+
+  useEffect(() => {
+    console.log("Tasks List Response:", tasksListsResponse);
+
     if (
       (stateObj.user === null && appDataContext.user !== null) ||
       stateObj.user !== appDataContext.user
@@ -51,25 +76,6 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
       setStateObj({ ...stateObj, user: appDataContext.user });
     }
   }, [appDataContext.user]);
-
-  useEffect(() => {
-    if (props.tasksListsResponse && Array.isArray(props.tasksListsResponse)) {
-      setTasks(props.tasksListsResponse);
-      props.onSetLoader(false);
-    }
-  }, [props.tasksListsResponse]);
-
-  const getTasks = () => {
-    setTaskIsLoading(true);
-    const request = {
-      email: "tango@ncinga.net",
-    };
-    props.dispatch(getTasksList(request));
-  };
-
-  useEffect(() => {
-    console.log("Tasks before mapping:", tasks);
-  }, [tasks]);
 
   return (
     <>
@@ -115,20 +121,23 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                   Task
                 </Typography>
                 <Select
-                  disabled={false}
-                  onClick={() => getTasks()}
                   placeholder="Task..."
+                  value={props.tasksListsResponse}  // Use props.tasksListsResponse directly
+                  onChange={(event, value) => selectTask(event, value)}
+                  onClick={selectTaskDropdown}
                   sx={{ width: 270 }}
-                  startDecorator={
-                    isTaskLoading && <CircularProgress size="sm" />
-                  }
+                  startDecorator={<CircularProgress size="sm" />}
                 >
-
-                  {tasks?.map((task: any, index: number) => (
-                    <Option key={index} value={task}>
-                      {task?.title}
-                    </Option>
-                  ))}
+                  {Array.isArray(props.tasksListsResponse) &&
+                  props.tasksListsResponse.length > 0 ? (
+                    props.tasksListsResponse.map((task: any, index: number) => (
+                      <Option key={index} value={task}>
+                        {task?.title}
+                      </Option>
+                    ))
+                  ) : (
+                    <Option value="">No tasks available</Option>
+                  )}
                 </Select>
                 <IconButton
                   disabled={false}
@@ -218,8 +227,6 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: any) => {
   return {
     dispatch,
-    onSetLoader: (payload: boolean) => dispatch(setLoader(payload)),
-    onReset: () => dispatch(setResetState()),
     onShowSnackBar: (props: ISnackBar) => dispatch(setSnackBar(props)),
   };
 };

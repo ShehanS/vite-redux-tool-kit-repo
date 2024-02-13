@@ -23,7 +23,7 @@ export interface TaskState {
   isTodayFilterActive: boolean;
   fromDate?: Date | null;
   toDate?: Date | null;
-  tasksListsResponse: null;
+  tasksListsResponse: any;
 }
 
 const initialState: TaskState = {
