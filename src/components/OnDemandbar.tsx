@@ -37,7 +37,6 @@ type StateObj = {
 const OnDemandBar: FC<ReduxProps> = (props) => {
   const { appDataContext, setAppDataContext } = useAppDataContext();
   const { tasksListsResponse, dispatch } = props;
-  const [selectedTask, setSelectedTask] = useState<any>(null);
 
   const [stateObj, setStateObj] = useState<StateObj>({
     user: null,
@@ -47,13 +46,11 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
     dispatch(getTasksList({}));
   }, [dispatch]);
 
-  
   const selectTaskDropdown = () => {
     if (appDataContext.user.email !== null) {
       const request = {
         email: "tango@ncinga.net",
       };
-      // Assuming you have the onGetProjects action
       dispatch(getTasksList(request));
     }
   };
@@ -61,14 +58,11 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
   const selectTask = (event: any, value: any) => {
     if (value !== null) {
       dispatch(setLoader(true));
-      setSelectedTask(value);
-      dispatch(getTasksList({ projectId: value?.id }));
     }
   };
 
   useEffect(() => {
-    console.log("Tasks List Response:", tasksListsResponse);
-
+    console.log("Tasks List Response in ondemandbar:", tasksListsResponse);
     if (
       (stateObj.user === null && appDataContext.user !== null) ||
       stateObj.user !== appDataContext.user
@@ -76,6 +70,10 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
       setStateObj({ ...stateObj, user: appDataContext.user });
     }
   }, [appDataContext.user]);
+
+  useEffect(() => {
+    console.log("Tasks List Response in ondemandbar:", tasksListsResponse);
+  }, [tasksListsResponse]);
 
   return (
     <>
@@ -122,7 +120,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                 </Typography>
                 <Select
                   placeholder="Task..."
-                  value={props.tasksListsResponse}  // Use props.tasksListsResponse directly
+                  value={tasksListsResponse}
                   onChange={(event, value) => selectTask(event, value)}
                   onClick={selectTaskDropdown}
                   sx={{ width: 270 }}
@@ -139,6 +137,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                     <Option value="">No tasks available</Option>
                   )}
                 </Select>
+
                 <IconButton
                   disabled={false}
                   color="primary"

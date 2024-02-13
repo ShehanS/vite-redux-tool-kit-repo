@@ -54,7 +54,7 @@ function* handleGetTasksList(action: { payload: {} }) {
       GET_TASKSLIST_API.get,
       action.payload
     );
-    console.log("Complete response from redux saga:", response);
+    console.log("Task response from redux saga:", response);
 
     yield put(getTasksList(response));
   } catch (e) {
