@@ -36,7 +36,7 @@ type StateObj = {
 
 const OnDemandBar: FC<ReduxProps> = (props) => {
   const { appDataContext, setAppDataContext } = useAppDataContext();
-  const { tasksListsResponse, dispatch } = props;
+  const { dispatch, tasksListsResponse } = props;
 
   const [stateObj, setStateObj] = useState<StateObj>({
     user: null,
@@ -57,7 +57,6 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
 
   const selectTask = (event: any, value: any) => {
     if (value !== null) {
-      dispatch(setLoader(true));
     }
   };
 
@@ -120,24 +119,30 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                 </Typography>
                 <Select
                   placeholder="Task..."
-                  value={tasksListsResponse}
+                  value={null}
                   onChange={(event, value) => selectTask(event, value)}
                   onClick={selectTaskDropdown}
                   sx={{ width: 270 }}
                   startDecorator={<CircularProgress size="sm" />}
                 >
-                  {Array.isArray(props.tasksListsResponse) &&
-                  props.tasksListsResponse.length > 0 ? (
-                    props.tasksListsResponse.map((task: any, index: number) => (
-                      <Option key={index} value={task}>
-                        {task?.title}
-                      </Option>
-                    ))
+                  {tasksListsResponse &&
+                  Array.isArray(tasksListsResponse.data) &&
+                  tasksListsResponse.data.length > 0 ? (
+                    tasksListsResponse.data.map((task: any, index: number) => {
+                      console.log(
+                        "Task data in map:",
+                        JSON.stringify(task, null, 2)
+                      );
+                      return (
+                        <Option key={index} value={task}>
+                          {task.title}
+                        </Option>
+                      );
+                    })
                   ) : (
                     <Option value="">No tasks available</Option>
                   )}
                 </Select>
-
                 <IconButton
                   disabled={false}
                   color="primary"
