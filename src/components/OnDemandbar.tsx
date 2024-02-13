@@ -12,12 +12,7 @@ import {
   Typography,
 } from "@mui/joy";
 import { RootState } from "../redux/store";
-import {
-  setLoader,
-  setResetState,
-  setSnackBar,
-  getTasksList,
-} from "../redux/task/task-slice";
+import { setSnackBar, getTasksList } from "../redux/task/task-slice";
 import { connect, ConnectedProps } from "react-redux";
 import { useAppDataContext } from "../context/AppDataContext";
 import { ISnackBar } from "../interfaces/ISnackBar";
@@ -32,36 +27,58 @@ type ReduxProps = ConnectedProps<typeof connector>;
 
 type StateObj = {
   user: any;
+  selectedTask: any;
+  loadingTasks: boolean;
 };
 
 const OnDemandBar: FC<ReduxProps> = (props) => {
   const { appDataContext, setAppDataContext } = useAppDataContext();
   const { dispatch, tasksListsResponse } = props;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [stateObj, setStateObj] = useState<StateObj>({
     user: null,
+    selectedTask: null,
+    loadingTasks: false,
   });
 
   useEffect(() => {
-    dispatch(getTasksList({}));
-  }, [dispatch]);
+    if (
+      stateObj.selectedTask === null &&
+      (!props.tasksListsResponse || !props.tasksListsResponse.data)
+    ) {
+      dispatch(getTasksList({}));
+    }
+  }, [dispatch, stateObj.selectedTask, props.tasksListsResponse]);
 
-  const selectTaskDropdown = () => {
-    if (appDataContext.user.email !== null) {
+  const selectTaskDropdown = async () => {
+    if (
+      appDataContext.user.email !== null &&
+      stateObj.selectedTask === null &&
+      !stateObj.loadingTasks
+    ) {
       const request = {
         email: "tango@ncinga.net",
       };
-      dispatch(getTasksList(request));
+
+      try {
+        setStateObj({ ...stateObj, loadingTasks: true });
+        await dispatch(getTasksList(request));
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      } finally {
+        setStateObj({ ...stateObj, loadingTasks: false });
+      }
     }
   };
 
   const selectTask = (event: any, value: any) => {
-    if (value !== null) {
+    if (value !== undefined) {
+      setStateObj({ ...stateObj, selectedTask: value });
     }
   };
 
   useEffect(() => {
-    console.log("Tasks List Response in ondemandbar:", tasksListsResponse);
     if (
       (stateObj.user === null && appDataContext.user !== null) ||
       stateObj.user !== appDataContext.user
@@ -117,32 +134,38 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                 <Typography level="body-sm" fontSize={"md"}>
                   Task
                 </Typography>
+
                 <Select
-                  placeholder="Task..."
-                  value={null}
+                  placeholder={
+                    stateObj.selectedTask
+                      ? stateObj.selectedTask.title
+                      : "Task..."
+                  }
+                  value={stateObj.selectedTask}
                   onChange={(event, value) => selectTask(event, value)}
-                  onClick={selectTaskDropdown}
+                  onClick={(event) => {
+                    const target = event.target as HTMLInputElement;
+                    if (target.tagName.toLowerCase() === "input") {
+                      selectTaskDropdown();
+                    }
+                  }}
                   sx={{ width: 270 }}
                   startDecorator={<CircularProgress size="sm" />}
+                  disabled={stateObj.loadingTasks}
                 >
                   {tasksListsResponse &&
                   Array.isArray(tasksListsResponse.data) &&
                   tasksListsResponse.data.length > 0 ? (
-                    tasksListsResponse.data.map((task: any, index: number) => {
-                      console.log(
-                        "Task data in map:",
-                        JSON.stringify(task, null, 2)
-                      );
-                      return (
-                        <Option key={index} value={task}>
-                          {task.title}
-                        </Option>
-                      );
-                    })
+                    tasksListsResponse.data.map((task: any, index: number) => (
+                      <Option key={index} value={task.title}>
+                        {task.title}
+                      </Option>
+                    ))
                   ) : (
                     <Option value="">No tasks available</Option>
                   )}
                 </Select>
+
                 <IconButton
                   disabled={false}
                   color="primary"
