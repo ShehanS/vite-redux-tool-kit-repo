@@ -54,31 +54,26 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
     }
   }, [appDataContext.user]);
 
-  //////////////check here for the getTasksList in the useEffect , when this useeffect runs app crashes//////////
+  useEffect(() => {
+    if (stateObj.selectedTask === null && !stateObj.loadingTasks) {
+      const request = {
+        email: "tango@ncinga.net",
+      };
 
-  // useEffect(() => {
-  //   if (
-  //     !stateObj.selectedTask &&
-  //     (!tasksListsResponse || !tasksListsResponse.data)
-  //   ) {
-  //     const request = {
-  //       email: "tango@ncinga.net",
-  //     };
+      const fetchTasks = async () => {
+        try {
+          setStateObj({ ...stateObj, loadingTasks: true });
+          await dispatch(getTasksList(request));
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
+        } finally {
+          setStateObj({ ...stateObj, loadingTasks: false });
+        }
+      };
 
-  //     const fetchTasks = async () => {
-  //       try {
-  //         setStateObj({ ...stateObj, loadingTasks: true });
-  //         await dispatch(getTasksList(request));
-  //       } catch (error) {
-  //         console.error("Error fetching tasks:", error);
-  //       } finally {
-  //         setStateObj({ ...stateObj, loadingTasks: false });
-  //       }
-  //     };
-
-  //     fetchTasks();
-  //   }
-  // }, [dispatch, stateObj.selectedTask, tasksListsResponse]);
+      fetchTasks();
+    }
+  }, [dispatch, stateObj.selectedTask, stateObj.loadingTasks]);
 
   const selectTaskDropdown = async () => {
     if (
