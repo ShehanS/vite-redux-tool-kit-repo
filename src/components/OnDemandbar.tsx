@@ -87,7 +87,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
       const request = {
         email: "tango@ncinga.net",
       };
-  
+
       try {
         if (!tasksListsResponse || !tasksListsResponse.data) {
           await dispatch(getTasksList(request));
@@ -97,7 +97,6 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
       }
     }
   };
-  
 
   const selectTask = (event: any, value: any) => {
     if (value !== undefined && value !== stateObj.selectedTask) {
@@ -111,7 +110,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
         (task) => task.title === stateObj.selectedTask
       );
 
-      console.log("Selected Task Data:", selectedTaskData); 
+      console.log("Selected Task Data:", selectedTaskData);
 
       if (selectedTaskData) {
         setTableData([
@@ -187,7 +186,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                       }
                     }}
                     sx={{ width: 270 }}
-                    startDecorator={<CircularProgress size="sm" />}
+                    // startDecorator={<CircularProgress size="sm" />}
                     disabled={stateObj.loadingTasks}
                   >
                     {tasksListsResponse &&
