@@ -109,6 +109,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
       stateObj.getTaskResponse !== props.getTaskResponse
     ) {
       setStateObj({ ...stateObj, getTaskResponse: props.getTaskResponse });
+
       if (props.getTaskResponse?.responseCode === "GET_TASK_SUCCESS") {
         if (
           props.getTaskResponse?.data?.task?.actual_start_time?.value &&
