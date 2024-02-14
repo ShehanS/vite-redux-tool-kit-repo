@@ -116,7 +116,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
             startTime:
               selectedTaskData.actual_start_time?.display_value || "N/A",
             endTime: selectedTaskData.actual_end_time?.display_value || "N/A",
-            taskType: selectedTaskData.task_type.name || "N/A",
+            // taskType: selectedTaskData.task_type.name || "N/A",
             createdBy: selectedTaskData.created_by.email_id || "N/A",
           },
         ]);
