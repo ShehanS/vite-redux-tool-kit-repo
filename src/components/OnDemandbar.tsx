@@ -134,7 +134,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
         <Box
           sx={{
             top: 130,
-            width: "97%",
+            width: "96.8%",
             position: "fixed",
             display: "flex",
             zIndex: 50,
@@ -187,7 +187,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                         selectTaskDropdown();
                       }
                     }}
-                    sx={{ width: 270 }}
+                    sx={{ width: 310 }}
                     // startDecorator={<CircularProgress size="sm" />}
                     disabled={stateObj.loadingTasks}
                   >
@@ -259,6 +259,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                     <DatePicker
                       label="From"
                       slotProps={{ textField: { size: "small" } }}
+                      sx={{ width: 90 }}
                     />
                   </LocalizationProvider>
                 </Stack>
@@ -275,6 +276,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                     <DatePicker
                       label="To"
                       slotProps={{ textField: { size: "small" } }}
+                      sx={{ width: 90 }}
                     />
                   </LocalizationProvider>
                 </Stack>
