@@ -440,7 +440,7 @@ const MainBar: FC<ReduxProps> = (props) => {
         >
           <CardContent>
             <Stack
-              direction={{ xs: "column", lg: "row" }}
+              direction={{ xs: "column", xl: "row" }}
               sx={{
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -526,7 +526,7 @@ const MainBar: FC<ReduxProps> = (props) => {
               <Stack
                 direction={{ xs: "column", sm: "row" }}
                 sx={{
-                  justifyContent: "space-around",
+                  justifyContent: "center",
                   alignItems: "center",
                   width: "100%",
                 }}
