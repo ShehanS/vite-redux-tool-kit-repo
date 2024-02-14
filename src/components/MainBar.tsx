@@ -421,8 +421,9 @@ const MainBar: FC<ReduxProps> = (props) => {
       <Box
         sx={{
           top: 128,
-          width: "97%",
-          position: "fixed",
+          width: "100%",
+          padding: "0",
+          position: "sticky",
           display: "flex",
           zIndex: 50,
           alignItems: "center",
@@ -439,171 +440,213 @@ const MainBar: FC<ReduxProps> = (props) => {
         >
           <CardContent>
             <Stack
-              direction={"row"}
+              direction={{ xs: "column", lg: "row" }}
               sx={{
                 justifyContent: "space-between",
                 alignItems: "center",
-                width: "40%",
+                width: "100%",
               }}
               spacing={1}
             >
               <Stack
-                spacing={1}
-                direction={"row"}
+                direction={{ xs: "column", sm: "row" }}
                 sx={{
-                  display: "flex",
-                  justifyItems: "center",
+                  justifyContent: "center",
                   alignItems: "center",
+                  width: "100%",
                 }}
+                spacing={1}
               >
-                <Typography level="body-sm" fontSize={"md"}>
-                  Project
-                </Typography>
-                <Select
-                  value={selectedProject ?? ""}
-                  onChange={selectProject}
-                  onClick={selectProjectDropdown}
-                  placeholder="Project..."
-                  startDecorator={isLoading && <CircularProgress size="sm" />}
-                  sx={{ width: 270 }}
+                <Stack
+                  spacing={1}
+                  direction={{ xs: "column", sm: "row" }}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  {projects?.map((project: any, index: number) => (
-                    <Option
-                      disabled={isLoading ? true : false}
-                      key={index}
-                      value={project}
-                    >
-                      {project?.title}
-                    </Option>
-                  ))}
-                </Select>
+                  <Typography level="body-sm" fontSize={"md"}>
+                    Project
+                  </Typography>
+                  <Select
+                    value={selectedProject ?? ""}
+                    onChange={selectProject}
+                    onClick={selectProjectDropdown}
+                    placeholder="Project..."
+                    startDecorator={isLoading && <CircularProgress size="sm" />}
+                    sx={{ width: { xs: 200, sm: 230, md: 270 } }}
+                  >
+                    {projects?.map((project: any, index: number) => (
+                      <Option
+                        disabled={isLoading ? true : false}
+                        key={index}
+                        value={project}
+                      >
+                        {project?.title}
+                      </Option>
+                    ))}
+                  </Select>
+                </Stack>
+                <Stack
+                  spacing={1}
+                  direction={{ xs: "column", sm: "row" }}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography level="body-sm" fontSize={"md"}>
+                    Task
+                  </Typography>
+                  <Select
+                    disabled={selectedProject !== null ? false : true}
+                    value={currentSelectedTask ?? ""}
+                    onChange={(event, value) => selectTask(event, value)}
+                    onClick={() => getTasks()}
+                    placeholder="Task..."
+                    sx={{ width: { xs: 200, sm: 230, md: 270 } }}
+                    startDecorator={
+                      isTaskLoading && <CircularProgress size="sm" />
+                    }
+                  >
+                    {tasks?.map((task: any, index: number) => (
+                      <Option
+                        disabled={isTaskLoading ? true : false}
+                        key={index}
+                        value={task}
+                      >
+                        {task?.title}
+                      </Option>
+                    ))}
+                  </Select>
+                </Stack>
               </Stack>
               <Stack
-                spacing={1}
-                direction={"row"}
+                direction={{ xs: "column", sm: "row" }}
                 sx={{
-                  display: "flex",
-                  justifyItems: "center",
+                  justifyContent: "space-around",
                   alignItems: "center",
+                  width: "100%",
                 }}
+                spacing={1}
               >
-                <Typography level="body-sm" fontSize={"md"}>
-                  Task
-                </Typography>
-                <Select
-                  disabled={selectedProject !== null ? false : true}
-                  value={currentSelectedTask ?? ""}
-                  onChange={(event, value) => selectTask(event, value)}
-                  onClick={() => getTasks()}
-                  placeholder="Task..."
-                  sx={{ width: 270 }}
-                  startDecorator={
-                    isTaskLoading && <CircularProgress size="sm" />
-                  }
+                <Stack
+                  spacing={{ xs: 2, sm: 1 }}
+                  direction="row"
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  {tasks?.map((task: any, index: number) => (
-                    <Option
-                      disabled={isTaskLoading ? true : false}
-                      key={index}
-                      value={task}
-                    >
-                      {task?.title}
-                    </Option>
-                  ))}
-                </Select>
-                <IconButton
-                  disabled={selectedProject !== null ? false : true}
-                  color="primary"
-                  sx={{ background: "#0ca59d" }}
-                  onClick={openTaskCreateDialog}
-                  variant="solid"
-                >
-                  <AddCircleRoundedIcon />
-                </IconButton>
-                <IconButton
-                  disabled={currentSelectedTask !== null ? false : true}
-                  color="primary"
-                  sx={{ background: "#fc8441" }}
-                  onClick={editTaskCreateDialog}
-                  variant="solid"
-                >
-                  <BorderColorRoundedIcon />
-                </IconButton>
-                <IconButton
-                  disabled={currentSelectedTask !== null ? false : true}
-                  color="primary"
-                  sx={{ background: "#e85153" }}
-                  onClick={openDeleteTaskConfirm}
-                  variant="solid"
-                >
-                  <DeleteForeverRoundedIcon />
-                </IconButton>
-              </Stack>
+                  <IconButton
+                    disabled={selectedProject !== null ? false : true}
+                    color="primary"
+                    sx={{ background: "#0ca59d" }}
+                    onClick={openTaskCreateDialog}
+                    variant="solid"
+                  >
+                    <AddCircleRoundedIcon />
+                  </IconButton>
+                  <IconButton
+                    disabled={currentSelectedTask !== null ? false : true}
+                    color="primary"
+                    sx={{ background: "#fc8441" }}
+                    onClick={editTaskCreateDialog}
+                    variant="solid"
+                  >
+                    <BorderColorRoundedIcon />
+                  </IconButton>
+                  <IconButton
+                    disabled={currentSelectedTask !== null ? false : true}
+                    color="primary"
+                    sx={{ background: "#e85153" }}
+                    onClick={openDeleteTaskConfirm}
+                    variant="solid"
+                  >
+                    <DeleteForeverRoundedIcon />
+                  </IconButton>
+                </Stack>
 
-              <Stack
-                spacing={1}
-                direction={"row"}
-                sx={{
-                  display: "flex",
-                  justifyItems: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Button
-                  variant={"outlined"}
-                  disabled={currentSelectedTask === null ? true : false}
-                  onClick={openWorklogCreateDialog}
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  <PatternRoundedIcon />
-                  Worklog
-                </Button>
+                  <Button
+                    variant={"outlined"}
+                    disabled={currentSelectedTask === null ? true : false}
+                    onClick={openWorklogCreateDialog}
+                  >
+                    <PatternRoundedIcon />
+                    Worklog
+                  </Button>
+                </Stack>
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Button onClick={handleTodayButtonClick}>Today</Button>
+                </Stack>
               </Stack>
               <Stack
-                spacing={1}
-                direction={"row"}
+                direction={{ xs: "column", sm: "row" }}
                 sx={{
-                  display: "flex",
-                  justifyItems: "center",
+                  justifyContent: "center",
                   alignItems: "center",
+                  width: "100%",
                 }}
-              >
-                <Button onClick={handleTodayButtonClick}>Today</Button>
-              </Stack>
-              <Stack
                 spacing={1}
-                direction={"row"}
-                sx={{
-                  display: "flex",
-                  justifyItems: "center",
-                  alignItems: "center",
-                }}
               >
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="From"
-                    value={props.fromDate}
-                    onChange={handleFromDateChange}
-                    slotProps={{ textField: { size: "small" } }}
-                  />
-                </LocalizationProvider>
-              </Stack>
-              <Stack
-                spacing={1}
-                direction={"row"}
-                sx={{
-                  display: "flex",
-                  justifyItems: "center",
-                  alignItems: "center",
-                }}
-              >
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="To"
-                    value={props.toDate}
-                    onChange={handleToDateChange}
-                    slotProps={{ textField: { size: "small" } }}
-                  />
-                </LocalizationProvider>
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      label="From"
+                      value={props.fromDate}
+                      onChange={handleFromDateChange}
+                      slotProps={{ textField: { size: "small" } }}
+                      sx={{ width: { xs: 200, sm: 230 } }}
+                    />
+                  </LocalizationProvider>
+                </Stack>
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      label="To"
+                      value={props.toDate}
+                      onChange={handleToDateChange}
+                      slotProps={{ textField: { size: "small" } }}
+                      sx={{ width: { xs: 200, sm: 230 } }}
+                    />
+                  </LocalizationProvider>
+                </Stack>
               </Stack>
             </Stack>
           </CardContent>

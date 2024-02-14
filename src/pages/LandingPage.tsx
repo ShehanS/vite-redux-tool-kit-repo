@@ -554,7 +554,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
           <Box>
             <TaskCreateBar />
           </Box>
-          <Box sx={{ marginTop: 10 }}>
+          <Box sx={{ marginTop: 1 }}>
             <Box
               sx={{
                 height: 60,
