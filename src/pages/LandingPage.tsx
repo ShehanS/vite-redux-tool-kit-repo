@@ -109,6 +109,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
       stateObj.getTaskResponse !== props.getTaskResponse
     ) {
       setStateObj({ ...stateObj, getTaskResponse: props.getTaskResponse });
+
       if (props.getTaskResponse?.responseCode === "GET_TASK_SUCCESS") {
         if (
           props.getTaskResponse?.data?.task?.actual_start_time?.value &&
@@ -771,13 +772,12 @@ const LandingPage: FC<ReduxProps> = (props) => {
         </TabPanel>
         <TabPanel value={1}>
           <Box>
-            <Box>
-              <OnDemandBar />
-            </Box>
+            <OnDemandBar />
+          </Box>
 
-            {/* Moved below commented Box to the OnDemandbar.tsx */}
+          {/* Moved below commented Box to the OnDemandbar.tsx */}
 
-            {/* <Box sx={{ marginTop: 10 }}>
+          {/* <Box sx={{ marginTop: 10 }}>
               <Box
                 sx={{
                   height: 60,
@@ -937,7 +937,6 @@ const LandingPage: FC<ReduxProps> = (props) => {
                 </Sheet>
               </Box>
             </Box>  */}
-          </Box>
         </TabPanel>
       </Tabs>
     </>

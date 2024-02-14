@@ -54,29 +54,31 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
     }
   }, [appDataContext.user]);
 
-  useEffect(() => {
-    if (
-      !stateObj.selectedTask &&
-      (!tasksListsResponse || !tasksListsResponse.data)
-    ) {
-      const request = {
-        email: "tango@ncinga.net",
-      };
+  //////////////check here for the getTasksList in the useEffect , when this useeffect runs app crashes//////////
 
-      const fetchTasks = async () => {
-        try {
-          setStateObj({ ...stateObj, loadingTasks: true });
-          await dispatch(getTasksList(request));
-        } catch (error) {
-          console.error("Error fetching tasks:", error);
-        } finally {
-          setStateObj({ ...stateObj, loadingTasks: false });
-        }
-      };
+  // useEffect(() => {
+  //   if (
+  //     !stateObj.selectedTask &&
+  //     (!tasksListsResponse || !tasksListsResponse.data)
+  //   ) {
+  //     const request = {
+  //       email: "tango@ncinga.net",
+  //     };
 
-      fetchTasks();
-    }
-  }, [dispatch, stateObj.selectedTask, tasksListsResponse]);
+  //     const fetchTasks = async () => {
+  //       try {
+  //         setStateObj({ ...stateObj, loadingTasks: true });
+  //         await dispatch(getTasksList(request));
+  //       } catch (error) {
+  //         console.error("Error fetching tasks:", error);
+  //       } finally {
+  //         setStateObj({ ...stateObj, loadingTasks: false });
+  //       }
+  //     };
+
+  //     fetchTasks();
+  //   }
+  // }, [dispatch, stateObj.selectedTask, tasksListsResponse]);
 
   const selectTaskDropdown = async () => {
     if (
@@ -87,7 +89,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
       const request = {
         email: "tango@ncinga.net",
       };
-  
+
       try {
         if (!tasksListsResponse || !tasksListsResponse.data) {
           await dispatch(getTasksList(request));
@@ -97,7 +99,6 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
       }
     }
   };
-  
 
   const selectTask = (event: any, value: any) => {
     if (value !== undefined && value !== stateObj.selectedTask) {
@@ -111,7 +112,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
         (task) => task.title === stateObj.selectedTask
       );
 
-      console.log("Selected Task Data:", selectedTaskData); 
+      console.log("Selected Task Data:", selectedTaskData);
 
       if (selectedTaskData) {
         setTableData([
@@ -120,6 +121,8 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
             startTime:
               selectedTaskData.actual_start_time?.display_value || "N/A",
             endTime: selectedTaskData.actual_end_time?.display_value || "N/A",
+            taskType: selectedTaskData.task_type?.name || "N/A",
+            createdBy: selectedTaskData.created_by.email_id || "N/A",
           },
         ]);
       }
@@ -133,7 +136,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
         <Box
           sx={{
             top: 130,
-            width: "97%",
+            width: "96.8%",
             position: "fixed",
             display: "flex",
             zIndex: 50,
@@ -186,8 +189,8 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                         selectTaskDropdown();
                       }
                     }}
-                    sx={{ width: 270 }}
-                    startDecorator={<CircularProgress size="sm" />}
+                    sx={{ width: 310 }}
+                    // startDecorator={<CircularProgress size="sm" />}
                     disabled={stateObj.loadingTasks}
                   >
                     {tasksListsResponse &&
@@ -258,6 +261,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                     <DatePicker
                       label="From"
                       slotProps={{ textField: { size: "small" } }}
+                      sx={{ width: 90 }}
                     />
                   </LocalizationProvider>
                 </Stack>
@@ -274,6 +278,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                     <DatePicker
                       label="To"
                       slotProps={{ textField: { size: "small" } }}
+                      sx={{ width: 90 }}
                     />
                   </LocalizationProvider>
                 </Stack>
@@ -394,6 +399,8 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                         <th style={{ width: 150 }}>Description</th>
                         <th style={{ width: 100 }}>Start Time</th>
                         <th style={{ width: 100 }}>End Time</th>
+                        <th style={{ width: 100 }}>Task Type</th>
+                        <th style={{ width: 100 }}>Created By</th>
                       </tr>
                     </thead>
 
@@ -403,6 +410,8 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                           <td>{row.description}</td>
                           <td>{row.startTime}</td>
                           <td>{row.endTime}</td>
+                          <td>{row.taskType}</td>
+                          <td>{row.createdBy}</td>
                         </tr>
                       ))}
                     </tbody>
