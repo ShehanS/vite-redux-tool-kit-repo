@@ -119,6 +119,8 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
             startTime:
               selectedTaskData.actual_start_time?.display_value || "N/A",
             endTime: selectedTaskData.actual_end_time?.display_value || "N/A",
+            taskType: selectedTaskData.task_type?.name || "N/A",
+            createdBy: selectedTaskData.created_by.email_id || "N/A",
           },
         ]);
       }
@@ -393,6 +395,8 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                         <th style={{ width: 150 }}>Description</th>
                         <th style={{ width: 100 }}>Start Time</th>
                         <th style={{ width: 100 }}>End Time</th>
+                        <th style={{ width: 100 }}>Task Type</th>
+                        <th style={{ width: 100 }}>Created By</th>
                       </tr>
                     </thead>
 
@@ -402,6 +406,8 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                           <td>{row.description}</td>
                           <td>{row.startTime}</td>
                           <td>{row.endTime}</td>
+                          <td>{row.taskType}</td>
+                          <td>{row.createdBy}</td>
                         </tr>
                       ))}
                     </tbody>
