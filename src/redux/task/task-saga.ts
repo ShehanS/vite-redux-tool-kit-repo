@@ -31,7 +31,8 @@ import {
   updateTask,
   updateTaskSuccess,
   updateTaskTaskError,
-  getTasksList,
+  getTasksList, //////
+  getTasksListById, //////
 } from "./task-slice";
 import {
   ADD_TASK_API,
@@ -42,27 +43,39 @@ import {
   GET_PROJECTS_BY_ID_API,
   GET_STATUS_BY_PROJECT_ID_API,
   GET_TASKSLIST_API,
+  GET_TASKSLIST_BY_ID_API,
   GET_TASK_API,
   GET_TASK_BY_ID_API,
   UPDATE_TASK_API,
 } from "./task-api";
 
-//get taskslist here//
+/////////////////////get taskslist here/////////////////////
+
 function* handleGetTasksList(action: { payload: {} }) {
   try {
     const response: ServerResponse = yield call(
       GET_TASKSLIST_API.get,
       action.payload
     );
-    console.log("Task response from redux saga:", response);
-
     yield put(getTasksList(response));
   } catch (e) {
-    console.error("Error fetching tasks:", e);
     yield put(getTaskError(e));
   }
 }
 
+function* handleGetTasksListById(action: { payload: {} }) {
+  try {
+    const response: ServerResponse = yield call(
+      GET_TASKSLIST_BY_ID_API.get,
+      action.payload
+    );
+    yield put(getTasksList(response));
+  } catch (e) {
+    yield put(getTaskError(e));
+  }
+}
+
+///////////////////////////////////////////////////////////////
 
 function* handleGetTask(action: { payload: {} }) {
   try {
@@ -244,13 +257,20 @@ function* watchGetGetOwnersByProjectId() {
   );
 }
 
+//////////////////////////////////////////////////////////////////
 function* watchGetTasksList() {
   yield takeLatest<any>(getTasksList.type, handleGetTasksList);
 }
 
+function* watchGetTasksListByTaskslistsId() {
+  yield takeLatest<any>(getTasksListById.type, handleGetTasksListById);
+}
+//////////////////////////////////////////////////////////////////
+
 export default function* TaskSaga() {
   yield all([
-    watchGetTasksList(),
+    watchGetTasksList(),   //////
+    watchGetTasksListByTaskslistsId,   //////
     watchGetTask(),
     watchGetProjects(),
     watchGetGetProjectById(),

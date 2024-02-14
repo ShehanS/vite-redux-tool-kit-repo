@@ -499,18 +499,6 @@ const LandingPage: FC<ReduxProps> = (props) => {
   //   return true;
   // });
 
-  useEffect(() => {}, [
-    props.isTodayFilterActive,
-    stateObj.fromDate,
-    stateObj.toDate,
-  ]);
-
-  useEffect(() => {}, [
-    props.isTodayFilterActive,
-    stateObj.fromDate,
-    stateObj.toDate,
-  ]);
-
   ///////////////////////Logic (december 18 is hardcoded) ////////////////////
   useEffect(() => {}, [
     props.isTodayFilterActive,
@@ -786,7 +774,10 @@ const LandingPage: FC<ReduxProps> = (props) => {
             <Box>
               <OnDemandBar />
             </Box>
-            <Box sx={{ marginTop: 10 }}>
+
+            {/* Moved below commented Box to the OnDemandbar.tsx */}
+
+            {/* <Box sx={{ marginTop: 10 }}>
               <Box
                 sx={{
                   height: 60,
@@ -935,7 +926,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                           <th style={{ width: 100 }}>Start Time</th>
                           <th style={{ width: 100 }}>End Time</th>
                           <th style={{ width: 100 }}>Worklog Type</th>
-                          {/*<th style={{width: 100}}>Owner</th>*/}
+                          <th style={{width: 100}}>Owner</th>
                           <th style={{ width: 100 }}>Created By</th>
                           <th style={{ width: 50 }} />
                         </tr>
@@ -945,7 +936,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                   </Box>
                 </Sheet>
               </Box>
-            </Box>
+            </Box>  */}
           </Box>
         </TabPanel>
       </Tabs>

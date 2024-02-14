@@ -20,14 +20,15 @@ export interface TaskState {
   isLoading: boolean;
   showSnackBar: ISnackBar;
   deleteTaskResponse: any;
-  isTodayFilterActive: boolean;
-  fromDate?: Date | null;
-  toDate?: Date | null;
-  tasksListsResponse: any;
+  isTodayFilterActive: boolean; ////
+  fromDate?: Date | null; ////
+  toDate?: Date | null; ////
+  tasksListsResponse: any; ////
+  taskslistId: string; ////
 }
 
 const initialState: TaskState = {
-  taskListResponse: null,
+  taskListResponse: null, ////
   error: null,
   payload: null,
   projectListResponse: null,
@@ -50,19 +51,27 @@ const initialState: TaskState = {
     variant: "solid",
     color: "primary",
   },
-  isTodayFilterActive: false,
-  tasksListsResponse: null,
+  isTodayFilterActive: false, ////
+  tasksListsResponse: null, ////
+  taskslistId: null, ////
 };
 
 export const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
+    ///////////////////////////////
     getTasksList: (state, action: PayloadAction<any>) => ({
       ...state,
       tasksListsResponse: action.payload,
       error: null,
     }),
+    getTasksListById: (state, action: PayloadAction<any>) => ({
+      ...state,
+      payload: action.payload,
+      error: null,
+    }),
+    ///////////////////////////////
     getTask: (state, action: PayloadAction<any>) => ({
       ...state,
       payload: action.payload,
@@ -254,7 +263,8 @@ export const taskSlice = createSlice({
 });
 
 export const {
-  getTasksList,
+  getTasksList, ////
+  getTasksListById, ////
   clearTaskResponseHistory,
   getTask,
   getTaskSuccess,
@@ -291,9 +301,9 @@ export const {
   deleteTaskByIdSuccess,
   deleteTaskByIdError,
   deleteTaskByIdResponseClear,
-  setTodayFilter,
-  setFromDate,
-  setToDate,
+  setTodayFilter, ////
+  setFromDate, ////
+  setToDate, ////
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

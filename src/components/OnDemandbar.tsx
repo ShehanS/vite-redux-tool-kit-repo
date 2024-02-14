@@ -10,6 +10,8 @@ import {
   Select,
   Stack,
   Typography,
+  Sheet,
+  Table,
 } from "@mui/joy";
 import { RootState } from "../redux/store";
 import { setSnackBar, getTasksList } from "../redux/task/task-slice";
@@ -35,6 +37,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
   const { appDataContext, setAppDataContext } = useAppDataContext();
   const { dispatch, tasksListsResponse } = props;
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [tableData, setTableData] = useState([]);
 
   const [stateObj, setStateObj] = useState<StateObj>({
     user: null,
@@ -44,12 +47,36 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
 
   useEffect(() => {
     if (
-      stateObj.selectedTask === null &&
-      (!props.tasksListsResponse || !props.tasksListsResponse.data)
+      (stateObj.user === null && appDataContext.user !== null) ||
+      stateObj.user !== appDataContext.user
     ) {
-      dispatch(getTasksList({}));
+      setStateObj({ ...stateObj, user: appDataContext.user });
     }
-  }, [dispatch, stateObj.selectedTask, props.tasksListsResponse]);
+  }, [appDataContext.user]);
+
+  useEffect(() => {
+    if (
+      !stateObj.selectedTask &&
+      (!tasksListsResponse || !tasksListsResponse.data)
+    ) {
+      const request = {
+        email: "tango@ncinga.net",
+      };
+
+      const fetchTasks = async () => {
+        try {
+          setStateObj({ ...stateObj, loadingTasks: true });
+          await dispatch(getTasksList(request));
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
+        } finally {
+          setStateObj({ ...stateObj, loadingTasks: false });
+        }
+      };
+
+      fetchTasks();
+    }
+  }, [dispatch, stateObj.selectedTask, tasksListsResponse]);
 
   const selectTaskDropdown = async () => {
     if (
@@ -62,12 +89,10 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
       };
 
       try {
-        setStateObj({ ...stateObj, loadingTasks: true });
         await dispatch(getTasksList(request));
       } catch (error) {
         console.error("Error fetching tasks:", error);
       } finally {
-        setStateObj({ ...stateObj, loadingTasks: false });
       }
     }
   };
@@ -79,168 +104,316 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
   };
 
   useEffect(() => {
-    if (
-      (stateObj.user === null && appDataContext.user !== null) ||
-      stateObj.user !== appDataContext.user
-    ) {
-      setStateObj({ ...stateObj, user: appDataContext.user });
-    }
-  }, [appDataContext.user]);
+    if (tasksListsResponse && Array.isArray(tasksListsResponse.data)) {
+      const selectedTaskData = tasksListsResponse.data.find(
+        (task) => task.title === stateObj.selectedTask
+      );
 
-  useEffect(() => {
-    console.log("Tasks List Response in ondemandbar:", tasksListsResponse);
-  }, [tasksListsResponse]);
+      if (selectedTaskData) {
+        setTableData([
+          {
+            description: selectedTaskData.description,
+            startTime:
+              selectedTaskData.actual_start_time?.display_value || "N/A",
+            endTime: selectedTaskData.actual_end_time?.display_value || "N/A",
+            taskType: selectedTaskData.task_type.name || "N/A",
+            createdBy: selectedTaskData.created_by.email_id || "N/A",
+          },
+        ]);
+      }
+      console.log("Tasks List Response in ondemandbar:", tasksListsResponse);
+    }
+  }, [stateObj.selectedTask, tasksListsResponse]);
 
   return (
     <>
-      <Box
-        sx={{
-          top: 130,
-          width: "97%",
-          position: "fixed",
-          display: "flex",
-          zIndex: 50,
-          alignItems: "center",
-          justifyItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Card
-          variant="outlined"
-          orientation="horizontal"
+      <Box>
+        <Box
           sx={{
-            width: "100%",
+            top: 130,
+            width: "97%",
+            position: "fixed",
+            display: "flex",
+            zIndex: 50,
+            alignItems: "center",
+            justifyItems: "center",
+            justifyContent: "center",
           }}
         >
-          <CardContent>
-            <Stack
-              direction={"row"}
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "40%",
-              }}
-              spacing={1}
-            >
+          <Card
+            variant="outlined"
+            orientation="horizontal"
+            sx={{
+              width: "100%",
+            }}
+          >
+            <CardContent>
               <Stack
-                spacing={1}
                 direction={"row"}
                 sx={{
-                  display: "flex",
-                  justifyItems: "center",
+                  justifyContent: "space-between",
                   alignItems: "center",
+                  width: "40%",
                 }}
+                spacing={1}
               >
-                <Typography level="body-sm" fontSize={"md"}>
-                  Task
-                </Typography>
-
-                <Select
-                  placeholder={
-                    stateObj.selectedTask
-                      ? stateObj.selectedTask.title
-                      : "Task..."
-                  }
-                  value={stateObj.selectedTask}
-                  onChange={(event, value) => selectTask(event, value)}
-                  onClick={(event) => {
-                    const target = event.target as HTMLInputElement;
-                    if (target.tagName.toLowerCase() === "input") {
-                      selectTaskDropdown();
-                    }
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
                   }}
-                  sx={{ width: 270 }}
-                  startDecorator={<CircularProgress size="sm" />}
-                  disabled={stateObj.loadingTasks}
                 >
-                  {tasksListsResponse &&
-                  Array.isArray(tasksListsResponse.data) &&
-                  tasksListsResponse.data.length > 0 ? (
-                    tasksListsResponse.data.map((task: any, index: number) => (
-                      <Option key={index} value={task.title}>
-                        {task.title}
-                      </Option>
-                    ))
-                  ) : (
-                    <Option value="">No tasks available</Option>
-                  )}
-                </Select>
+                  <Typography level="body-sm" fontSize={"md"}>
+                    Task
+                  </Typography>
 
-                <IconButton
-                  disabled={false}
-                  color="primary"
-                  sx={{ background: "#0ca59d" }}
-                  variant="solid"
+                  <Select
+                    placeholder={
+                      stateObj.selectedTask
+                        ? stateObj.selectedTask.title
+                        : "Task..."
+                    }
+                    value={stateObj.selectedTask}
+                    onChange={(event, value) => selectTask(event, value)}
+                    onClick={(event) => {
+                      const target = event.target as HTMLInputElement;
+                      if (target.tagName.toLowerCase() === "input") {
+                        selectTaskDropdown();
+                      }
+                    }}
+                    sx={{ width: 270 }}
+                    startDecorator={<CircularProgress size="sm" />}
+                    disabled={stateObj.loadingTasks}
+                  >
+                    {tasksListsResponse &&
+                    Array.isArray(tasksListsResponse.data) &&
+                    tasksListsResponse.data.length > 0 ? (
+                      tasksListsResponse.data.map(
+                        (task: any, index: number) => (
+                          <Option key={index} value={task.title}>
+                            {task.title}
+                          </Option>
+                        )
+                      )
+                    ) : (
+                      <Option value="">No tasks available</Option>
+                    )}
+                  </Select>
+
+                  <IconButton
+                    disabled={false}
+                    color="primary"
+                    sx={{ background: "#0ca59d" }}
+                    variant="solid"
+                  >
+                    <AddCircleRoundedIcon />
+                  </IconButton>
+                  <IconButton
+                    color="primary"
+                    sx={{ background: "#fc8441" }}
+                    variant="solid"
+                  >
+                    <BorderColorRoundedIcon />
+                  </IconButton>
+                  <IconButton
+                    color="primary"
+                    sx={{ background: "#e85153" }}
+                    variant="solid"
+                  >
+                    <DeleteForeverRoundedIcon />
+                  </IconButton>
+                </Stack>
+                <Stack>
+                  <Button variant={"outlined"}>
+                    <PatternRoundedIcon />
+                    Worklog
+                  </Button>
+                </Stack>
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  <AddCircleRoundedIcon />
-                </IconButton>
-                <IconButton
-                  color="primary"
-                  sx={{ background: "#fc8441" }}
-                  variant="solid"
+                  <Button>Today</Button>
+                </Stack>
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  <BorderColorRoundedIcon />
-                </IconButton>
-                <IconButton
-                  color="primary"
-                  sx={{ background: "#e85153" }}
-                  variant="solid"
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      label="From"
+                      slotProps={{ textField: { size: "small" } }}
+                    />
+                  </LocalizationProvider>
+                </Stack>
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  <DeleteForeverRoundedIcon />
-                </IconButton>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      label="To"
+                      slotProps={{ textField: { size: "small" } }}
+                    />
+                  </LocalizationProvider>
+                </Stack>
               </Stack>
-              <Stack>
-                <Button variant={"outlined"}>
-                  <PatternRoundedIcon />
-                  Worklog
-                </Button>
-              </Stack>
-              <Stack
-                spacing={1}
-                direction={"row"}
+            </CardContent>
+          </Card>
+        </Box>
+        <Box>
+          <Box sx={{ marginTop: 10 }}>
+            <Box
+              sx={{
+                height: 60,
+                width: "100%",
+                background: "#2596be",
+                borderRadius: "10px 10px 0px 0px",
+                display: "flex",
+                justifyItems: "center",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              {appDataContext.task !== null && (
+                <Stack direction={"row"} spacing={2}>
+                  <Stack direction={"row"} spacing={1} sx={{ paddingLeft: 1 }}>
+                    <Typography
+                      level={"body-md"}
+                      sx={{ fontWeight: "bold", color: "white" }}
+                    >
+                      Task Predict Time :{" "}
+                    </Typography>
+                  </Stack>
+                  <Stack direction={"row"} spacing={1}>
+                    <Typography
+                      level={"body-md"}
+                      sx={{ fontWeight: "bold", color: "white" }}
+                    >
+                      Actual Task Time :{" "}
+                    </Typography>
+                  </Stack>
+                  <Stack
+                    direction={"row"}
+                    spacing={1}
+                    sx={{ paddingRight: 1 }}
+                  ></Stack>
+                </Stack>
+              )}
+            </Box>
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Sheet
+                variant="outlined"
                 sx={{
-                  display: "flex",
-                  justifyItems: "center",
-                  alignItems: "center",
+                  "--TableCell-height": "10px",
+                  "--TableHeader-height": "calc(1 * var(--TableCell-height))",
+                  "--Table-firstColumnWidth": "80px",
+                  "--Table-lastColumnWidth": "144px",
+                  "--TableRow-stripeBackground": "rgba(0 0 0 / 0.04)",
+                  "--TableRow-hoverBackground": "rgba(0 0 0 / 0.08)",
+                  overflow: "auto",
+                  background: (
+                    theme
+                  ) => `linear-gradient(to right, ${theme.vars.palette.background.surface} 30%, rgba(255, 255, 255, 0)),
+                                linear-gradient(to right, rgba(255, 255, 255, 0), ${theme.vars.palette.background.surface} 70%) 0 100%,
+                                radial-gradient(
+                                farthest-side at 0 50%,
+                                rgba(0, 0, 0, 0.12),
+                                rgba(0, 0, 0, 0)
+                                ),
+                                radial-gradient(
+                                farthest-side at 100% 50%,
+                                rgba(0, 0, 0, 0.12),
+                                rgba(0, 0, 0, 0)
+                                )
+                                0 100%`,
+                  backgroundSize:
+                    "40px calc(100% - var(--TableCell-height)), 40px calc(100% - var(--TableCell-height)), 14px calc(100% - var(--TableCell-height)), 14px calc(100% - var(--TableCell-height))",
+                  backgroundRepeat: "no-repeat",
+                  backgroundAttachment: "local, local, scroll, scroll",
+                  backgroundPosition:
+                    "var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height), var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height)",
+                  backgroundColor: "background.surface",
+                  overflowX: "auto",
+                  maxWidth: "100%",
+                  height: "550px",
                 }}
               >
-                <Button>Today</Button>
-              </Stack>
-              <Stack
-                spacing={1}
-                direction={"row"}
-                sx={{
-                  display: "flex",
-                  justifyItems: "center",
-                  alignItems: "center",
-                }}
-              >
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="From"
-                    slotProps={{ textField: { size: "small" } }}
-                  />
-                </LocalizationProvider>
-              </Stack>
-              <Stack
-                spacing={1}
-                direction={"row"}
-                sx={{
-                  display: "flex",
-                  justifyItems: "center",
-                  alignItems: "center",
-                }}
-              >
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="To"
-                    slotProps={{ textField: { size: "small" } }}
-                  />
-                </LocalizationProvider>
-              </Stack>
-            </Stack>
-          </CardContent>
-        </Card>
+                <Box sx={{ width: "100%" }}>
+                  <Table
+                    noWrap
+                    borderAxis="bothBetween"
+                    stripe="odd"
+                    hoverRow
+                    sx={{
+                      width: "100%",
+                      "& tr > *:first-child": {
+                        position: "sticky",
+                        left: 0,
+                        boxShadow: "1px 0 var(--TableCell-borderColor)",
+                        bgcolor: "background.surface",
+                      },
+                      "& tr > *:last-child": {
+                        position: "sticky",
+                        right: 0,
+                        bgcolor: "var(--TableCell-headBackground)",
+                        width: "120px",
+                      },
+                    }}
+                  >
+                    <thead>
+                      <tr>
+                        <th style={{ width: 150 }}>Description</th>
+                        <th style={{ width: 100 }}>Start Time</th>
+                        <th style={{ width: 100 }}>End Time</th>
+                        <th style={{ width: 100 }}>Task type</th>
+                        <th style={{ width: 100 }}>Created By </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {tableData.map((row, index) => (
+                        <tr key={index}>
+                          <td>{row.description}</td>
+                          <td>{row.startTime}</td>
+                          <td>{row.endTime}</td>
+                          <td>{row.taskType}</td>
+                          <td>{row.createdBy}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </Box>
+              </Sheet>
+            </Box>
+          </Box>
+        </Box>
       </Box>
     </>
   );
