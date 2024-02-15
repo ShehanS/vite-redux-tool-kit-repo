@@ -137,6 +137,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
           sx={{
             top: 130,
             width: "96.8%",
+            padding: "0",
             position: "fixed",
             display: "flex",
             zIndex: 50,
@@ -154,22 +155,22 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
           >
             <CardContent>
               <Stack
-                direction={"row"}
+                direction={{ xs: "column", lg: "row" }}
                 sx={{
                   justifyContent: "space-between",
                   alignItems: "center",
-                  width: "40%",
+                  width: "100%",
                 }}
                 spacing={1}
               >
                 <Stack
-                  spacing={1}
-                  direction={"row"}
+                  direction={{ xs: "column", sm: "row" }}
                   sx={{
-                    display: "flex",
-                    justifyItems: "center",
+                    justifyContent: "center",
                     alignItems: "center",
+                    width: "100%",
                   }}
+                  spacing={1}
                 >
                   <Typography level="body-sm" fontSize={"md"}>
                     Task
@@ -233,7 +234,15 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                     <DeleteForeverRoundedIcon />
                   </IconButton>
                 </Stack>
-                <Stack>
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
                   <Button
                     variant={"outlined"}
                     disabled={!stateObj.selectedTask}
