@@ -30,6 +30,7 @@ import { IWorklog } from "../interfaces/IWorklog";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import DeleteDialog from "../components/Dialogs/DeleteDialog";
 import Tabs from "@mui/joy/Tabs";
+import { Pagination } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
 
@@ -645,7 +646,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
                   backgroundColor: "background.surface",
                   overflowX: "auto",
                   maxWidth: "100%",
-                  height: "550px",
+                  height: "450px",
                 }}
               >
                 <Box sx={{ width: "100%" }}>
@@ -752,6 +753,18 @@ const LandingPage: FC<ReduxProps> = (props) => {
               </Sheet>
             </Box>
           </Box>
+          <Pagination
+            count={20}
+            color="primary"
+            sx={{
+              height: 50,
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          />
         </TabPanel>
       </Tabs>
     </>

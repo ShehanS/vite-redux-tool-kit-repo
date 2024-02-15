@@ -624,7 +624,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                       value={props.fromDate}
                       onChange={handleFromDateChange}
                       slotProps={{ textField: { size: "small" } }}
-                      sx={{ width: { xs: 200, sm: 230 } }}
+                      sx={{ width: { xs: 200, sm: 170 } }}
                     />
                   </LocalizationProvider>
                 </Stack>
@@ -643,7 +643,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                       value={props.toDate}
                       onChange={handleToDateChange}
                       slotProps={{ textField: { size: "small" } }}
-                      sx={{ width: { xs: 200, sm: 230 } }}
+                      sx={{ width: { xs: 200, sm: 170 } }}
                     />
                   </LocalizationProvider>
                 </Stack>
