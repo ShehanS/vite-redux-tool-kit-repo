@@ -30,8 +30,6 @@ import { IWorklog } from "../interfaces/IWorklog";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import DeleteDialog from "../components/Dialogs/DeleteDialog";
 import Tabs from "@mui/joy/Tabs";
-import TabList from "@mui/joy/TabList";
-import Tab from "@mui/joy/Tab";
 
 import { useNavigate } from "react-router-dom";
 
