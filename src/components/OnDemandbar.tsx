@@ -4,7 +4,6 @@ import CardContent from "@mui/joy/CardContent";
 import {
   Box,
   Button,
-  CircularProgress,
   IconButton,
   Option,
   Select,
@@ -52,43 +51,36 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
     ) {
       setStateObj({ ...stateObj, user: appDataContext.user });
     }
-  }, [appDataContext.user]);
 
-  //////////////check here for the getTasksList in the useEffect , when this useeffect runs app crashes//////////
+    if (stateObj.selectedTask === null && !stateObj.loadingTasks) {
+      const request = { email: "tango@ncinga.net" };
+      const fetchTasks = async () => {
+        try {
+          setStateObj({ ...stateObj, loadingTasks: true });
+          await dispatch(getTasksList(request));
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
+        } finally {
+          setStateObj({ ...stateObj, loadingTasks: false });
+        }
+      };
 
-  // useEffect(() => {
-  //   if (
-  //     !stateObj.selectedTask &&
-  //     (!tasksListsResponse || !tasksListsResponse.data)
-  //   ) {
-  //     const request = {
-  //       email: "tango@ncinga.net",
-  //     };
-
-  //     const fetchTasks = async () => {
-  //       try {
-  //         setStateObj({ ...stateObj, loadingTasks: true });
-  //         await dispatch(getTasksList(request));
-  //       } catch (error) {
-  //         console.error("Error fetching tasks:", error);
-  //       } finally {
-  //         setStateObj({ ...stateObj, loadingTasks: false });
-  //       }
-  //     };
-
-  //     fetchTasks();
-  //   }
-  // }, [dispatch, stateObj.selectedTask, tasksListsResponse]);
+      fetchTasks();
+    }
+  }, [
+    appDataContext.user,
+    dispatch,
+    stateObj.selectedTask,
+    stateObj.loadingTasks,
+  ]);
 
   const selectTaskDropdown = async () => {
     if (
-      appDataContext.user.email !== null &&
+      stateObj.user.email !== null &&
       stateObj.selectedTask === null &&
       !stateObj.loadingTasks
     ) {
-      const request = {
-        email: "tango@ncinga.net",
-      };
+      const request = { email: "tango@ncinga.net" };
 
       try {
         if (!tasksListsResponse || !tasksListsResponse.data) {
@@ -100,33 +92,41 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
     }
   };
 
-  const selectTask = (event: any, value: any) => {
+  const selectTask = async (event: any, value: any) => {
     if (value !== undefined && value !== stateObj.selectedTask) {
       setStateObj({ ...stateObj, selectedTask: value });
+      await selectTaskDropdown();
     }
   };
 
   useEffect(() => {
     if (tasksListsResponse && Array.isArray(tasksListsResponse.data)) {
-      const selectedTaskData = tasksListsResponse.data.find(
-        (task) => task.title === stateObj.selectedTask
+      const filteredTasks = tasksListsResponse.data.filter(
+        (task) => task.owner.email_id === "tango@ncinga.net"
       );
 
-      console.log("Selected Task Data:", selectedTaskData);
+      console.log("Filtered Tasks:", filteredTasks);
 
-      if (selectedTaskData) {
-        setTableData([
-          {
-            description: selectedTaskData.description,
-            startTime:
-              selectedTaskData.actual_start_time?.display_value || "N/A",
-            endTime: selectedTaskData.actual_end_time?.display_value || "N/A",
-            taskType: selectedTaskData.task_type?.name || "N/A",
-            createdBy: selectedTaskData.created_by.email_id || "N/A",
-          },
-        ]);
+      if (stateObj.selectedTask) {
+        const selectedTaskData = filteredTasks.find(
+          (task) => task.title === stateObj.selectedTask
+        );
+
+        console.log("Selected Task Data:", selectedTaskData);
+
+        if (selectedTaskData) {
+          setTableData([
+            {
+              description: selectedTaskData.description,
+              startTime:
+                selectedTaskData.actual_start_time?.display_value || "N/A",
+              endTime: selectedTaskData.actual_end_time?.display_value || "N/A",
+              taskType: selectedTaskData.task_type?.name || "N/A",
+              createdBy: selectedTaskData.created_by.email_id || "N/A",
+            },
+          ]);
+        }
       }
-      console.log("Tasks List Response in ondemandbar:", tasksListsResponse);
     }
   }, [stateObj.selectedTask, tasksListsResponse]);
 
@@ -137,6 +137,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
           sx={{
             top: 130,
             width: "96.8%",
+            padding: "0",
             position: "fixed",
             display: "flex",
             zIndex: 50,
@@ -154,22 +155,22 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
           >
             <CardContent>
               <Stack
-                direction={"row"}
+                direction={{ xs: "column", lg: "row" }}
                 sx={{
                   justifyContent: "space-between",
                   alignItems: "center",
-                  width: "40%",
+                  width: "100%",
                 }}
                 spacing={1}
               >
                 <Stack
-                  spacing={1}
-                  direction={"row"}
+                  direction={{ xs: "column", sm: "row" }}
                   sx={{
-                    display: "flex",
-                    justifyItems: "center",
+                    justifyContent: "center",
                     alignItems: "center",
+                    width: "100%",
                   }}
+                  spacing={1}
                 >
                   <Typography level="body-sm" fontSize={"md"}>
                     Task
@@ -209,7 +210,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                   </Select>
 
                   <IconButton
-                    disabled={false}
+                    disabled={!stateObj.selectedTask}
                     color="primary"
                     sx={{ background: "#0ca59d" }}
                     variant="solid"
@@ -217,6 +218,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                     <AddCircleRoundedIcon />
                   </IconButton>
                   <IconButton
+                    disabled={!stateObj.selectedTask}
                     color="primary"
                     sx={{ background: "#fc8441" }}
                     variant="solid"
@@ -224,6 +226,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                     <BorderColorRoundedIcon />
                   </IconButton>
                   <IconButton
+                    disabled={!stateObj.selectedTask}
                     color="primary"
                     sx={{ background: "#e85153" }}
                     variant="solid"
@@ -231,8 +234,19 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                     <DeleteForeverRoundedIcon />
                   </IconButton>
                 </Stack>
-                <Stack>
-                  <Button variant={"outlined"}>
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  sx={{
+                    display: "flex",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Button
+                    variant={"outlined"}
+                    disabled={!stateObj.selectedTask}
+                  >
                     <PatternRoundedIcon />
                     Worklog
                   </Button>
@@ -246,7 +260,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Button>Today</Button>
+                  <Button disabled={!stateObj.selectedTask}>Today</Button>
                 </Stack>
                 <Stack
                   spacing={1}
@@ -259,6 +273,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                 >
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
+                      disabled={!stateObj.selectedTask}
                       label="From"
                       slotProps={{ textField: { size: "small" } }}
                       sx={{ width: 90 }}
@@ -276,6 +291,7 @@ const OnDemandBar: FC<ReduxProps> = (props) => {
                 >
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
+                      disabled={!stateObj.selectedTask}
                       label="To"
                       slotProps={{ textField: { size: "small" } }}
                       sx={{ width: 90 }}
