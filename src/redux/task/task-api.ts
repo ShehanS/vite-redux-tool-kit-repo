@@ -1,25 +1,5 @@
 import axios from "axios";
 
-///////////////////Tasklists////////////////////////
-const GET_TASKSLIST_API = {
-  get: (payload: any) =>
-    axios
-      .post(`/api/engine/get-tasks`, payload)
-      .then((response: { data: any }) => {
-        return response.data;
-      }),
-};
-
-const GET_TASKSLIST_BY_ID_API = {
-  get: (payload: any) =>
-    axios
-      .get(`/api/engine/get-tasks/${payload.taskslistId}`, payload)
-      .then((response: { data: any }) => {
-        return response.data;
-      }),
-};
-///////////////////////////////////////////////////
-
 const GET_TASK_API = {
   get: (payload: any) =>
     axios
@@ -128,6 +108,4 @@ export {
   UPDATE_TASK_API,
   GET_TASK_BY_ID_API,
   DELETE_TASK_BY_ID_API,
-  GET_TASKSLIST_API,
-  GET_TASKSLIST_BY_ID_API,
 };

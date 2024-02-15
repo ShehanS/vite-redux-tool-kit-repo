@@ -8,8 +8,6 @@ import {AppDataContextProvider} from "./context/AppDataContext";
 import Authenticate from "./pages/Authenticate";
 import Layout from "./components/Layout";
 import IdealTimerContainer from "./components/IdelTimer";
-import OnDemandBar from "./components/OnDemandbar";
-
 
 function App() {
     return (
@@ -21,7 +19,6 @@ function App() {
                         <Routes>
                             <Route path={ROUTES.login} element={<LoginPage/>}/>
                             <Route path={ROUTES.root} element={<LoginPage/>}/>
-                            <Route path={ROUTES.OnDemandBar} element={<OnDemandBar/>} />
                             <Route path={ROUTES.ladingPage} element={
                                 <IdealTimerContainer><Authenticate><Layout><LandingPage/></Layout></Authenticate></IdealTimerContainer>}/>
                         </Routes>
