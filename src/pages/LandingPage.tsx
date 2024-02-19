@@ -507,23 +507,32 @@ const LandingPage: FC<ReduxProps> = (props) => {
 
   const filteredWorklogs = worklogs.filter((log) => {
     const logStartTime = new Date(Number.parseInt(log?.start_time?.value));
+    const logEndTime = new Date(Number.parseInt(log?.end_time?.value));
 
     if (props.isTodayFilterActive) {
       const today = new Date(2023, 11, 18);
       console.log("Today:", today);
       console.log("Log Start Time:", logStartTime);
+      console.log("Log End Time:", logEndTime);
 
       const isToday =
         logStartTime.getDate() === today.getDate() &&
         logStartTime.getMonth() === today.getMonth() &&
         logStartTime.getFullYear() === today.getFullYear();
 
-      console.log("Is Today:", isToday);
+      const isSameDay =
+        isToday && logStartTime.getDate() === logEndTime.getDate();
 
-      return isToday;
+      console.log("Is Today:", isToday);
+      console.log("Is Same Day:", isSameDay);
+
+      return isSameDay;
     } else if (props.fromDate && props.toDate) {
       const isInDateRange =
-        logStartTime >= props.fromDate && logStartTime <= props.toDate;
+        logStartTime >= props.fromDate &&
+        logStartTime <= props.toDate &&
+        logEndTime >= props.fromDate &&
+        logEndTime <= props.toDate;
       return isInDateRange;
     }
 
