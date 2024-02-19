@@ -54,6 +54,18 @@ export const worklogSlice = createSlice({
             getWorklogsResponse: action.payload,
             error: null
         }),
+
+        getPageWorklogs: (state, action: PayloadAction<any>) => ({
+            ...state,
+            payload: action.payload,
+            error: null
+        }),
+        getPageWorklogsSuccess: (state, action: PayloadAction<any>) => ({
+            ...state,
+            getWorklogsResponse: action.payload,
+            error: null
+        }),
+
         addWorklog: (state, action: PayloadAction<any>) => ({
             ...state,
             payload: action.payload,
@@ -128,6 +140,8 @@ export const {
     clearHistory,
     getWorklogs,
     getWorklogsSuccess,
+    getPageWorklogs, 
+    getPageWorklogsSuccess,
     addWorklog,
     addWorklogSuccess,
     editWorklog,

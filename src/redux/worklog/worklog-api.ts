@@ -6,6 +6,14 @@ const GET_WORKLOGS_API = {
             return response.data;
         }),
 };
+
+const GET_Page_WORKLOGS_API = {
+    get: (payload: any) =>
+        axios.get(`/api/engine/projects/${payload.projectId}/tasks/${payload.taskId}/page-worklogs`).then((response: { data: any }) => {
+            return response.data;
+        }),
+};
+
 const ADD_WORKLOG_API = {
     add: (payload: any) =>
         axios.post(`/api/engine/projects/${payload.projectId}/tasks/${payload.taskId}/add-worklog`, payload.payload).then((response: { data: any }) => {
@@ -36,6 +44,7 @@ const GET_TYPES_API = {
 
 export {
     GET_TYPES_API,
+    GET_Page_WORKLOGS_API,
     GET_WORKLOGS_API,
     ADD_WORKLOG_API,
     EDIT_WORKLOG_API,
