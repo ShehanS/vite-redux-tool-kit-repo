@@ -16,6 +16,8 @@ export interface TaskState {
     isLoading: boolean;
     typesResponse: any;
     showSnackBar: ISnackBar;
+
+    
 }
 
 const initialState: TaskState = {

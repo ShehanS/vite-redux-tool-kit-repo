@@ -34,6 +34,8 @@ import { Pagination } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
 
+import { getPageWorklogs } from "../redux/worklog/worklog-slice";
+
 type StateObj = {
   user: any;
   taskListResponse: any;
@@ -54,7 +56,9 @@ type StateObj = {
 type ReduxProps = ConnectedProps<typeof connector>;
 
 const LandingPage: FC<ReduxProps> = (props) => {
-  const [page, setPage] = useState(2);
+  const [page, setPage] = useState(1); 
+  const [pageSize] = useState(8);
+
   const [predictTime, setPredictTime] = useState<number>(0);
   const [actualTime, setActualTime] = useState<number>(0);
   const { appDataContext, setAppDataContext } = useAppDataContext();
@@ -86,11 +90,29 @@ const LandingPage: FC<ReduxProps> = (props) => {
     newPage: number
   ) => {
     setPage(newPage);
+
+    const pageSize = 8; // Number of worklogs per page
+    const startIndex = (newPage - 1) * pageSize;
+    const projectId = appDataContext?.project?.id;
+    const taskId = appDataContext?.task?.id;
+    if (projectId && taskId) {
+      props.onGetPageWorklogs(projectId, taskId, startIndex, pageSize);
+    }
   };
 
   const navigate = useNavigate();
 
   const [currentTab, setCurrentTab] = useState(0);
+
+  useEffect(() => {
+    if (appDataContext.project && appDataContext.task) {
+      const projectId = appDataContext.project.id;
+      const taskId = appDataContext.task.id;
+      const startIndex = 0; 
+      const pageSize = 8; 
+      props.onGetPageWorklogs(projectId, taskId, startIndex, pageSize);
+    }
+  }, [appDataContext.project, appDataContext.task]);
 
   useEffect(() => {
     initials();
@@ -763,17 +785,19 @@ const LandingPage: FC<ReduxProps> = (props) => {
             </Box>
           </Box>
           <Pagination
-            count={filteredWorklogs.length}
-            color="primary"
-            sx={{
-              height: 50,
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          />
+        count={Math.ceil(filteredWorklogs.length / pageSize)} // Calculate the number of pages
+        page={page}
+        onChange={handleChangePage}
+        color="primary"
+        sx={{
+          height: 50,
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      />
         </TabPanel>
       </Tabs>
     </>
@@ -820,6 +844,16 @@ const mapDispatchToProps = (dispatch: any) => {
         getWorklogs({
           projectId: projectId,
           taskId: taskId,
+        })
+      ),
+
+      onGetPageWorklogs: (projectId: string, taskId: string, pageIndex: number, pageSize: number) =>
+      dispatch(
+        getPageWorklogs({
+          projectId: projectId,
+          taskId: taskId,
+          pageIndex: pageIndex,
+          pageSize: pageSize,
         })
       ),
   };

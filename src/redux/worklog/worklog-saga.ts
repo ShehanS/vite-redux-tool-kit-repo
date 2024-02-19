@@ -30,15 +30,15 @@ function* handleGetWorklogs(action: { payload: {} }) {
         yield put(getError(e));
     }
 }
-
-function* handleGetPageWorklogs(action: { payload: {} }) {
+function* handleGetPageWorklogs(action: { payload: { projectId: string, taskId: string, pageIndex: number, pageSize: number } }) {
     try {
         const response: ServerResponse = yield call(
             GET_Page_WORKLOGS_API.get,
             action.payload
         );
         yield put(getPageWorklogsSuccess(response));
-    } catch (e) {
+    } 
+    catch (e) {
         yield put(getError(e));
     }
 }
