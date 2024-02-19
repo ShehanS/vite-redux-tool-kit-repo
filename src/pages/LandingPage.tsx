@@ -763,7 +763,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
             </Box>
           </Box>
           <Pagination
-            count={20}
+            count={filteredWorklogs.length}
             color="primary"
             sx={{
               height: 50,
