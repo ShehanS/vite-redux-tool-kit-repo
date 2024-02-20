@@ -89,9 +89,19 @@ const LandingPage: FC<ReduxProps> = (props) => {
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
-    setPage(newPage);
+    const pageSize = 8; 
+  
+    let newIndex = page;
+    
+    if (newPage > page) {
+      newIndex++;
+    }
 
-    const pageSize = 8; // Number of worklogs per page
+    else if (newPage < page) {
+      newIndex--;
+    }
+
+  setPage(newIndex);
     const startIndex = (newPage - 1) * pageSize;
     const projectId = appDataContext?.project?.id;
     const taskId = appDataContext?.task?.id;
@@ -113,6 +123,12 @@ const LandingPage: FC<ReduxProps> = (props) => {
       props.onGetPageWorklogs(projectId, taskId, startIndex, pageSize);
     }
   }, [appDataContext.project, appDataContext.task]);
+
+  useEffect(() => {
+    if (props.getPageWorklogsResponse) {
+      setPage(parseInt(props.getPageWorklogsResponse?.list_info.start_index));
+    }
+  }, [props.getPageWorklogsResponse]);
 
   useEffect(() => {
     initials();
@@ -188,6 +204,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
         ...stateObj,
         updateTaskResponse: props.updateTaskResponse,
       });
+     
       if (props?.updateTaskResponse?.responseCode === "TASK_UPDATED") {
         setAppDataContext({
           ...appDataContext,
@@ -388,6 +405,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
         props.getWorklogsResponse !== null) ||
       stateObj.getWorklogsResponse !== props.getWorklogsResponse
     ) {
+      
       setStateObj({
         ...stateObj,
         getWorklogsResponse: props.getWorklogsResponse,
@@ -785,7 +803,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
             </Box>
           </Box>
           <Pagination
-        count={Math.ceil(filteredWorklogs.length / pageSize)} // Calculate the number of pages
+        count={Math.ceil(filteredWorklogs.length / pageSize)} 
         page={page}
         onChange={handleChangePage}
         color="primary"
@@ -812,6 +830,9 @@ const mapStateToProps = (state: RootState) => {
     addTaskResponse: state.task.addTaskResponse,
     addWorklogResponse: state.worklog.addWorklogResponse,
     getWorklogsResponse: state.worklog.getWorklogsResponse,
+
+    getPageWorklogsResponse: state.worklog.getPageWorklogsResponse,
+
     editWorklogResponse: state.worklog.editWorklogResponse,
     projectResponse: state.task.projectResponse,
     updateTaskResponse: state.task.updateTaskResponse,

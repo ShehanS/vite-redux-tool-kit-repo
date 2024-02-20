@@ -16,8 +16,8 @@ export interface TaskState {
     isLoading: boolean;
     typesResponse: any;
     showSnackBar: ISnackBar;
-
     
+    getPageWorklogsResponse: any;
 }
 
 const initialState: TaskState = {
@@ -38,8 +38,9 @@ const initialState: TaskState = {
         isOpen: false,
         variant: "solid",
         color: "primary"
-    }
+    },
 
+    getPageWorklogsResponse: null,
 }
 
 export const worklogSlice = createSlice({
