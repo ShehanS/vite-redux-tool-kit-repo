@@ -440,7 +440,7 @@ const MainBar: FC<ReduxProps> = (props) => {
         >
           <CardContent>
             <Stack
-              direction={{ xs: "column", xl: "row" }}
+              direction={{ xs: "column", lg: "row" }}
               sx={{
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -462,8 +462,10 @@ const MainBar: FC<ReduxProps> = (props) => {
                   direction={{ xs: "column", sm: "row" }}
                   sx={{
                     display: "flex",
+                    justifyContent: "center",
                     justifyItems: "center",
                     alignItems: "center",
+                    width: "100%",
                   }}
                 >
                   <Typography level="body-sm" fontSize={"md"}>
@@ -475,7 +477,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                     onClick={selectProjectDropdown}
                     placeholder="Project..."
                     startDecorator={isLoading && <CircularProgress size="sm" />}
-                    sx={{ width: { xs: 200, sm: 230, md: 270 } }}
+                    sx={{ width: { xs: "100%", sm: 230, md: 270 } }}
                   >
                     {projects?.map((project: any, index: number) => (
                       <Option
@@ -493,8 +495,10 @@ const MainBar: FC<ReduxProps> = (props) => {
                   direction={{ xs: "column", sm: "row" }}
                   sx={{
                     display: "flex",
+                    justifyContent: "center",
                     justifyItems: "center",
                     alignItems: "center",
+                    width: "100%",
                   }}
                 >
                   <Typography level="body-sm" fontSize={"md"}>
@@ -506,7 +510,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                     onChange={(event, value) => selectTask(event, value)}
                     onClick={() => getTasks()}
                     placeholder="Task..."
-                    sx={{ width: { xs: 200, sm: 230, md: 270 } }}
+                    sx={{ width: { xs: "100%", sm: 230, md: 270 } }}
                     startDecorator={
                       isTaskLoading && <CircularProgress size="sm" />
                     }
@@ -526,19 +530,21 @@ const MainBar: FC<ReduxProps> = (props) => {
               <Stack
                 direction={{ xs: "column", sm: "row" }}
                 sx={{
-                  justifyContent: "center",
-                  alignItems: "center",
+                  justifyContent: { xs: "space-around" },
+                  // alignItems: "center",
                   width: "100%",
                 }}
                 spacing={1}
               >
                 <Stack
-                  spacing={{ xs: 2, sm: 1 }}
+                  // spacing={{ xs: 2, sm: 1 }}
+                  spacing={1}
                   direction="row"
                   sx={{
                     display: "flex",
-                    justifyItems: "center",
-                    alignItems: "center",
+                    justifyContent: { xs: "space-around" },
+                    // justifyItems: "center",
+                    //alignItems: "center",
                   }}
                 >
                   <IconButton
@@ -575,6 +581,8 @@ const MainBar: FC<ReduxProps> = (props) => {
                   direction={"row"}
                   sx={{
                     display: "flex",
+                    //width: "100%",
+                    width: { xs: "100%", sm: "200px", lg: "100%" },
                     justifyItems: "center",
                     alignItems: "center",
                   }}
@@ -583,6 +591,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                     variant={"outlined"}
                     disabled={currentSelectedTask === null ? true : false}
                     onClick={openWorklogCreateDialog}
+                    fullWidth
                   >
                     <PatternRoundedIcon />
                     Worklog
@@ -595,9 +604,13 @@ const MainBar: FC<ReduxProps> = (props) => {
                     display: "flex",
                     justifyItems: "center",
                     alignItems: "center",
+                    //width: "100%",
+                    width: { xs: "100%", sm: "200px", lg: "100%" },
                   }}
                 >
-                  <Button onClick={handleTodayButtonClick}>Today</Button>
+                  <Button onClick={handleTodayButtonClick} fullWidth>
+                    Today
+                  </Button>
                 </Stack>
               </Stack>
               <Stack
@@ -614,8 +627,10 @@ const MainBar: FC<ReduxProps> = (props) => {
                   direction={"row"}
                   sx={{
                     display: "flex",
+                    justifyContent: "center",
                     justifyItems: "center",
                     alignItems: "center",
+                    width: "100%",
                   }}
                 >
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -624,7 +639,9 @@ const MainBar: FC<ReduxProps> = (props) => {
                       value={props.fromDate}
                       onChange={handleFromDateChange}
                       slotProps={{ textField: { size: "small" } }}
-                      sx={{ width: { xs: 200, sm: 230 } }}
+                      sx={{
+                        width: { xs: "100%", sm: "75%", lg: "100%" },
+                      }}
                     />
                   </LocalizationProvider>
                 </Stack>
@@ -633,8 +650,10 @@ const MainBar: FC<ReduxProps> = (props) => {
                   direction={"row"}
                   sx={{
                     display: "flex",
+                    justifyContent: "center",
                     justifyItems: "center",
                     alignItems: "center",
+                    width: "100%",
                   }}
                 >
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -643,7 +662,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                       value={props.toDate}
                       onChange={handleToDateChange}
                       slotProps={{ textField: { size: "small" } }}
-                      sx={{ width: { xs: 200, sm: 230 } }}
+                      sx={{ width: { xs: "100%", sm: "75%", lg: "100%" } }}
                     />
                   </LocalizationProvider>
                 </Stack>

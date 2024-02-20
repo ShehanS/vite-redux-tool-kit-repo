@@ -408,7 +408,11 @@ const CreateTaskDialog: FC<Props> = (props) => {
           </FormControl>
           <Typography level="title-sm">Time</Typography>
           <Card variant="outlined">
-            <Stack direction={"row"} spacing={1}>
+            <Stack
+              // direction={"row"}
+              direction={{ xs: "column", sm: "row" }}
+              spacing={1}
+            >
               <FormControl>
                 <FormLabel>Start Time *</FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -436,7 +440,11 @@ const CreateTaskDialog: FC<Props> = (props) => {
             </Stack>
           </Card>
 
-          <Stack direction={"row"} spacing={1}>
+          <Stack
+            // direction={"row"}
+            direction={{ xs: "column", sm: "row" }}
+            spacing={1}
+          >
             <FormControl sx={{ width: 200 }}>
               <FormLabel>Assign</FormLabel>
               <Input disabled value={owner?.email_id} name={"owner"} />
