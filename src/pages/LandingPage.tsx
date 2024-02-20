@@ -56,7 +56,7 @@ type StateObj = {
 type ReduxProps = ConnectedProps<typeof connector>;
 
 const LandingPage: FC<ReduxProps> = (props) => {
-  const [page, setPage] = useState(1); 
+  const [page, setPage] = useState(1);
   const [pageSize] = useState(8);
 
   const [predictTime, setPredictTime] = useState<number>(0);
@@ -85,28 +85,20 @@ const LandingPage: FC<ReduxProps> = (props) => {
     fromDate: null,
     toDate: null,
   });
+
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
-    const pageSize = 8; 
-  
-    let newIndex = page;
-    
-    if (newPage > page) {
-      newIndex++;
-    }
+    if (newPage > 0) {
+      const startIndex = (newPage - 1) * pageSize;
+      const projectId = appDataContext?.project?.id;
+      const taskId = appDataContext?.task?.id;
 
-    else if (newPage < page) {
-      newIndex--;
-    }
-
-  setPage(newIndex);
-    const startIndex = (newPage - 1) * pageSize;
-    const projectId = appDataContext?.project?.id;
-    const taskId = appDataContext?.task?.id;
-    if (projectId && taskId) {
-      props.onGetPageWorklogs(projectId, taskId, startIndex, pageSize);
+      if (projectId && taskId) {
+        props.onGetPageWorklogs(projectId, taskId, startIndex, pageSize);
+      }
+      setPage(newPage);
     }
   };
 
@@ -118,8 +110,9 @@ const LandingPage: FC<ReduxProps> = (props) => {
     if (appDataContext.project && appDataContext.task) {
       const projectId = appDataContext.project.id;
       const taskId = appDataContext.task.id;
-      const startIndex = 0; 
+      const startIndex = 0;
       const pageSize = 8; 
+
       props.onGetPageWorklogs(projectId, taskId, startIndex, pageSize);
     }
   }, [appDataContext.project, appDataContext.task]);
@@ -127,6 +120,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
   useEffect(() => {
     if (props.getPageWorklogsResponse) {
       setPage(parseInt(props.getPageWorklogsResponse?.list_info.start_index));
+      setWorklogs(props.getPageWorklogsResponse?.requests ?? []); 
     }
   }, [props.getPageWorklogsResponse]);
 
@@ -204,7 +198,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
         ...stateObj,
         updateTaskResponse: props.updateTaskResponse,
       });
-     
+
       if (props?.updateTaskResponse?.responseCode === "TASK_UPDATED") {
         setAppDataContext({
           ...appDataContext,
@@ -405,7 +399,6 @@ const LandingPage: FC<ReduxProps> = (props) => {
         props.getWorklogsResponse !== null) ||
       stateObj.getWorklogsResponse !== props.getWorklogsResponse
     ) {
-      
       setStateObj({
         ...stateObj,
         getWorklogsResponse: props.getWorklogsResponse,
@@ -732,70 +725,72 @@ const LandingPage: FC<ReduxProps> = (props) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredWorklogs?.map((row: any, index: number) => (
-                        <tr key={index}>
-                          <td>
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: row?.description,
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <Stack direction={"row"} spacing={1}>
-                              <Typography level={"body-sm"}>
-                                {new Date(
-                                  Number.parseInt(row?.start_time?.value)
-                                ).toLocaleDateString() ?? ""}
-                              </Typography>
-                              <Chip color="primary">
-                                {new Date(
-                                  Number.parseInt(row?.start_time?.value)
-                                ).toLocaleTimeString()}
-                              </Chip>
-                            </Stack>
-                          </td>
-                          <td>
-                            <Stack direction={"row"} spacing={1}>
-                              <Typography level={"body-sm"}>
-                                {new Date(
-                                  Number.parseInt(row?.end_time?.value)
-                                ).toLocaleDateString()}
-                              </Typography>
-                              <Chip color="primary">
-                                {new Date(
-                                  Number.parseInt(row?.end_time?.value)
-                                ).toLocaleTimeString()}
-                              </Chip>
-                            </Stack>
-                          </td>
-                          <td>{row?.worklog_type?.name ?? ""}</td>
-                          {/*<td>{row?.owner?.email_id ?? ""}</td>*/}
-                          <td>{row?.created_by?.email_id ?? ""}</td>
-                          <td>
-                            <Stack
-                              direction={"row"}
-                              sx={{ display: "flex", gap: 1 }}
-                            >
-                              <IconButton
-                                color="primary"
-                                onClick={() => editWorklog(row)}
-                                variant="soft"
+                      {filteredWorklogs
+                        .slice((page - 1) * pageSize, page * pageSize)
+                        .map((row: any, index: number) => (
+                          <tr key={index}>
+                            <td>
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: row?.description,
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <Stack direction={"row"} spacing={1}>
+                                <Typography level={"body-sm"}>
+                                  {new Date(
+                                    Number.parseInt(row?.start_time?.value)
+                                  ).toLocaleDateString() ?? ""}
+                                </Typography>
+                                <Chip color="primary">
+                                  {new Date(
+                                    Number.parseInt(row?.start_time?.value)
+                                  ).toLocaleTimeString()}
+                                </Chip>
+                              </Stack>
+                            </td>
+                            <td>
+                              <Stack direction={"row"} spacing={1}>
+                                <Typography level={"body-sm"}>
+                                  {new Date(
+                                    Number.parseInt(row?.end_time?.value)
+                                  ).toLocaleDateString()}
+                                </Typography>
+                                <Chip color="primary">
+                                  {new Date(
+                                    Number.parseInt(row?.end_time?.value)
+                                  ).toLocaleTimeString()}
+                                </Chip>
+                              </Stack>
+                            </td>
+                            <td>{row?.worklog_type?.name ?? ""}</td>
+                            {/*<td>{row?.owner?.email_id ?? ""}</td>*/}
+                            <td>{row?.created_by?.email_id ?? ""}</td>
+                            <td>
+                              <Stack
+                                direction={"row"}
+                                sx={{ display: "flex", gap: 1 }}
                               >
-                                <BorderColorRoundedIcon />
-                              </IconButton>
+                                <IconButton
+                                  color="primary"
+                                  onClick={() => editWorklog(row)}
+                                  variant="soft"
+                                >
+                                  <BorderColorRoundedIcon />
+                                </IconButton>
 
-                              <IconButton
-                                color="danger"
-                                onClick={() => openDeleteWorklogConfirm(row)}
-                                variant="soft"
-                              >
-                                <DeleteForeverRoundedIcon />
-                              </IconButton>
-                            </Stack>
-                          </td>
-                        </tr>
-                      ))}
+                                <IconButton
+                                  color="danger"
+                                  onClick={() => openDeleteWorklogConfirm(row)}
+                                  variant="soft"
+                                >
+                                  <DeleteForeverRoundedIcon />
+                                </IconButton>
+                              </Stack>
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </Table>
                 </Box>
@@ -803,19 +798,19 @@ const LandingPage: FC<ReduxProps> = (props) => {
             </Box>
           </Box>
           <Pagination
-        count={Math.ceil(filteredWorklogs.length / pageSize)} 
-        page={page}
-        onChange={handleChangePage}
-        color="primary"
-        sx={{
-          height: 50,
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      />
+            count={Math.ceil(filteredWorklogs.length / pageSize)}
+            page={page}
+            onChange={handleChangePage}
+            color="primary"
+            sx={{
+              height: 50,
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          />
         </TabPanel>
       </Tabs>
     </>
@@ -868,13 +863,18 @@ const mapDispatchToProps = (dispatch: any) => {
         })
       ),
 
-      onGetPageWorklogs: (projectId: string, taskId: string, pageIndex: number, pageSize: number) =>
+    onGetPageWorklogs: (
+      projectId: string,
+      taskId: string,
+      pageIndex: number,
+      pageSize: number
+    ) =>
       dispatch(
         getPageWorklogs({
           projectId: projectId,
           taskId: taskId,
-          pageIndex: pageIndex,
-          pageSize: pageSize,
+          page: pageIndex,
+          row_count: pageSize,
         })
       ),
   };
