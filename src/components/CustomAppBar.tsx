@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, MouseEvent, useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import ExitToAppRoundedIcon from "@mui/icons-material/ExitToAppRounded";
@@ -14,6 +14,9 @@ import {
 } from "@mui/joy";
 import { googleLogout } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Menu, MenuList, MenuItem } from "@mui/material";
+
 type StateObj = {
   user: any;
 };
@@ -23,6 +26,15 @@ const CustomAppBar: FC = (props: any) => {
   const [stateObj, setStateObj] = useState<StateObj>({
     user: null,
   });
+
+  // Menu List for mobile view
+  const [anchorNav, setAnchorNav] = useState<null | HTMLElement>(null);
+  const openMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorNav(event.currentTarget);
+  };
+  const closeMenu = () => {
+    setAnchorNav(null);
+  };
 
   useEffect(() => {
     if (
@@ -61,7 +73,14 @@ const CustomAppBar: FC = (props: any) => {
               direction={"row"}
               sx={{ alignItems: "center", justifyItems: "center" }}
             >
-              <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+              <Box
+                sx={{
+                  // display: "flex",
+                  display: { xs: "none", sm: "flex" },
+                  gap: 2,
+                  alignItems: "center",
+                }}
+              >
                 <Badge
                   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                   badgeInset="14%"
@@ -102,13 +121,16 @@ const CustomAppBar: FC = (props: any) => {
               <Stack
                 spacing={1}
                 direction={"row"}
-                sx={{ alignItems: "center" }}
+                sx={{
+                  alignItems: "center",
+                  display: { xs: "none", sm: "flex" },
+                }}
               >
                 <Typography
                   sx={{
                     fontWeight: "bold",
                     color: "white",
-                    display: { xs: "none", sm: "flex" }, // Hide the user email according to the size of the screen
+                    // display: { xs: "none", sm: "flex" }, // Hide the user email according to the size of the screen
                   }}
                   level={"body-sm"}
                 >
@@ -123,6 +145,44 @@ const CustomAppBar: FC = (props: any) => {
                   <ExitToAppRoundedIcon />
                 </IconButton>
               </Stack>
+              <Box sx={{ display: { xs: "flex", sm: "none" } }}>
+                <IconButton
+                  color="neutral"
+                  onClick={!Boolean(anchorNav) ? openMenu : closeMenu}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Menu
+                  open={Boolean(anchorNav)}
+                  onClose={closeMenu}
+                  sx={{ display: { xs: "flow", sm: "none" } }}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                >
+                  <MenuList>
+                    <MenuItem>
+                      <Typography
+                        sx={{
+                          color: "black",
+                        }}
+                        level={"body-sm"}
+                      >
+                        {stateObj.user?.email}
+                      </Typography>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        googleLogout();
+                        navigate("/login", { replace: true });
+                      }}
+                    >
+                      Log Out
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
+              </Box>
             </Stack>
           </Stack>
         </Toolbar>
