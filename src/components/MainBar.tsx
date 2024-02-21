@@ -445,13 +445,15 @@ const MainBar: FC<ReduxProps> = (props) => {
                 justifyContent: "space-between",
                 alignItems: "center",
                 width: "100%",
+                // marginRight: "10px",
+                // marginLeft: "10px",
               }}
               spacing={1}
             >
               <Stack
                 direction={{ xs: "column", sm: "row" }}
                 sx={{
-                  justifyContent: "center",
+                  justifyContent: "space-between",
                   alignItems: "center",
                   width: "100%",
                 }}
@@ -461,9 +463,13 @@ const MainBar: FC<ReduxProps> = (props) => {
                   spacing={1}
                   direction={{ xs: "column", sm: "row" }}
                   sx={{
+                    // ***************************************************************************************
                     display: "flex",
+                    justifyContent: "center",
                     justifyItems: "center",
                     alignItems: "center",
+                    width: "100%",
+                    // ***************************************************************************************
                   }}
                 >
                   <Typography level="body-sm" fontSize={"md"}>
@@ -475,7 +481,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                     onClick={selectProjectDropdown}
                     placeholder="Project..."
                     startDecorator={isLoading && <CircularProgress size="sm" />}
-                    sx={{ width: { xs: 200, sm: 230, md: 270 } }}
+                    sx={{ width: { xs: "100%", sm: 230, md: 270 } }} // *******************************************************
                   >
                     {projects?.map((project: any, index: number) => (
                       <Option
@@ -492,9 +498,13 @@ const MainBar: FC<ReduxProps> = (props) => {
                   spacing={1}
                   direction={{ xs: "column", sm: "row" }}
                   sx={{
+                    // ****************************************************************
                     display: "flex",
+                    justifyContent: "center",
                     justifyItems: "center",
                     alignItems: "center",
+                    width: "100%",
+                    // ***************************************************************************
                   }}
                 >
                   <Typography level="body-sm" fontSize={"md"}>
@@ -506,7 +516,7 @@ const MainBar: FC<ReduxProps> = (props) => {
                     onChange={(event, value) => selectTask(event, value)}
                     onClick={() => getTasks()}
                     placeholder="Task..."
-                    sx={{ width: { xs: 200, sm: 230, md: 270 } }}
+                    sx={{ width: { xs: "100%", sm: 230, md: 270 } }} // **************************************
                     startDecorator={
                       isTaskLoading && <CircularProgress size="sm" />
                     }
@@ -526,19 +536,22 @@ const MainBar: FC<ReduxProps> = (props) => {
               <Stack
                 direction={{ xs: "column", sm: "row" }}
                 sx={{
-                  justifyContent: "space-around",
+                  display: "flex",
+                  justifyContent: "space-evenly",
                   alignItems: "center",
-                  width: "100%",
+                  width: { xs: "100%", sm: "85%", md: "75%", lg: "100%" },
                 }}
                 spacing={1}
               >
                 <Stack
-                  spacing={{ xs: 2, sm: 1 }}
+                  spacing={1}
                   direction="row"
                   sx={{
+                    width: "100%",
                     display: "flex",
-                    justifyItems: "center",
-                    alignItems: "center",
+                    justifyContent: "space-evenly",
+                    // justifyItems: "center", **************************************
+                    // alignItems: "center", *****************************************
                   }}
                 >
                   <IconButton
@@ -574,15 +587,19 @@ const MainBar: FC<ReduxProps> = (props) => {
                   spacing={1}
                   direction={"row"}
                   sx={{
+                    // **********************************************************************
                     display: "flex",
-                    justifyItems: "center",
+                    width: "100%",
+                    // width: { xs: "100%", sm: "50%", lg: "100%" },
                     alignItems: "center",
+                    // *********************************************************************************
                   }}
                 >
                   <Button
                     variant={"outlined"}
                     disabled={currentSelectedTask === null ? true : false}
                     onClick={openWorklogCreateDialog}
+                    fullWidth
                   >
                     <PatternRoundedIcon />
                     Worklog
@@ -592,18 +609,26 @@ const MainBar: FC<ReduxProps> = (props) => {
                   spacing={1}
                   direction={"row"}
                   sx={{
+                    // *******************************************************************************
                     display: "flex",
-                    justifyItems: "center",
                     alignItems: "center",
+                    width: "100%",
+                    // width: { xs: "100%", sm: "50%", lg: "100%" },
+                    // ********************************************************************************************
                   }}
                 >
-                  <Button onClick={handleTodayButtonClick}>Today</Button>
+                  <Button
+                    onClick={handleTodayButtonClick}
+                    fullWidth // ***************************************************
+                  >
+                    Today
+                  </Button>
                 </Stack>
               </Stack>
               <Stack
                 direction={{ xs: "column", sm: "row" }}
                 sx={{
-                  justifyContent: "center",
+                  justifyContent: "space-around",
                   alignItems: "center",
                   width: "100%",
                 }}
@@ -613,9 +638,13 @@ const MainBar: FC<ReduxProps> = (props) => {
                   spacing={1}
                   direction={"row"}
                   sx={{
+                    // *********************************************************************
                     display: "flex",
+                    justifyContent: "center",
                     justifyItems: "center",
                     alignItems: "center",
+                    width: "100%",
+                    // **************************************************************
                   }}
                 >
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -624,7 +653,14 @@ const MainBar: FC<ReduxProps> = (props) => {
                       value={props.fromDate}
                       onChange={handleFromDateChange}
                       slotProps={{ textField: { size: "small" } }}
-                      sx={{ width: { xs: 200, sm: 170 } }}
+                      sx={{
+                        width: {
+                          xs: "100%",
+                          sm: "70%",
+                          md: "75%",
+                          lg: "100%",
+                        },
+                      }} // ****************************************
                     />
                   </LocalizationProvider>
                 </Stack>
@@ -632,9 +668,13 @@ const MainBar: FC<ReduxProps> = (props) => {
                   spacing={1}
                   direction={"row"}
                   sx={{
+                    //2024/02/21 **************************************************
                     display: "flex",
+                    justifyContent: "center",
                     justifyItems: "center",
                     alignItems: "center",
+                    width: "100%",
+                    // ****************************************************************
                   }}
                 >
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -643,7 +683,14 @@ const MainBar: FC<ReduxProps> = (props) => {
                       value={props.toDate}
                       onChange={handleToDateChange}
                       slotProps={{ textField: { size: "small" } }}
-                      sx={{ width: { xs: 200, sm: 170 } }}
+                      sx={{
+                        width: {
+                          xs: "100%",
+                          sm: "70%",
+                          md: "75%",
+                          lg: "100%",
+                        },
+                      }} // **************************************
                     />
                   </LocalizationProvider>
                 </Stack>

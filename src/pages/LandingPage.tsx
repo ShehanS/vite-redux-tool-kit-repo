@@ -695,7 +695,11 @@ const LandingPage: FC<ReduxProps> = (props) => {
                       width: "100%",
                     }}
                   >
-                    <Stack direction={"column"} spacing={1}>
+                    <Stack
+                      direction={"column"}
+                      spacing={1}
+                      sx={{ overflowX: "hidden" }}
+                    >
                       {filteredWorklogs?.map((row: any, index: number) => (
                         <Card key={index} sx={{ width: "inherit" }}>
                           <CardContent>
