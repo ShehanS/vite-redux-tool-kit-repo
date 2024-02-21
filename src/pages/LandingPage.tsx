@@ -4,6 +4,8 @@ import { RootState } from "../redux/store";
 import { connect, ConnectedProps } from "react-redux";
 import {
   Box,
+  Card,
+  CardContent,
   Chip,
   IconButton,
   Sheet,
@@ -111,7 +113,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
       const projectId = appDataContext.project.id;
       const taskId = appDataContext.task.id;
       const startIndex = 0;
-      const pageSize = 8; 
+      const pageSize = 8;
 
       props.onGetPageWorklogs(projectId, taskId, startIndex, pageSize);
     }
@@ -120,7 +122,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
   useEffect(() => {
     if (props.getPageWorklogsResponse) {
       setPage(parseInt(props.getPageWorklogsResponse?.list_info.start_index));
-      setWorklogs(props.getPageWorklogsResponse?.requests ?? []); 
+      setWorklogs(props.getPageWorklogsResponse?.requests ?? []);
     }
   }, [props.getPageWorklogsResponse]);
 
@@ -528,25 +530,19 @@ const LandingPage: FC<ReduxProps> = (props) => {
   //   return true;
   // });
 
-  ///////////////////////Logic (december 18 is hardcoded) ////////////////////
+  ///////////////////////Today filter Logic////////////////////
   useEffect(() => {}, [
     props.isTodayFilterActive,
     stateObj.fromDate,
     stateObj.toDate,
   ]);
 
-  console.log("From Date:", stateObj.fromDate);
-  console.log("To Date:", stateObj.toDate);
-
   const filteredWorklogs = worklogs.filter((log) => {
     const logStartTime = new Date(Number.parseInt(log?.start_time?.value));
     const logEndTime = new Date(Number.parseInt(log?.end_time?.value));
 
     if (props.isTodayFilterActive) {
-      const today = new Date(2023, 11, 18);
-      console.log("Today:", today);
-      console.log("Log Start Time:", logStartTime);
-      console.log("Log End Time:", logEndTime);
+      const today = new Date();
 
       const isToday =
         logStartTime.getDate() === today.getDate() &&
@@ -555,9 +551,6 @@ const LandingPage: FC<ReduxProps> = (props) => {
 
       const isSameDay =
         isToday && logStartTime.getDate() === logEndTime.getDate();
-
-      console.log("Is Today:", isToday);
-      console.log("Is Same Day:", isSameDay);
 
       return isSameDay;
     } else if (props.fromDate && props.toDate) {
@@ -583,7 +576,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
           <Box sx={{ marginTop: 1 }}>
             <Box
               sx={{
-                height: 60,
+                height: { xs: 100, sm: 60 },
                 width: "100%",
                 background: "#2596be",
                 borderRadius: "10px 10px 0px 0px",
@@ -645,7 +638,7 @@ const LandingPage: FC<ReduxProps> = (props) => {
             </Box>
             <Box
               sx={{
-                width: "100%",
+                // width: "100%",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -688,16 +681,95 @@ const LandingPage: FC<ReduxProps> = (props) => {
                   backgroundColor: "background.surface",
                   overflowX: "auto",
                   maxWidth: "100%",
-                  height: "450px",
+                  height: "550px",
                 }}
               >
-                <Box sx={{ width: "100%" }}>
+                <Box
+                // sx={{ width: "100%" }}
+                >
+                  {/* Card start */}
+                  <Box
+                    sx={{
+                      display: { xs: "flex", md: "none" },
+                      marginTop: "5px",
+                      width: "100%",
+                    }}
+                  >
+                    <Stack direction={"column"} spacing={1}>
+                      {filteredWorklogs?.map((row: any, index: number) => (
+                        <Card key={index} sx={{ width: "inherit" }}>
+                          <CardContent>
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: row?.description,
+                              }}
+                            />
+                            <Stack
+                              direction={"row"}
+                              spacing={1}
+                              sx={{ justifyContent: "space-between" }}
+                            >
+                              <Typography level={"body-sm"}>
+                                {new Date(
+                                  Number.parseInt(row?.start_time?.value)
+                                ).toLocaleDateString() ?? ""}
+                              </Typography>
+                              <Chip color="primary">
+                                {new Date(
+                                  Number.parseInt(row?.start_time?.value)
+                                ).toLocaleTimeString()}
+                              </Chip>
+                            </Stack>
+                            <Stack
+                              direction={"row"}
+                              spacing={1}
+                              sx={{ justifyContent: "space-between" }}
+                            >
+                              <Typography level={"body-sm"}>
+                                {row?.worklog_type?.name ?? ""}
+                              </Typography>
+                              <Typography level={"body-sm"}>
+                                {row?.created_by?.email_id ?? ""}
+                              </Typography>
+                            </Stack>
+                            <Stack
+                              direction={"row"}
+                              sx={{
+                                display: "flex",
+                                gap: 2,
+                                justifyContent: "flex-end",
+                              }}
+                            >
+                              <IconButton
+                                color="primary"
+                                onClick={() => editWorklog(row)}
+                                variant="soft"
+                              >
+                                <BorderColorRoundedIcon />
+                              </IconButton>
+
+                              <IconButton
+                                color="danger"
+                                onClick={() => openDeleteWorklogConfirm(row)}
+                                variant="soft"
+                              >
+                                <DeleteForeverRoundedIcon />
+                              </IconButton>
+                            </Stack>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </Stack>
+                  </Box>
+                  {/* Card end */}
+
                   <Table
                     noWrap
                     borderAxis="bothBetween"
                     stripe="odd"
                     hoverRow
                     sx={{
+                      display: { xs: "none", md: "table" },
                       width: "100%",
                       "& tr > *:first-child": {
                         position: "sticky",
