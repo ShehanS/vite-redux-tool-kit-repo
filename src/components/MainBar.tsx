@@ -242,7 +242,7 @@ const MainBar: FC<ReduxProps> = (props) => {
       setIsLoading(true);
       setTaskIsLoading(false);
       const request = {
-        email: "shehan.salinda@ncinga.net",
+        email:appDataContext.user.email,
       };
       props.onGetProjects(request);
     }
@@ -397,7 +397,7 @@ const MainBar: FC<ReduxProps> = (props) => {
     setTaskIsLoading(true);
     const request = {
       projectId: selectedProject?.id,
-      email: "shehan.salinda@ncinga.net",
+      email:appDataContext.user.email,
     };
     props.onGetTasks(request);
   };
