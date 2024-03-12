@@ -9,12 +9,8 @@ const GET_WORKLOGS_API = {
 
 const GET_Page_WORKLOGS_API = {
     get: (payload: { projectId: string, taskId: string, pageIndex: number, pageSize: number }) =>
-        axios.get(`/api/engine/projects/${payload.projectId}/tasks/${payload.taskId}/page-worklogs`, {
-            params: {
-                pageIndex: payload.pageIndex,
-                pageSize: payload.pageSize
-            }
-        }).then((response: { data: any }) => {
+        axios.get(`/api/engine/projects/${payload.projectId}/tasks/${payload.taskId}/page-worklogs?pageIndex=${payload.pageIndex}&pageSize=${payload.pageSize}`)
+        .then((response: { data: any }) => {
             return response.data;
         }),
 };

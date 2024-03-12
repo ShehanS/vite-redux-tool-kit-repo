@@ -93,16 +93,18 @@ const LandingPage: FC<ReduxProps> = (props) => {
     newPage: number
   ) => {
     if (newPage > 0) {
-      const startIndex = (newPage - 1) * pageSize;
+      console.log("New Page:", newPage);
+      
       const projectId = appDataContext?.project?.id;
       const taskId = appDataContext?.task?.id;
-
+  
       if (projectId && taskId) {
-        props.onGetPageWorklogs(projectId, taskId, startIndex, pageSize);
+        props.onGetPageWorklogs(projectId, taskId, newPage, pageSize);
       }
       setPage(newPage);
     }
   };
+  
 
   const navigate = useNavigate();
 
@@ -120,9 +122,9 @@ const LandingPage: FC<ReduxProps> = (props) => {
   }, [appDataContext.project, appDataContext.task]);
 
   useEffect(() => {
-    if (props.getPageWorklogsResponse) {
-      setPage(parseInt(props.getPageWorklogsResponse?.list_info.start_index));
-      setWorklogs(props.getPageWorklogsResponse?.requests ?? []);
+    if (props.getPageWorklogsResponse?.list_info?.start_index !== undefined) {
+      setPage(parseInt(props.getPageWorklogsResponse.list_info.start_index));
+      setWorklogs(props.getPageWorklogsResponse.requests ?? []);
     }
   }, [props.getPageWorklogsResponse]);
 
@@ -566,6 +568,9 @@ const LandingPage: FC<ReduxProps> = (props) => {
   });
   //////////////////////////////////////////
 
+  console.log("Total Worklogs:", filteredWorklogs.length);
+  console.log("page index:", page);
+  console.log("page size:", pageSize);
   return (
     <>
       <Tabs>
@@ -695,74 +700,49 @@ const LandingPage: FC<ReduxProps> = (props) => {
                       width: "100%",
                     }}
                   >
-                    <Stack
-                      direction={"column"}
-                      spacing={1}
-                      sx={{ overflowX: "hidden" }}
-                    >
-                      {filteredWorklogs?.map((row: any, index: number) => (
-                        <Card key={index} sx={{ width: "inherit" }}>
-                          <CardContent>
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: row?.description,
-                              }}
-                            />
-                            <Stack
-                              direction={"row"}
-                              spacing={1}
-                              sx={{ justifyContent: "space-between" }}
-                            >
-                              <Typography level={"body-sm"}>
-                                {new Date(
-                                  Number.parseInt(row?.start_time?.value)
-                                ).toLocaleDateString() ?? ""}
-                              </Typography>
-                              <Chip color="primary">
-                                {new Date(
-                                  Number.parseInt(row?.start_time?.value)
-                                ).toLocaleTimeString()}
-                              </Chip>
-                            </Stack>
-                            <Stack
-                              direction={"row"}
-                              spacing={1}
-                              sx={{ justifyContent: "space-between" }}
-                            >
-                              <Typography level={"body-sm"}>
-                                {row?.worklog_type?.name ?? ""}
-                              </Typography>
-                              <Typography level={"body-sm"}>
-                                {row?.created_by?.email_id ?? ""}
-                              </Typography>
-                            </Stack>
-                            <Stack
-                              direction={"row"}
-                              sx={{
-                                display: "flex",
-                                gap: 2,
-                                justifyContent: "flex-end",
-                              }}
-                            >
-                              <IconButton
-                                color="primary"
-                                onClick={() => editWorklog(row)}
-                                variant="soft"
-                              >
-                                <BorderColorRoundedIcon />
-                              </IconButton>
-
-                              <IconButton
-                                color="danger"
-                                onClick={() => openDeleteWorklogConfirm(row)}
-                                variant="soft"
-                              >
-                                <DeleteForeverRoundedIcon />
-                              </IconButton>
-                            </Stack>
-                          </CardContent>
-                        </Card>
-                      ))}
+                    <Stack direction={"column"} spacing={1} sx={{ overflowX: "hidden" }}>
+                      {/* Displaying worklogs as cards */}
+                      {filteredWorklogs
+                        .slice((page - 1) * pageSize, page * pageSize)
+                        .map((row: any, index: number) => (
+                          <Card key={index} sx={{ width: "inherit" }}>
+                            <CardContent>
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: row?.description,
+                                }}
+                              />
+                              <Stack direction={"row"} spacing={1} sx={{ justifyContent: "space-between" }}>
+                                <Typography level={"body-sm"}>
+                                  {new Date(Number.parseInt(row?.start_time?.value)).toLocaleDateString() ?? ""}
+                                </Typography>
+                                <Chip color="primary">
+                                  {new Date(Number.parseInt(row?.start_time?.value)).toLocaleTimeString()}
+                                </Chip>
+                              </Stack>
+                              <Stack direction={"row"} spacing={1} sx={{ justifyContent: "space-between" }}>
+                                <Typography level={"body-sm"}>{row?.worklog_type?.name ?? ""}</Typography>
+                                <Typography level={"body-sm"}>{row?.created_by?.email_id ?? ""}</Typography>
+                              </Stack>
+                              <Stack direction={"row"} sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+                                <IconButton
+                                  color="primary"
+                                  onClick={() => editWorklog(row)}
+                                  variant="soft"
+                                >
+                                  <BorderColorRoundedIcon />
+                                </IconButton>
+                                <IconButton
+                                  color="danger"
+                                  onClick={() => openDeleteWorklogConfirm(row)}
+                                  variant="soft"
+                                >
+                                  <DeleteForeverRoundedIcon />
+                                </IconButton>
+                              </Stack>
+                            </CardContent>
+                          </Card>
+                        ))}
                     </Stack>
                   </Box>
                   {/* Card end */}
@@ -949,8 +929,8 @@ const mapDispatchToProps = (dispatch: any) => {
         getPageWorklogs({
           projectId: projectId,
           taskId: taskId,
-          page: pageIndex,
-          row_count: pageSize,
+          pageIndex: pageIndex, 
+          pageSize: pageSize,
         })
       ),
   };

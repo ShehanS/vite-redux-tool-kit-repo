@@ -65,9 +65,10 @@ export const worklogSlice = createSlice({
         }),
         getPageWorklogsSuccess: (state, action: PayloadAction<any>) => ({
             ...state,
-            getWorklogsResponse: action.payload,
+            getPageWorklogsResponse: action.payload,
             error: null
         }),
+        
 
         addWorklog: (state, action: PayloadAction<any>) => ({
             ...state,
