@@ -1,10 +1,10 @@
-import  loginReducer from "../login/login-slice";
+import loginReducer from "../login/login-slice";
 import {combineReducers} from "@reduxjs/toolkit";
-import counterReducer from "../login/counter-slice";
+import dashboardReducer from "../dashboard/dashboard-slice";
 
 
 const rootReducer = combineReducers({
-    counter: counterReducer,
+    dashboard: dashboardReducer,
     login: loginReducer
 });
 
