@@ -43,7 +43,7 @@ const SubscriberParameter: FC<Props> = (props: any) => {
             <span style={{
                 fontFamily: 'Ubuntu',
                 color: '#349bff'
-            }}>{stateObj.subscriberParameterResponse?.data?.totalElements ?? 0} Subscriber Plan(s) {props.isLoading &&
+            }}>{stateObj.subscriberParameterResponse?.data?.totalElements ?? 0} Subscriber Parameters(s) {props.isLoading &&
                 <Spinner/>}</span>
             <Table
                 columnDefinitions={[

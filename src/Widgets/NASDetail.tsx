@@ -53,8 +53,8 @@ const NASDetail: FC<Props> = (props: any) => {
                         isRowHeader: true
                     },
                     {
-                        id: "Attribute Group Name",
-                        header: "nas_attrgroup_name",
+                        id: "nas_attrgroup_name",
+                        header: "Attribute Group Name",
                         cell: item =>(<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.nas_attrgroup_name}</span>) || "-",
                         sortingField: "nas_attrgroup_name"
                     },

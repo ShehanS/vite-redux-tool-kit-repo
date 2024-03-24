@@ -5,7 +5,6 @@ import BoardItem from '@cloudscape-design/board-components/board-item';
 import {Board} from "@cloudscape-design/board-components";
 import SubscriberInfo from "../Widgets/SubscriberInfo";
 import DataUsageSession from "../Widgets/DataUsageSession";
-import Data from "../Widgets/DataBundle";
 import DataBundle from "../Widgets/DataBundle";
 import SubscriberPlan from "../Widgets/SubscriberPlan";
 import SubscriberParameter from "../Widgets/SubscriberParameter";
@@ -14,52 +13,52 @@ import AuthLog from "../Widgets/AuthLog";
 import NASDetail from "../Widgets/NASDetail";
 
 const Home: FC = () => {
-    const menu = [
-        {
-            label: 'Home',
-            icon: 'pi pi-home'
-        },
-        {
-            label: 'Features',
-            icon: 'pi pi-star'
-        },
-        {
-            label: 'Projects',
-            icon: 'pi pi-search',
-            items: [
-                {
-                    label: 'Components',
-                    icon: 'pi pi-bolt'
-                },
-                {
-                    label: 'Blocks',
-                    icon: 'pi pi-server'
-                },
-                {
-                    label: 'UI Kit',
-                    icon: 'pi pi-pencil'
-                },
-                {
-                    label: 'Templates',
-                    icon: 'pi pi-palette',
-                    items: [
-                        {
-                            label: 'Apollo',
-                            icon: 'pi pi-palette'
-                        },
-                        {
-                            label: 'Ultima',
-                            icon: 'pi pi-palette'
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            label: 'Contact',
-            icon: 'pi pi-envelope'
-        }
-    ];
+    // const menu = [
+    //     {
+    //         label: 'Home',
+    //         icon: 'pi pi-home'
+    //     },
+    //     {
+    //         label: 'Features',
+    //         icon: 'pi pi-star'
+    //     },
+    //     {
+    //         label: 'Projects',
+    //         icon: 'pi pi-search',
+    //         items: [
+    //             {
+    //                 label: 'Components',
+    //                 icon: 'pi pi-bolt'
+    //             },
+    //             {
+    //                 label: 'Blocks',
+    //                 icon: 'pi pi-server'
+    //             },
+    //             {
+    //                 label: 'UI Kit',
+    //                 icon: 'pi pi-pencil'
+    //             },
+    //             {
+    //                 label: 'Templates',
+    //                 icon: 'pi pi-palette',
+    //                 items: [
+    //                     {
+    //                         label: 'Apollo',
+    //                         icon: 'pi pi-palette'
+    //                     },
+    //                     {
+    //                         label: 'Ultima',
+    //                         icon: 'pi pi-palette'
+    //                     }
+    //                 ]
+    //             }
+    //         ]
+    //     },
+    //     {
+    //         label: 'Contact',
+    //         icon: 'pi pi-envelope'
+    //     }
+    // ];
     const [items, setItems] = useState([
         {
             id: "1",

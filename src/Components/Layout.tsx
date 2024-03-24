@@ -1,13 +1,12 @@
 import React, {FC} from "react";
 
 import {Outlet} from "react-router-dom";
-import {Box} from "@cloudscape-design/components";
 
 const Layout: FC = () => {
     return (<React.Fragment>
-            <Box sx={{position: 'absolute', left: 0, right: 0, top: 100, bottom: 0, padding: 0}}>
+            <div style ={{position: 'absolute', left: 15, right: 15, top: 5, bottom: 10, padding: 0}}>
                 <Outlet/>
-            </Box>
+            </div>
         </React.Fragment>
     )
 }
