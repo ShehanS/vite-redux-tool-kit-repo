@@ -6,7 +6,7 @@ import Button from "@cloudscape-design/components/button";
 import {Link, Spinner, StatusIndicator} from "@cloudscape-design/components";
 import {connect, ConnectedProps} from "react-redux";
 import {RootState} from "../redux/store";
-import {getSubscribers} from "../redux/dashboard/dashboard-slice";
+import {getNASList, getSubscribers} from "../redux/dashboard/dashboard-slice";
 import Pagination from "@cloudscape-design/components/pagination";
 
 type OwnProps = {}
@@ -20,67 +20,62 @@ type PageStateObj = {
 }
 
 type StateObj = {
-    subscriberResponse: any;
+    nasListResponse: any;
 }
 
 
-const SubscriberInfo: FC<Props> = (props: any) => {
-    const [stateObj, setStateObj] = useState<StateObj>({subscriberResponse: null});
+const NASDetail: FC<Props> = (props: any) => {
+    const [stateObj, setStateObj] = useState<StateObj>({nasListResponse: null});
     const [pageRequest, setPageRequest] = useState<PageStateObj>({page: 1, pageSize: 5})
 
     useEffect(() => {
-        props.getSubscribers(pageRequest);
+        props.getNASList(pageRequest);
     }, []);
 
 
-    if ((stateObj.subscriberResponse === null && props.subscriberResponse !== null) || (stateObj.subscriberResponse !== props.subscriberResponse)) {
-        setStateObj({...stateObj, subscriberResponse: props.subscriberResponse})
+    if ((stateObj.nasListResponse === null && props.nasListResponse !== null) || (stateObj.nasListResponse !== props.nasListResponse)) {
+        setStateObj({...stateObj, nasListResponse: props.nasListResponse})
     }
 
 
     return (
         <React.Fragment>
-            <span style={{fontFamily:'Ubuntu', color:'#349bff'}}>{stateObj.subscriberResponse?.data?.totalElements ?? 0} Subscriber(s) {props.isLoading && <Spinner/>}</span>
+            <span style={{fontFamily:'Ubuntu', color:'#349bff'}}>{stateObj.nasListResponse?.data?.totalElements ?? 0} NAS(s) {props.isLoading && <Spinner/>}</span>
             <Table
                 columnDefinitions={[
                     {
-                        id: "username",
-                        header: "Username",
+                        id: "nas_name",
+                        header: "NAS Name",
                         cell: item => (
-                            <Link href="#"><span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.username || "-"}</span></Link>
+                            <Link href="#"><span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.nas_name || "-"}</span></Link>
                         ),
-                        sortingField: "username",
+                        sortingField: "nas_name",
                         isRowHeader: true
                     },
                     {
-                        id: "email",
-                        header: "Email",
-                        cell: item =>(<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.email}</span>) || "-",
-                        sortingField: "email"
+                        id: "Attribute Group Name",
+                        header: "nas_attrgroup_name",
+                        cell: item =>(<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.nas_attrgroup_name}</span>) || "-",
+                        sortingField: "nas_attrgroup_name"
                     },
                     {
-                        id: "contact_no",
-                        header: "Contact",
-                        cell: item => (<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.contact_no}</span>) || "-"
+                        id: "nas_type",
+                        header: "NAS Type",
+                        cell: item => (<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.nas_type}</span>) || "-"
                     },
                     {
-                        id: "updated_time",
-                        header: "Update Time",
-                        cell: item =>(<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.updated_time}</span>) || "-"
+                        id: "nas_secret",
+                        header: "NAS Secret",
+                        cell: item =>(<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.nas_secret}</span>) || "-"
                     },
                     {
-                        id: "status",
-                        header: "Status",
-                        cell: item => item.status === "ACTIVE" ?
-                            <StatusIndicator><span style={{fontFamily: 'Ubuntu'}}>Active</span></StatusIndicator> :
-                            <StatusIndicator type="warning">
-                                <span style={{fontFamily: 'Ubuntu'}}>Inactive</span>
-                            </StatusIndicator> || "-",
-                        sortingField: "status"
-                    }
+                        id: "created_date",
+                        header: "Created Date",
+                        cell: item =>(<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.created_date}</span>) || "-"
+                    },
                 ]}
                 enableKeyboardNavigation
-                items={stateObj.subscriberResponse?.data?.content ?? []}
+                items={stateObj.nasListResponse?.data?.content ?? []}
                 loadingText="Loading resources"
                 sortingDisabled
                 empty={
@@ -104,26 +99,26 @@ const SubscriberInfo: FC<Props> = (props: any) => {
                         page: detail.currentPageIndex,
                         pageSize: 5
                     }
-                    props.getSubscribers(page);
+                    props.getNASList(page);
 
                 }}
-                pagesCount={(stateObj.subscriberResponse?.data?.totalPages ?? 0)}
+                pagesCount={(stateObj.nasListResponse?.data?.totalPages ?? 0)}
             />
         </React.Fragment>
     )
 }
 const mapStateToProps = (state: RootState) => {
     return {
-        subscriberResponse: state.dashboard.subscriberResponse,
+        nasListResponse: state.dashboard.nasListResponse,
         isLoading: state.dashboard.isLoading
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        getSubscribers: (pageRequest) => dispatch(getSubscribers(pageRequest))
+        getNASList: (pageRequest) => dispatch(getNASList(pageRequest))
     };
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
-export default connector(SubscriberInfo);
+export default connector(NASDetail);

@@ -2,11 +2,10 @@ import React, {FC, useEffect, useState} from "react";
 import Table from "@cloudscape-design/components/table";
 import Box from "@cloudscape-design/components/box";
 import SpaceBetween from "@cloudscape-design/components/space-between";
-import Button from "@cloudscape-design/components/button";
 import {Link, Spinner, StatusIndicator} from "@cloudscape-design/components";
 import {connect, ConnectedProps} from "react-redux";
 import {RootState} from "../redux/store";
-import {getSubscribers} from "../redux/dashboard/dashboard-slice";
+import {getDeviceWhiteList, getSubscribers} from "../redux/dashboard/dashboard-slice";
 import Pagination from "@cloudscape-design/components/pagination";
 
 type OwnProps = {}
@@ -20,53 +19,55 @@ type PageStateObj = {
 }
 
 type StateObj = {
-    subscriberResponse: any;
+    deviceWhiteListResponse: any;
 }
 
 
-const SubscriberInfo: FC<Props> = (props: any) => {
-    const [stateObj, setStateObj] = useState<StateObj>({subscriberResponse: null});
+const DeviceWhiteList: FC<Props> = (props: any) => {
+    const [stateObj, setStateObj] = useState<StateObj>({deviceWhiteListResponse: null});
     const [pageRequest, setPageRequest] = useState<PageStateObj>({page: 1, pageSize: 5})
 
     useEffect(() => {
-        props.getSubscribers(pageRequest);
+        props.getDeviceWhiteList(pageRequest);
     }, []);
 
 
-    if ((stateObj.subscriberResponse === null && props.subscriberResponse !== null) || (stateObj.subscriberResponse !== props.subscriberResponse)) {
-        setStateObj({...stateObj, subscriberResponse: props.subscriberResponse})
+    if ((stateObj.deviceWhiteListResponse === null && props.deviceWhiteListResponse !== null) || (stateObj.deviceWhiteListResponse !== props.deviceWhiteListResponse)) {
+        setStateObj({...stateObj, deviceWhiteListResponse: props.deviceWhiteListResponse})
     }
 
 
     return (
         <React.Fragment>
-            <span style={{fontFamily:'Ubuntu', color:'#349bff'}}>{stateObj.subscriberResponse?.data?.totalElements ?? 0} Subscriber(s) {props.isLoading && <Spinner/>}</span>
+            <span style={{
+                fontFamily: 'Ubuntu',
+                color: '#349bff'
+            }}>{stateObj.deviceWhiteListResponse?.data?.totalElements ?? 0} Device(s) {props.isLoading &&
+                <Spinner/>}</span>
             <Table
                 columnDefinitions={[
                     {
                         id: "username",
                         header: "Username",
                         cell: item => (
-                            <Link href="#"><span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.username || "-"}</span></Link>
+                            <Link href="#"><span
+                                style={{fontFamily: 'Ubuntu', color: '#4f5c7a'}}>{item.username || "-"}</span></Link>
                         ),
                         sortingField: "username",
                         isRowHeader: true
                     },
                     {
-                        id: "email",
-                        header: "Email",
-                        cell: item =>(<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.email}</span>) || "-",
-                        sortingField: "email"
+                        id: "device_mac",
+                        header: "Device MAC",
+                        cell: item => (
+                            <span style={{fontFamily: 'Ubuntu', color: '#4f5c7a'}}>{item.device_mac}</span>) || "-",
+                        sortingField: "device_mac"
                     },
                     {
-                        id: "contact_no",
-                        header: "Contact",
-                        cell: item => (<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.contact_no}</span>) || "-"
-                    },
-                    {
-                        id: "updated_time",
-                        header: "Update Time",
-                        cell: item =>(<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.updated_time}</span>) || "-"
+                        id: "created_date",
+                        header: "Created Time",
+                        cell: item => (
+                            <span style={{fontFamily: 'Ubuntu', color: '#4f5c7a'}}>{item.created_date}</span>) || "-"
                     },
                     {
                         id: "status",
@@ -80,7 +81,7 @@ const SubscriberInfo: FC<Props> = (props: any) => {
                     }
                 ]}
                 enableKeyboardNavigation
-                items={stateObj.subscriberResponse?.data?.content ?? []}
+                items={stateObj.deviceWhiteListResponse?.data?.content ?? []}
                 loadingText="Loading resources"
                 sortingDisabled
                 empty={
@@ -104,26 +105,26 @@ const SubscriberInfo: FC<Props> = (props: any) => {
                         page: detail.currentPageIndex,
                         pageSize: 5
                     }
-                    props.getSubscribers(page);
+                    props.getDeviceWhiteList(page);
 
                 }}
-                pagesCount={(stateObj.subscriberResponse?.data?.totalPages ?? 0)}
+                pagesCount={(stateObj.deviceWhiteListResponse?.data?.totalPages ?? 0)}
             />
         </React.Fragment>
     )
 }
 const mapStateToProps = (state: RootState) => {
     return {
-        subscriberResponse: state.dashboard.subscriberResponse,
+        deviceWhiteListResponse: state.dashboard.deviceWhiteListResponse,
         isLoading: state.dashboard.isLoading
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        getSubscribers: (pageRequest) => dispatch(getSubscribers(pageRequest))
+        getDeviceWhiteList: (pageRequest) => dispatch(getDeviceWhiteList(pageRequest))
     };
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
-export default connector(SubscriberInfo);
+export default connector(DeviceWhiteList);

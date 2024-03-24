@@ -1,3 +1,24 @@
 html{
     font-family: Ubuntu;
 }
+/* Define scrollbar styles */
+/* Vertical scrollbar */
+::-webkit-scrollbar {
+    width: 5px; /* Width of the vertical scrollbar */
+    height: 5px; /* Height of the horizontal scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color of the track */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #a20202; /* Color of the scrollbar handle */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #570101; /* Color of the scrollbar handle on hover */
+}

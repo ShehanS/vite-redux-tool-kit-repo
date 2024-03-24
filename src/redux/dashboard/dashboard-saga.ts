@@ -1,19 +1,36 @@
 import {all, call, put, takeLatest} from "redux-saga/effects";
 import {ServerResponse} from "http";
 import {
+    GET_DEVEICE_WHITE_LIST_API, GET_NAS_LIST_API,
     GET_SUBSCRIBERS_API,
     GET_SUBSCRIBERS_DATA_BUNDLE_API,
+    GET_SUBSCRIBERS_DATA_ROLLOVER_API,
     GET_SUBSCRIBERS_DATA_USAGE_API,
+    GET_SUBSCRIBERS_PARAMETER_API,
+    GET_SUBSCRIBERS_PLAN_API,
     GET_SUBSCRIBERS_SESSION_API
 } from "./dashboard-api";
 import {
-    getDataBundle, getDataBundleError, getDataBundleSuccess,
+    getDataBundle,
+    getDataBundleError,
+    getDataBundleSuccess,
+    getDataRollover,
+    getDataRolloverError,
+    getDataRolloverSuccess,
     getDataUsage,
     getDataUsageError,
     getDataUsageSuccess,
+    getDeviceWhiteList,
+    getDeviceWhiteListError,
+    getDeviceWhiteListSuccess, getNASList, getNASListError, getNASListSuccess,
     getSession,
     getSessionError,
     getSessionSuccess,
+    getSubscriberParameter,
+    getSubscriberParameterPlanError,
+    getSubscriberParameterSuccess,
+    getSubscriberPlanError,
+    getSubscriberPlanSuccess,
     getSubscribers,
     getSubscribersError,
     getSubscribersSuccess
@@ -69,6 +86,89 @@ function* handleGetSubscribersDataBundle(action: { payload: {} }) {
 }
 
 
+function* handleGetSubscribersDataRollover(action: { payload: {} }) {
+    try {
+        const response: ServerResponse = yield call(
+            GET_SUBSCRIBERS_DATA_ROLLOVER_API.get,
+            action.payload
+        );
+        yield put(getDataRolloverSuccess(response));
+    } catch (e) {
+        yield put(getDataRolloverError(e));
+    }
+}
+
+function* handleGetSubscribersPlan(action: { payload: {} }) {
+    try {
+        const response: ServerResponse = yield call(
+            GET_SUBSCRIBERS_PLAN_API.get,
+            action.payload
+        );
+        yield put(getSubscriberPlanSuccess(response));
+    } catch (e) {
+        yield put(getSubscriberPlanError(e));
+    }
+}
+
+function* handleGetSubscribersParameter(action: { payload: {} }) {
+    try {
+        const response: ServerResponse = yield call(
+            GET_SUBSCRIBERS_PARAMETER_API.get,
+            action.payload
+        );
+        yield put(getSubscriberParameterSuccess(response));
+    } catch (e) {
+        yield put(getSubscriberParameterPlanError(e));
+    }
+}
+
+function* handleGetDeviceWhiteList(action: { payload: {} }) {
+    try {
+        const response: ServerResponse = yield call(
+            GET_DEVEICE_WHITE_LIST_API.get,
+            action.payload
+        );
+        yield put(getDeviceWhiteListSuccess(response));
+    } catch (e) {
+        yield put(getDeviceWhiteListError(e));
+    }
+}
+
+
+function* handleGetNASList(action: { payload: {} }) {
+    try {
+        const response: ServerResponse = yield call(
+            GET_NAS_LIST_API.get,
+            action.payload
+        );
+        yield put(getNASListSuccess(response));
+    } catch (e) {
+        yield put(getNASListError(e));
+    }
+}
+
+
+function* watchGetNASList() {
+    yield takeLatest<any>(getNASList.type, handleGetNASList);
+}
+
+function* watchGetDeviceWhiteList() {
+    yield takeLatest<any>(getDeviceWhiteList.type, handleGetDeviceWhiteList);
+}
+
+function* watchGetSubscribersParameter() {
+    yield takeLatest<any>(getSubscriberParameter.type, handleGetSubscribersParameter);
+}
+
+function* watchGetSubscribersPlan() {
+    yield takeLatest<any>(getDataRollover.type, handleGetSubscribersPlan);
+}
+
+
+function* watchGetSubscribersDataRollover() {
+    yield takeLatest<any>(getDataRollover.type, handleGetSubscribersDataRollover);
+}
+
 function* watchGetSubscribersDataBundle() {
     yield takeLatest<any>(getDataBundle.type, handleGetSubscribersDataBundle);
 }
@@ -87,5 +187,5 @@ function* watchGetSubscribers() {
 }
 
 export default function* DashboardSaga() {
-    yield all([watchGetSubscribers(), watchGetSubscribersDataUsage(), watchGetSession(), watchGetSubscribersDataBundle()]);
+    yield all([watchGetSubscribers(), watchGetSubscribersDataUsage(), watchGetSession(), watchGetSubscribersDataBundle(), watchGetSubscribersDataRollover(), watchGetSubscribersPlan(), watchGetSubscribersParameter(), watchGetDeviceWhiteList(), watchGetNASList()]);
 }

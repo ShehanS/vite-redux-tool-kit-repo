@@ -27,10 +27,11 @@ type PageStateObj = {
 const DataUsageSession: FC<Props> = (props: any) => {
     const [stateObj, setStateObj] = useState<StateObj>({dataUsageResponse: null, sessionResponse: null});
     const [pageRequest, setPageRequest] = useState<PageStateObj>({page: 1, pageSize: 5});
+    const [pageRequest2, setPageRequest2] = useState<PageStateObj>({page: 1, pageSize: 5});
 
     useEffect(() => {
         props.getSubscriberDataUsage(pageRequest);
-        props.getSubscriberSession(pageRequest);
+        props.getSubscriberSession(pageRequest2);
     }, []);
 
 
@@ -217,9 +218,9 @@ const DataUsageSession: FC<Props> = (props: any) => {
                     // header={<Header> Simple table </Header>}
                 />
                 <Pagination
-                    currentPageIndex={pageRequest.page}
+                    currentPageIndex={pageRequest2.page}
                     onChange={({detail}) => {
-                        setPageRequest({...pageRequest, page: detail.currentPageIndex});
+                        setPageRequest2({...pageRequest2, page: detail.currentPageIndex});
                         const page: PageStateObj = {
                             page: detail.currentPageIndex,
                             pageSize: 5

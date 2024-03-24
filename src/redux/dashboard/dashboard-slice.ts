@@ -7,6 +7,11 @@ export interface DashboardState {
     dataUsageResponse: any;
     sessionResponse: any;
     dataBundleResponse: any;
+    dataRollOverResponse: any;
+    subscriberPlanResponse: any;
+    subscriberParameterResponse: any;
+    deviceWhiteListResponse: any;
+    nasListResponse: any;
     isLoading: boolean;
 }
 
@@ -16,7 +21,12 @@ const initialState: DashboardState = {
     dataUsageResponse: null,
     sessionResponse: null,
     dataBundleResponse: null,
-    isLoading: false
+    isLoading: false,
+    dataRollOverResponse: null,
+    subscriberParameterResponse: null,
+    deviceWhiteListResponse: null,
+    subscriberPlanResponse: null,
+    nasListResponse: null
 }
 
 
@@ -85,10 +95,101 @@ export const dashboardSlice = createSlice({
             error: action.payload,
             isLoading: false
         }),
+        getDataRollover: (state, action: PayloadAction<any>) => ({
+            ...state,
+            request: action.payload,
+            isLoading: true
+        }),
+        getDataRolloverSuccess: (state, action: PayloadAction<any>) => ({
+            ...state,
+            dataRollOverResponse: action.payload,
+            isLoading: false
+        }),
+        getDataRolloverError: (state, action: PayloadAction<any>) => ({
+            ...state,
+            error: action.payload,
+            isLoading: false
+        }),
+        getSubscriberPlan: (state, action: PayloadAction<any>) => ({
+            ...state,
+            request: action.payload,
+            isLoading: true
+        }),
+        getSubscriberPlanSuccess: (state, action: PayloadAction<any>) => ({
+            ...state,
+            subscriberPlanResponse: action.payload,
+            isLoading: false
+        }),
+        getSubscriberPlanError: (state, action: PayloadAction<any>) => ({
+            ...state,
+            error: action.payload,
+            isLoading: false
+        }),
+        getSubscriberParameter: (state, action: PayloadAction<any>) => ({
+            ...state,
+            request: action.payload,
+            isLoading: true
+        }),
+        getSubscriberParameterSuccess: (state, action: PayloadAction<any>) => ({
+            ...state,
+            subscriberParameterResponse: action.payload,
+            isLoading: false
+        }),
+        getSubscriberParameterPlanError: (state, action: PayloadAction<any>) => ({
+            ...state,
+            error: action.payload,
+            isLoading: false
+        }),
+        getDeviceWhiteList: (state, action: PayloadAction<any>) => ({
+            ...state,
+            request: action.payload,
+            isLoading: true
+        }),
+        getDeviceWhiteListSuccess: (state, action: PayloadAction<any>) => ({
+            ...state,
+            deviceWhiteListResponse: action.payload,
+            isLoading: false
+        }),
+        getDeviceWhiteListError: (state, action: PayloadAction<any>) => ({
+            ...state,
+            error: action.payload,
+            isLoading: false
+        }),
+        getNASList: (state, action: PayloadAction<any>) => ({
+            ...state,
+            request: action.payload,
+            isLoading: true
+        }),
+        getNASListSuccess: (state, action: PayloadAction<any>) => ({
+            ...state,
+            nasListResponse: action.payload,
+            isLoading: false
+        }),
+        getNASListError: (state, action: PayloadAction<any>) => ({
+            ...state,
+            error: action.payload,
+            isLoading: false
+        }),
+
 
     }
 });
 export const {
+    getNASList,
+    getNASListSuccess,
+    getNASListError,
+    getDeviceWhiteList,
+    getDeviceWhiteListSuccess,
+    getDeviceWhiteListError,
+    getSubscriberParameter,
+    getSubscriberParameterSuccess,
+    getSubscriberParameterPlanError,
+    getSubscriberPlan,
+    getSubscriberPlanSuccess,
+    getSubscriberPlanError,
+    getDataRollover,
+    getDataRolloverSuccess,
+    getDataRolloverError,
     getSubscribers,
     getSubscribersSuccess,
     getSubscribersError,

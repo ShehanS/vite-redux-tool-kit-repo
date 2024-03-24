@@ -7,6 +7,11 @@ import SubscriberInfo from "../Widgets/SubscriberInfo";
 import DataUsageSession from "../Widgets/DataUsageSession";
 import Data from "../Widgets/DataBundle";
 import DataBundle from "../Widgets/DataBundle";
+import SubscriberPlan from "../Widgets/SubscriberPlan";
+import SubscriberParameter from "../Widgets/SubscriberParameter";
+import DeviceWhiteList from "../Widgets/DeviceWhiteList";
+import AuthLog from "../Widgets/AuthLog";
+import NASDetail from "../Widgets/NASDetail";
 
 const Home: FC = () => {
     const menu = [
@@ -58,27 +63,51 @@ const Home: FC = () => {
     const [items, setItems] = useState([
         {
             id: "1",
-            rowSpan: 3,
+            rowSpan: 4,
             columnSpan: 2,
             data: {title: "Subscribers Info", content: <SubscriberInfo/>}
         },
         {
             id: "2",
-            rowSpan: 5,
+            rowSpan: 4,
             columnSpan: 2,
             data: {title: "Subscribers Usage/ Sessions", content: <DataUsageSession/>}
         },
         {
             id: "3",
-            rowSpan: 4,
+            rowSpan: 3,
             columnSpan: 2,
             data: {title: "Data", content: <DataBundle/>}
         },
         {
             id: "4",
-            rowSpan: 1,
+            rowSpan: 3,
             columnSpan: 2,
-            data: {title: "Subscriber Info", content: "Third item"}
+            data: {title: "Subscribers Plan", content: <SubscriberPlan/>}
+        },
+        {
+            id: "5",
+            rowSpan: 3,
+            columnSpan: 2,
+            data: {title: "Subscriber Parameters", content: <SubscriberParameter/>}
+        },
+        {
+            id: "6",
+            rowSpan: 3,
+            columnSpan: 2,
+            data: {title: "Device Whitelist", content: <DeviceWhiteList/>}
+        },
+        {
+            id: "7",
+            rowSpan: 3,
+            columnSpan: 2,
+            data: {title: "Auth Logs", content: <AuthLog/>}
+        },
+        {
+            id: "8",
+            rowSpan: 3,
+            columnSpan: 2,
+            data: {title: "NAS Details", content: <NASDetail/>}
         }
     ]);
     const {appDataContext, setAppDataContext} = useAppDataContext();

@@ -6,7 +6,7 @@ import Button from "@cloudscape-design/components/button";
 import {Link, Spinner, StatusIndicator} from "@cloudscape-design/components";
 import {connect, ConnectedProps} from "react-redux";
 import {RootState} from "../redux/store";
-import {getSubscribers} from "../redux/dashboard/dashboard-slice";
+import {getSubscriberPlan} from "../redux/dashboard/dashboard-slice";
 import Pagination from "@cloudscape-design/components/pagination";
 
 type OwnProps = {}
@@ -20,58 +20,60 @@ type PageStateObj = {
 }
 
 type StateObj = {
-    subscriberResponse: any;
+    subscriberParameterResponse: any;
 }
 
 
-const SubscriberInfo: FC<Props> = (props: any) => {
-    const [stateObj, setStateObj] = useState<StateObj>({subscriberResponse: null});
+const SubscriberParameter: FC<Props> = (props: any) => {
+    const [stateObj, setStateObj] = useState<StateObj>({subscriberParameterResponse: null});
     const [pageRequest, setPageRequest] = useState<PageStateObj>({page: 1, pageSize: 5})
 
     useEffect(() => {
-        props.getSubscribers(pageRequest);
+        props.getSubscriberParameter(pageRequest);
     }, []);
 
 
-    if ((stateObj.subscriberResponse === null && props.subscriberResponse !== null) || (stateObj.subscriberResponse !== props.subscriberResponse)) {
-        setStateObj({...stateObj, subscriberResponse: props.subscriberResponse})
+    if ((stateObj.subscriberParameterResponse === null && props.subscriberParameterResponse !== null) || (stateObj.subscriberParameterResponse !== props.subscriberParameterResponse)) {
+        setStateObj({...stateObj, subscriberParameterResponse: props.subscriberParameterResponse})
     }
 
 
     return (
         <React.Fragment>
-            <span style={{fontFamily:'Ubuntu', color:'#349bff'}}>{stateObj.subscriberResponse?.data?.totalElements ?? 0} Subscriber(s) {props.isLoading && <Spinner/>}</span>
+            <span style={{
+                fontFamily: 'Ubuntu',
+                color: '#349bff'
+            }}>{stateObj.subscriberParameterResponse?.data?.totalElements ?? 0} Subscriber Plan(s) {props.isLoading &&
+                <Spinner/>}</span>
             <Table
                 columnDefinitions={[
                     {
                         id: "username",
                         header: "Username",
                         cell: item => (
-                            <Link href="#"><span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.username || "-"}</span></Link>
+                            <Link href="#"><span
+                                style={{fontFamily: 'Ubuntu', color: '#4f5c7a'}}>{item.username || "-"}</span></Link>
                         ),
                         sortingField: "username",
                         isRowHeader: true
                     },
                     {
-                        id: "email",
-                        header: "Email",
-                        cell: item =>(<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.email}</span>) || "-",
+                        id: "parameter_name",
+                        header: "Parameter Name",
+                        cell: item => (
+                            <span style={{fontFamily: 'Ubuntu', color: '#4f5c7a'}}>{item.parameter_name}</span>) || "-",
                         sortingField: "email"
                     },
                     {
-                        id: "contact_no",
-                        header: "Contact",
-                        cell: item => (<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.contact_no}</span>) || "-"
-                    },
-                    {
-                        id: "updated_time",
-                        header: "Update Time",
-                        cell: item =>(<span style={{fontFamily:'Ubuntu', color:'#4f5c7a'}}>{item.updated_time}</span>) || "-"
+                        id: "parameter_value",
+                        header: "Parameter Value",
+                        cell: item => (
+                            <span style={{fontFamily: 'Ubuntu', color: '#4f5c7a'}}>{item.parameter_value}</span>) || "-"
                     },
                     {
                         id: "status",
-                        header: "Status",
-                        cell: item => item.status === "ACTIVE" ?
+                        header: "Reject on Failure",
+                        cell: item => item.reject_on_failure === 1 ?
                             <StatusIndicator><span style={{fontFamily: 'Ubuntu'}}>Active</span></StatusIndicator> :
                             <StatusIndicator type="warning">
                                 <span style={{fontFamily: 'Ubuntu'}}>Inactive</span>
@@ -80,7 +82,7 @@ const SubscriberInfo: FC<Props> = (props: any) => {
                     }
                 ]}
                 enableKeyboardNavigation
-                items={stateObj.subscriberResponse?.data?.content ?? []}
+                items={stateObj.subscriberParameterResponse?.data?.content ?? []}
                 loadingText="Loading resources"
                 sortingDisabled
                 empty={
@@ -104,26 +106,26 @@ const SubscriberInfo: FC<Props> = (props: any) => {
                         page: detail.currentPageIndex,
                         pageSize: 5
                     }
-                    props.getSubscribers(page);
+                    props.getSubscriberParameter(page);
 
                 }}
-                pagesCount={(stateObj.subscriberResponse?.data?.totalPages ?? 0)}
+                pagesCount={(stateObj.subscriberParameterResponse?.data?.totalPages ?? 0)}
             />
         </React.Fragment>
     )
 }
 const mapStateToProps = (state: RootState) => {
     return {
-        subscriberResponse: state.dashboard.subscriberResponse,
+        subscriberParameterResponse: state.dashboard.subscriberParameterResponse,
         isLoading: state.dashboard.isLoading
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        getSubscribers: (pageRequest) => dispatch(getSubscribers(pageRequest))
+        getSubscriberParameter: (pageRequest) => dispatch(getSubscriberPlan(pageRequest))
     };
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
-export default connector(SubscriberInfo);
+export default connector(SubscriberParameter);
